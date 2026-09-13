@@ -70,6 +70,10 @@ foreach ($rows as $row) {
     }
 }
 
+/**
+ * @param array<string, mixed> $row
+ * @param array<int, array{id: int, module_id: int, category_id: ?int, is_favorite: bool, description: ?string, icon_key: ?string, priority: int}> $meta
+ */
 function mo_render_module_row(array $row, array $meta): string
 {
     $moduleId = (int) $row['id'];

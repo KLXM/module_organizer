@@ -26,7 +26,7 @@ class CustomIconRepository
         foreach ($rows as $row) {
             $result[] = [
                 'id' => (int) $row['id'],
-                'title' => $row['title'],
+                'title' => null === $row['title'] ? null : (string) $row['title'],
                 'svg' => (string) $row['svg'],
             ];
         }
@@ -48,7 +48,7 @@ class CustomIconRepository
 
         return [
             'id' => (int) $rows[0]['id'],
-            'title' => $rows[0]['title'],
+            'title' => null === $rows[0]['title'] ? null : (string) $rows[0]['title'],
             'svg' => (string) $rows[0]['svg'],
         ];
     }

@@ -31,8 +31,8 @@ class ModuleMetaRepository
                 'module_id' => $moduleId,
                 'category_id' => null !== $row['category_id'] ? (int) $row['category_id'] : null,
                 'is_favorite' => (bool) $row['is_favorite'],
-                'description' => $row['description'],
-                'icon_key' => $row['icon_key'],
+                'description' => null === $row['description'] ? null : (string) $row['description'],
+                'icon_key' => null === $row['icon_key'] ? null : (string) $row['icon_key'],
                 'priority' => (int) $row['priority'],
             ];
         }

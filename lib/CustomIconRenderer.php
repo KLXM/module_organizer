@@ -83,7 +83,7 @@ class CustomIconRenderer
         return $result;
     }
 
-    private static function clampFloat($value, float $min, float $max): float
+    private static function clampFloat(mixed $value, float $min, float $max): float
     {
         $float = is_numeric($value) ? (float) $value : 0.0;
 

@@ -80,7 +80,7 @@ class IconRegistry
 
     public static function getMediaFilename(?string $iconKey): ?string
     {
-        if (!self::isMediaIcon($iconKey)) {
+        if (null === $iconKey || !str_starts_with($iconKey, self::MEDIA_PREFIX)) {
             return null;
         }
 
@@ -94,7 +94,7 @@ class IconRegistry
 
     public static function getCustomId(?string $iconKey): ?int
     {
-        if (!self::isCustomIcon($iconKey)) {
+        if (null === $iconKey || !str_starts_with($iconKey, self::CUSTOM_PREFIX)) {
             return null;
         }
 
@@ -118,7 +118,7 @@ class IconRegistry
 
         if (self::isMediaIcon($iconKey)) {
             $filename = self::getMediaFilename($iconKey);
-            if ('' !== $filename && null !== rex_media::get($filename)) {
+            if (null !== $filename && '' !== $filename && null !== rex_media::get($filename)) {
                 return $iconKey;
             }
         }

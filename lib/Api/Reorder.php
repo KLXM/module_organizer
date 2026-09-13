@@ -38,11 +38,13 @@ class Reorder extends rex_api_function
             $order = [];
         }
 
+        $orderedIds = array_values(array_map('intval', $order));
+
         if ('categories' === $mode) {
-            CategoryRepository::saveOrder(array_map('intval', $order));
+            CategoryRepository::saveOrder($orderedIds);
         } else {
             $categoryId = rex_request('category_id', 'int', 0);
-            ModuleMetaRepository::saveGroupOrder($categoryId > 0 ? $categoryId : null, array_map('intval', $order));
+            ModuleMetaRepository::saveGroupOrder($categoryId > 0 ? $categoryId : null, $orderedIds);
         }
 
         rex_response::sendJson(['success' => true]);

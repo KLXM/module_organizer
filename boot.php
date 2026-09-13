@@ -1,5 +1,7 @@
 <?php
 
+/** @var rex_addon $this */
+
 rex_api_function::register('module_organizer_reorder', KLXM\ModuleOrganizer\Api\Reorder::class);
 rex_api_function::register('module_organizer_save_meta', KLXM\ModuleOrganizer\Api\SaveMeta::class);
 rex_api_function::register('module_organizer_category', KLXM\ModuleOrganizer\Api\Category::class);
@@ -43,8 +45,9 @@ if (rex::isBackend() && rex::getUser()) {
     if ($isContentEdit || $isOwnPage) {
         $i18nMap = [];
         $langFile = $this->getPath('lang/de_de.lang');
-        if (is_file($langFile)) {
-            foreach (file($langFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $langLines = is_file($langFile) ? file($langFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : false;
+        if (false !== $langLines) {
+            foreach ($langLines as $line) {
                 if (preg_match('/^([a-zA-Z0-9_]+)\s*=/', $line, $m)) {
                     $i18nMap[$m[1]] = rex_i18n::msg($m[1]);
                 }
