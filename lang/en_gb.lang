@@ -1,0 +1,63 @@
+module_organizer_title = Module Organizer
+
+# Navigation (subpages of "Modules", see package.yml)
+module_organizer_settings = Settings
+
+# Settings (pages/modules.organizer.settings.php)
+module_organizer_settings_saved = Settings saved.
+module_organizer_display_mode = Block selection display
+module_organizer_display_mode_popover = Popover (compact, anchored to the button)
+module_organizer_display_mode_popover_notice = Slim list right under the "Add block" button, grouped by category, favorites always first.
+module_organizer_display_mode_overlay = Overlay (large tile window)
+module_organizer_display_mode_overlay_notice = Centered window with tile grid and sidebar filters, similar to MediaPlace.
+module_organizer_warn_module_preview_conflict = Show a warning when a conflicting addon (module_preview, nv_modulepreview) is active
+module_organizer_save = Save
+
+# Conflict warning
+module_organizer_conflict_warning = <strong>Conflict detected:</strong> the following addon(s) also override the module selection in the content editor via extension point and would overwrite Module Organizer's tile overlay again: <strong>%s</strong>. Please disable them so the overlay shows up in the content editor.
+
+# Structure tree: categories (level 1) + modules (level 2), see pages/modules.organizer.overview.php
+module_organizer_tree_notice = Arrange categories and modules via drag & drop - modules can be moved between categories. Favorites always appear first in the block selection, regardless of their category.
+module_organizer_sidebar_empty_hint = Click a module in the tree to edit its favorite flag, description and icon.
+module_organizer_meta_saved = Saved.
+module_organizer_no_category = No category
+module_organizer_favorite = Pin as favorite at the top
+module_organizer_description = Description (optional)
+module_organizer_description_notice = Short hint text, shown as a tooltip in the overlay.
+module_organizer_icon = Layout preview icon (optional)
+module_organizer_no_icon = — none —
+module_organizer_icon_media_pick = Choose your own image from MediaPlace
+module_organizer_icon_media_remove = Remove
+module_organizer_icon_editor_open = Draw your own icon
+module_organizer_icon_editor_title = Draw icon
+module_organizer_icon_editor_hint = Drag a rectangle or line onto the area, move it, or resize it. Up to 8 shapes. The preview on the right shows the actual result.
+module_organizer_icon_editor_cancel = Cancel
+module_organizer_icon_editor_save = Save icon
+module_organizer_icon_editor_delete_shape = Delete shape
+module_organizer_icon_editor_clear = Clear all
+module_organizer_icon_editor_preview_label = Preview
+module_organizer_icon_editor_type_text = Text
+module_organizer_icon_editor_type_image = Image
+module_organizer_icon_editor_type_video = Video
+module_organizer_icon_editor_type_media = Document
+module_organizer_icon_editor_type_form = Form
+module_organizer_icon_editor_type_rect = Rectangle
+module_organizer_icon_editor_type_line = Line
+module_organizer_save_failed = Saving failed.
+module_organizer_order_saved = Order saved.
+
+# Categories in the tree: add/rename/delete (inline, no page change)
+module_organizer_category_add = Add category
+module_organizer_category_rename = Rename category
+module_organizer_category_name_prompt = Category name:
+module_organizer_category_delete_confirm = Really delete this category? Its modules will move to "No category".
+module_organizer_delete = Delete
+module_organizer_name = Name
+
+# Popover/overlay in the block selection (assets/module_organizer*.js)
+module_organizer_search_placeholder = Search module…
+module_organizer_close = Close
+module_organizer_filter_all = All
+module_organizer_filter_favorites = Favorites
+module_organizer_no_modules_found = No modules found.
+module_organizer_toggle_favorite = Remember as personal favorite

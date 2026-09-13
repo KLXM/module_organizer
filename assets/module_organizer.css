@@ -1,0 +1,925 @@
+:root {
+    --mo-overlay-bg: rgba(0, 0, 0, 0.6);
+    --mo-modal-bg: #fff;
+    --mo-modal-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --mo-header-bg: #f3f6fb;
+    --mo-header-border: #dfe3e9;
+    --mo-sidebar-bg: #f8f9fb;
+    --mo-sidebar-border: #dfe3e9;
+    --mo-text: #324050;
+    --mo-text-muted: #777;
+    --mo-tile-bg: #fff;
+    --mo-tile-border: #dfe3e9;
+    --mo-tile-hover-bg: #eef2f7;
+    --mo-tile-hover-border: #98a6b3;
+    --mo-favorite: #f0ad4e;
+    --mo-user-favorite: #4a90d9;
+    --mo-filter-active-bg: #324050;
+    --mo-filter-active-text: #fff;
+}
+
+/* Explizit vom Nutzer gewaehltes Dunkel-Theme (Backend-Einstellungen). */
+body.rex-theme-dark {
+    --mo-overlay-bg: rgba(0, 0, 0, 0.75);
+    --mo-modal-bg: #1a202c;
+    --mo-modal-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --mo-header-bg: #2d3748;
+    --mo-header-border: #3a4557;
+    --mo-sidebar-bg: #212836;
+    --mo-sidebar-border: #3a4557;
+    --mo-text: #e2e8f0;
+    --mo-text-muted: #9aa5b1;
+    --mo-tile-bg: #232c3d;
+    --mo-tile-border: #3a4557;
+    --mo-tile-hover-bg: #2d3748;
+    --mo-tile-hover-border: #5a6b82;
+    --mo-filter-active-bg: #4a90d9;
+    --mo-filter-active-text: #fff;
+}
+
+/* Auto-Dark-Mode: Systemeinstellung ist dunkel UND der Nutzer hat nicht
+   explizit "Hell" gewaehlt (rex-has-theme = Backend-Theme-System aktiv).
+   Gleiche Werte wie body.rex-theme-dark oben - Vorbild: mediaplace.css,
+   Abschnitt "Auto Dark Mode (System Preference = Dark)". */
+@media (prefers-color-scheme: dark) {
+    body.rex-has-theme:not(.rex-theme-light) {
+        --mo-overlay-bg: rgba(0, 0, 0, 0.75);
+        --mo-modal-bg: #1a202c;
+        --mo-modal-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        --mo-header-bg: #2d3748;
+        --mo-header-border: #3a4557;
+        --mo-sidebar-bg: #212836;
+        --mo-sidebar-border: #3a4557;
+        --mo-text: #e2e8f0;
+        --mo-text-muted: #9aa5b1;
+        --mo-tile-bg: #232c3d;
+        --mo-tile-border: #3a4557;
+        --mo-tile-hover-bg: #2d3748;
+        --mo-tile-hover-border: #5a6b82;
+        --mo-filter-active-bg: #4a90d9;
+        --mo-filter-active-text: #fff;
+    }
+}
+
+/* ---- Overlay ---- */
+#mo-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: var(--mo-overlay-bg);
+    align-items: center;
+    justify-content: center;
+}
+
+#mo-overlay.mo-open {
+    display: flex;
+}
+
+#mo-overlay .mo-modal {
+    width: 90vw;
+    max-width: 1100px;
+    height: 80vh;
+    min-width: 480px;
+    min-height: 320px;
+    background: var(--mo-modal-bg);
+    box-shadow: var(--mo-modal-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+#mo-overlay .mo-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--mo-header-bg);
+    border-bottom: 1px solid var(--mo-header-border);
+    flex-shrink: 0;
+}
+
+#mo-overlay .mo-search {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--mo-header-border);
+    border-radius: 4px;
+    background: var(--mo-modal-bg);
+    color: var(--mo-text);
+}
+
+#mo-overlay .mo-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--mo-text-muted);
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+#mo-overlay .mo-close:hover {
+    color: var(--mo-text);
+}
+
+#mo-overlay .mo-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+/* ---- Sidebar ---- */
+#mo-overlay .mo-sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    background: var(--mo-sidebar-bg);
+    border-right: 1px solid var(--mo-sidebar-border);
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+#mo-overlay .mo-filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    text-align: left;
+    color: var(--mo-text);
+    cursor: pointer;
+    font-size: 13px;
+}
+
+#mo-overlay .mo-filter-btn:hover {
+    background: var(--mo-tile-hover-bg);
+}
+
+#mo-overlay .mo-filter-btn.mo-filter-active {
+    background: var(--mo-filter-active-bg);
+    color: var(--mo-filter-active-text);
+}
+
+#mo-overlay .mo-filter-btn .fa-star {
+    color: var(--mo-favorite);
+}
+
+/* ---- Grid ---- */
+#mo-overlay .mo-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    align-content: start;
+}
+
+#mo-overlay .mo-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 10px;
+    background: var(--mo-tile-bg);
+    border: 1px solid var(--mo-tile-border);
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--mo-text);
+    position: relative;
+    transition: background-color .1s, border-color .1s;
+}
+
+#mo-overlay .mo-tile:hover,
+#mo-overlay .mo-tile:focus {
+    background: var(--mo-tile-hover-bg);
+    border-color: var(--mo-tile-hover-border);
+    color: var(--mo-text);
+    text-decoration: none;
+}
+
+#mo-overlay .mo-tile-icon {
+    width: 48px;
+    height: 36px;
+    color: var(--mo-text-muted);
+}
+
+#mo-overlay .mo-tile-icon svg,
+#mo-overlay .mo-tile-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 3px;
+}
+
+#mo-overlay .mo-tile-title {
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.3;
+}
+
+#mo-overlay .mo-tile-favorite {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    color: var(--mo-favorite);
+    font-size: 12px;
+}
+
+/* Persoenlicher Favoriten-Stern (jeder eingeloggte User, im Unterschied zum
+   read-only globalen .mo-tile-favorite oben) - eigener Button statt reinem
+   Icon, damit ein Klick nicht gleichzeitig das Modul einfuegt. */
+#mo-overlay .mo-tile-favorite-toggle {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 3px;
+    color: var(--mo-text-muted, #777);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#mo-overlay .mo-tile-favorite-toggle:hover {
+    background: var(--mo-tile-hover-bg, #eef2f7);
+}
+
+#mo-overlay .mo-tile-favorite-toggle.is-active {
+    color: var(--mo-user-favorite, #4a90d9);
+}
+
+#mo-overlay .mo-grid-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--mo-text-muted);
+    padding: 32px 0;
+}
+
+/* ---- Icon-Auswahl im Modul-Edit-Formular (pages/modules.php) ---- */
+.mo-icon-radio-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.mo-icon-radio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 84px;
+    padding: 10px 6px;
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    text-align: center;
+}
+
+.mo-icon-radio input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mo-icon-radio svg {
+    width: 32px;
+    height: 24px;
+}
+
+.mo-icon-radio.is-selected {
+    border-color: #4a90d9;
+    background: rgba(74, 144, 217, 0.1);
+}
+
+.mo-icon-media {
+    margin-top: 10px;
+}
+
+.mo-icon-media-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding: 6px;
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 4px;
+}
+
+.mo-icon-media-preview img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 3px;
+}
+
+.mo-icon-media-preview span {
+    flex: 1;
+    font-size: 12px;
+    word-break: break-all;
+}
+
+/* ---- Organizer-Seite: Liste + interaktive Sidebar (pages/modules.organizer.php) ---- */
+#mo-organizer {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.mo-organizer-tree {
+    flex: 1;
+    min-width: 0;
+    max-width: 560px;
+}
+
+.mo-organizer-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 20px;
+    background: var(--mo-tile-bg, #fff);
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 4px;
+    padding: 16px;
+}
+
+.mo-sidebar-empty {
+    color: var(--mo-text-muted, #777);
+    font-size: 13px;
+}
+
+.mo-sidebar-title {
+    margin: 0 0 14px;
+}
+
+/* ---- Strukturbaum: Kategorien (1. Ebene) + Module (2. Ebene) ----
+   pages/modules.organizer.overview.php / assets/module_organizer_organizer.js */
+.mo-tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mo-tree-category {
+    margin-bottom: 4px;
+}
+
+.mo-tree-category-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--mo-tile-bg, #fff);
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 4px;
+    cursor: grab;
+    font-weight: 600;
+}
+
+.mo-tree-category-favorites .mo-tree-category-header,
+.mo-tree-category-uncategorized .mo-tree-category-header {
+    cursor: default;
+    background: var(--mo-sidebar-bg, #f8f9fb);
+}
+
+.mo-tree-category.mo-dragging > .mo-tree-category-header {
+    opacity: 0.4;
+}
+
+.mo-tree-toggle {
+    color: var(--mo-text-muted, #777);
+    transition: transform .1s;
+}
+
+.mo-tree-collapsed > .mo-tree-category-header .mo-tree-toggle {
+    transform: rotate(-90deg);
+}
+
+.mo-tree-collapsed > .mo-tree-modules {
+    display: none;
+}
+
+.mo-tree-category-icon {
+    color: var(--mo-favorite, #f0ad4e);
+}
+
+.mo-tree-category-name {
+    flex: 1;
+}
+
+.mo-tree-category-rename,
+.mo-tree-category-delete {
+    background: none;
+    border: none;
+    padding: 2px 6px;
+    color: var(--mo-text-muted, #777);
+    cursor: pointer;
+}
+
+.mo-tree-category-rename:hover,
+.mo-tree-category-delete:hover {
+    color: var(--mo-text, #324050);
+}
+
+.mo-tree-modules {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0 0 0 22px;
+    min-height: 6px;
+}
+
+.mo-tree-module {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    margin-bottom: 3px;
+    background: var(--mo-tile-bg, #fff);
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 4px;
+    cursor: grab;
+    font-size: 13px;
+}
+
+.mo-tree-modules-readonly .mo-tree-module {
+    cursor: pointer;
+}
+
+.mo-tree-module:hover {
+    border-color: var(--mo-tile-hover-border, #98a6b3);
+}
+
+.mo-tree-module.mo-tree-module-active {
+    border-color: #4a90d9;
+    background: rgba(74, 144, 217, 0.08);
+}
+
+.mo-tree-module.mo-dragging {
+    opacity: 0.4;
+}
+
+.mo-tree-module-name {
+    flex: 1;
+}
+
+.mo-tree-favorite {
+    color: var(--mo-favorite, #f0ad4e);
+}
+
+.mo-tree-handle {
+    color: var(--mo-text-muted, #777);
+}
+
+#mo-tree-add-category {
+    margin-top: 10px;
+}
+
+.mo-save-status {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--mo-text-muted, #777);
+}
+
+@media (max-width: 900px) {
+    #mo-organizer {
+        flex-direction: column;
+    }
+
+    .mo-organizer-sidebar {
+        width: 100%;
+        position: static;
+    }
+}
+
+@media (max-width: 700px) {
+    #mo-icon-editor .mo-icon-editor-workarea {
+        flex-direction: column;
+    }
+
+    #mo-icon-editor .mo-icon-editor-preview-wrap {
+        width: 100%;
+    }
+}
+
+/* ---- Popover-Blockauswahl (assets/module_organizer_popover.js) ----
+   Bewusst kastig/eckig, konsistent mit dem restlichen Backend-Theme
+   (Standard-Bootstrap-3-Dropdown-Optik: 4px Radius, dezenter Schatten/
+   Border). Klassisches Popdown/Popup-Verhalten (siehe position() in
+   module_organizer_popover.js): erscheint unter dem Button, oder darueber
+   wenn dort nicht genug Platz ist - Breite folgt der (meist vollen,
+   btn-block) Button-Breite statt einer festen eigenen Breite. */
+#mo-popover {
+    display: none;
+    position: fixed;
+    z-index: 999999;
+    max-width: calc(100vw - 12px);
+    max-height: 420px;
+    background: var(--mo-tile-bg, #fff);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    overflow: hidden;
+    flex-direction: column;
+}
+
+body.rex-theme-dark #mo-popover {
+    border-color: var(--mo-tile-border, #3a4557);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+    body.rex-has-theme:not(.rex-theme-light) #mo-popover {
+        border-color: var(--mo-tile-border, #3a4557);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    }
+}
+
+#mo-popover.mo-open {
+    display: flex;
+}
+
+#mo-popover .mo-popover-search-wrap {
+    padding: 8px;
+    border-bottom: 1px solid var(--mo-tile-border, #dfe3e9);
+    flex-shrink: 0;
+}
+
+#mo-popover .mo-popover-search {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 4px;
+    background: var(--mo-modal-bg, #fff);
+    color: var(--mo-text, #324050);
+    font-size: 13px;
+}
+
+#mo-popover .mo-popover-list {
+    overflow-y: auto;
+    padding: 4px 0;
+}
+
+#mo-popover .mo-popover-group-header {
+    padding: 6px 12px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: var(--mo-text-muted, #777);
+}
+
+#mo-popover .mo-popover-divider {
+    margin: 4px 0;
+    border-top: 1px solid var(--mo-tile-border, #dfe3e9);
+}
+
+#mo-popover .mo-popover-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    color: var(--mo-text, #324050);
+    text-decoration: none;
+    font-size: 13px;
+}
+
+#mo-popover .mo-popover-row:hover,
+#mo-popover .mo-popover-row:focus {
+    background: var(--mo-tile-hover-bg, #eef2f7);
+    color: var(--mo-text, #324050);
+    text-decoration: none;
+}
+
+#mo-popover .mo-popover-row-icon {
+    width: 22px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--mo-text-muted, #777);
+    display: inline-flex;
+}
+
+#mo-popover .mo-popover-row-icon svg,
+#mo-popover .mo-popover-row-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+#mo-popover .mo-popover-row-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#mo-popover .mo-popover-row-favorite {
+    color: var(--mo-favorite, #f0ad4e);
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+/* Persoenlicher Favoriten-Stern (jeder eingeloggte User) - eigener Button
+   statt reinem Icon, damit ein Klick nicht gleichzeitig das Modul einfuegt.
+   Read-only globale Favoriten nutzen weiterhin .mo-popover-row-favorite. */
+#mo-popover .mo-popover-row-favorite-toggle {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 3px;
+    color: var(--mo-text-muted, #ccc);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#mo-popover .mo-popover-row-favorite-toggle:hover {
+    background: var(--mo-tile-hover-bg, #eef2f7);
+}
+
+#mo-popover .mo-popover-row-favorite-toggle.is-active {
+    color: var(--mo-user-favorite, #4a90d9);
+}
+
+#mo-popover .mo-popover-empty {
+    padding: 16px 12px;
+    text-align: center;
+    color: var(--mo-text-muted, #777);
+    font-size: 13px;
+}
+
+/* ---- Icon-Mini-Editor (assets/module_organizer_icon_editor.js) ----
+   Eigenes Modal, bewusst nicht im kompakten Popover - der Nutzer hat mehr
+   Platz zum Zeichnen noetig. Gleicher kastiger Backend-Stil wie der Rest. */
+#mo-icon-editor {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: var(--mo-overlay-bg, rgba(0, 0, 0, 0.6));
+    align-items: center;
+    justify-content: center;
+}
+
+#mo-icon-editor.mo-open {
+    display: flex;
+}
+
+#mo-icon-editor .mo-icon-editor-box {
+    width: 880px;
+    max-width: calc(100vw - 32px);
+    background: var(--mo-modal-bg, #fff);
+    border-radius: 4px;
+    box-shadow: var(--mo-modal-shadow, 0 8px 32px rgba(0, 0, 0, 0.3));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#mo-icon-editor .mo-icon-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--mo-header-bg, #f3f6fb);
+    border-bottom: 1px solid var(--mo-header-border, #dfe3e9);
+}
+
+#mo-icon-editor .mo-icon-editor-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--mo-text-muted, #777);
+    cursor: pointer;
+}
+
+#mo-icon-editor .mo-icon-editor-body {
+    padding: 16px;
+}
+
+#mo-icon-editor .mo-icon-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+#mo-icon-editor .mo-icon-editor-tool {
+    padding: 6px 12px;
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 4px;
+    background: var(--mo-tile-bg, #fff);
+    color: var(--mo-text, #324050);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#mo-icon-editor .mo-icon-editor-tool:hover {
+    background: var(--mo-tile-hover-bg, #eef2f7);
+}
+
+#mo-icon-editor .mo-icon-editor-tool.is-active {
+    background: var(--mo-filter-active-bg, #324050);
+    color: var(--mo-filter-active-text, #fff);
+    border-color: var(--mo-filter-active-bg, #324050);
+}
+
+#mo-icon-editor .mo-icon-editor-delete-btn,
+#mo-icon-editor .mo-icon-editor-clear-btn {
+    margin-left: auto;
+}
+
+#mo-icon-editor .mo-icon-editor-clear-btn {
+    margin-left: 6px;
+}
+
+/* Zeichenflaeche und Live-Vorschau nebeneinander, damit man beim Ziehen
+   sofort das tatsaechliche (serverseitig gerenderte) SVG-Ergebnis sieht -
+   Ueberlappungen, Verzerrungen und Abstaende werden so direkt sichtbar. */
+#mo-icon-editor .mo-icon-editor-workarea {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+#mo-icon-editor .mo-icon-editor-canvas-wrap {
+    flex: 1.4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+}
+
+#mo-icon-editor .mo-icon-editor-preview-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+}
+
+#mo-icon-editor .mo-icon-editor-preview-label {
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: var(--mo-text-muted, #777);
+    margin-bottom: 6px;
+}
+
+#mo-icon-editor .mo-icon-editor-preview {
+    width: 100%;
+    aspect-ratio: 24 / 18;
+    background-color: var(--mo-tile-bg, #fff);
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 4px;
+    color: var(--mo-text, #324050);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10%;
+    box-sizing: border-box;
+}
+
+#mo-icon-editor .mo-icon-editor-preview svg {
+    width: 100%;
+    height: 100%;
+}
+
+#mo-icon-editor .mo-icon-editor-canvas {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 24 / 18;
+    background-image:
+        linear-gradient(var(--mo-tile-border, #dfe3e9) 1px, transparent 1px),
+        linear-gradient(90deg, var(--mo-tile-border, #dfe3e9) 1px, transparent 1px);
+    background-size: calc(100% / 24) calc(100% / 18);
+    background-color: var(--mo-sidebar-bg, #f8f9fb);
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 4px;
+    cursor: crosshair;
+    touch-action: none;
+    user-select: none;
+}
+
+#mo-icon-editor .mo-icon-editor-shape {
+    position: absolute;
+    background: var(--mo-filter-active-bg, #324050);
+    opacity: 0.35;
+    border: 1.5px solid var(--mo-filter-active-bg, #324050);
+    border-radius: 2px;
+    box-sizing: border-box;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#mo-icon-editor .mo-icon-editor-shape.is-selected {
+    opacity: 0.55;
+    border-color: #d9534f;
+}
+
+#mo-icon-editor .mo-icon-editor-shape-label {
+    font-size: 9px;
+    color: #fff;
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+}
+
+#mo-icon-editor .mo-icon-editor-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border: 1.5px solid var(--mo-filter-active-bg, #324050);
+    border-radius: 50%;
+}
+
+#mo-icon-editor .mo-icon-editor-handle-se {
+    right: -5px;
+    bottom: -5px;
+    cursor: nwse-resize;
+}
+
+/* Freie Linie: eigenes duennes Segment (rotiertes 0-Hoehe-Div mit Border)
+   statt einer Box, plus zwei runde Endpunkt-Handles zum separaten Ziehen
+   von Start-/Endpunkt. */
+#mo-icon-editor .mo-icon-editor-line {
+    position: absolute;
+    height: 0;
+    border-top: 2px solid var(--mo-filter-active-bg, #324050);
+    cursor: move;
+}
+
+#mo-icon-editor .mo-icon-editor-line.is-selected {
+    border-top-color: #d9534f;
+}
+
+#mo-icon-editor .mo-icon-editor-line-handle {
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 1;
+}
+
+#mo-icon-editor .mo-icon-editor-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--mo-header-border, #dfe3e9);
+}
+
+/* ---- Icon-Editor Aufruf-Button + Galerie vorhandener Custom-Icons
+   (pages/modules.organizer.overview.php) ---- */
+#mo-icon-editor-open {
+    margin-top: 8px;
+}
+
+.mo-custom-icon-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.mo-custom-icon-gallery-item {
+    position: relative;
+}
+
+.mo-custom-icon-gallery-item .mo-icon-radio {
+    width: 64px;
+}
+
+.mo-custom-icon-delete {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    line-height: 16px;
+    text-align: center;
+    padding: 0;
+    background: var(--mo-tile-bg, #fff);
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 50%;
+    color: var(--mo-text-muted, #777);
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.mo-custom-icon-delete:hover {
+    color: #d9534f;
+}

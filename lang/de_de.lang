@@ -1,0 +1,63 @@
+module_organizer_title = Module Organizer
+
+# Navigation (Unterseiten von "Module", siehe package.yml)
+module_organizer_settings = Einstellungen
+
+# Einstellungen (pages/modules.organizer.settings.php)
+module_organizer_settings_saved = Einstellungen gespeichert.
+module_organizer_display_mode = Darstellung der Blockauswahl
+module_organizer_display_mode_popover = Popover (kompakt, am Button verankert)
+module_organizer_display_mode_popover_notice = Schlanke Liste direkt unter dem "Block hinzufügen"-Button, nach Kategorie gruppiert, Favoriten immer zuerst.
+module_organizer_display_mode_overlay = Overlay (großes Kachel-Fenster)
+module_organizer_display_mode_overlay_notice = Zentriertes Fenster mit Kachel-Grid und Sidebar-Filtern, ähnlich MediaPlace.
+module_organizer_warn_module_preview_conflict = Warnung anzeigen, wenn ein konkurrierendes Addon (module_preview, nv_modulepreview) aktiv ist
+module_organizer_save = Speichern
+
+# Konflikt-Warnung
+module_organizer_conflict_warning = <strong>Konflikt erkannt:</strong> Folgende Addon(s) überschreiben ebenfalls die Modul-Auswahl im Content-Editor per Extension Point und würden das Kachel-Overlay von Module Organizer wieder überschreiben: <strong>%s</strong>. Bitte deaktivieren, damit das Overlay im Content-Editor sichtbar wird.
+
+# Strukturbaum: Kategorien (1. Ebene) + Module (2. Ebene), siehe pages/modules.organizer.overview.php
+module_organizer_tree_notice = Kategorien und Module per Drag & Drop anordnen - Module lassen sich zwischen Kategorien verschieben. Favoriten stehen in der Blockauswahl immer zuerst, unabhängig von ihrer Kategorie.
+module_organizer_sidebar_empty_hint = Modul im Baum anklicken, um Favorit, Beschreibung und Icon zu bearbeiten.
+module_organizer_meta_saved = Gespeichert.
+module_organizer_no_category = Ohne Kategorie
+module_organizer_favorite = Als Favorit vorne einsortieren
+module_organizer_description = Beschreibung (optional)
+module_organizer_description_notice = Kurzer Hinweistext, erscheint im Overlay als Tooltip.
+module_organizer_icon = Layout-Vorschau-Icon (optional)
+module_organizer_no_icon = — keins —
+module_organizer_icon_media_pick = Eigenes Bild aus MediaPlace wählen
+module_organizer_icon_media_remove = Entfernen
+module_organizer_icon_editor_open = Eigenes Icon zeichnen
+module_organizer_icon_editor_title = Icon zeichnen
+module_organizer_icon_editor_hint = Rechteck oder Linie auf die Fläche ziehen, verschieben oder in der Größe ändern. Bis zu 8 Bereiche möglich. Die Vorschau rechts zeigt das tatsächliche Ergebnis.
+module_organizer_icon_editor_cancel = Abbrechen
+module_organizer_icon_editor_save = Icon speichern
+module_organizer_icon_editor_delete_shape = Bereich löschen
+module_organizer_icon_editor_clear = Alles löschen
+module_organizer_icon_editor_preview_label = Vorschau
+module_organizer_icon_editor_type_text = Text
+module_organizer_icon_editor_type_image = Bild
+module_organizer_icon_editor_type_video = Video
+module_organizer_icon_editor_type_media = Dokument
+module_organizer_icon_editor_type_form = Formular
+module_organizer_icon_editor_type_rect = Rechteck
+module_organizer_icon_editor_type_line = Linie
+module_organizer_save_failed = Speichern fehlgeschlagen.
+module_organizer_order_saved = Reihenfolge gespeichert.
+
+# Kategorien im Baum anlegen/umbenennen/löschen (inline, kein Seitenwechsel)
+module_organizer_category_add = Kategorie hinzufügen
+module_organizer_category_rename = Kategorie umbenennen
+module_organizer_category_name_prompt = Name der Kategorie:
+module_organizer_category_delete_confirm = Kategorie wirklich löschen? Enthaltene Module werden zu "Ohne Kategorie" verschoben.
+module_organizer_delete = Löschen
+module_organizer_name = Name
+
+# Popover/Overlay in der Blockauswahl (assets/module_organizer*.js)
+module_organizer_search_placeholder = Modul suchen…
+module_organizer_close = Schließen
+module_organizer_filter_all = Alle
+module_organizer_filter_favorites = Favoriten
+module_organizer_no_modules_found = Keine Module gefunden.
+module_organizer_toggle_favorite = Als persönlichen Favorit merken

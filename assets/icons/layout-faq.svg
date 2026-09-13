@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" role="img" aria-hidden="true">
+  <circle cx="3" cy="4" r="2.25" fill="currentColor" fill-opacity="0.2"/>
+  <text x="3" y="5.6" font-size="4" font-weight="700" text-anchor="middle" fill="currentColor">?</text>
+  <path d="M8 4h15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="3" cy="10" r="2.25" fill="currentColor" fill-opacity="0.2"/>
+  <text x="3" y="11.6" font-size="4" font-weight="700" text-anchor="middle" fill="currentColor">?</text>
+  <path d="M8 10h15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="3" cy="16" r="2.25" fill="currentColor" fill-opacity="0.2"/>
+  <text x="3" y="17.6" font-size="4" font-weight="700" text-anchor="middle" fill="currentColor">?</text>
+  <path d="M8 16h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

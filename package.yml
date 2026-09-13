@@ -1,0 +1,28 @@
+package: module_organizer
+version: '1.0.0-beta1'
+author: KLXM Crossmedia GmbH
+supportpage: https://github.com/KLXM/module_organizer
+
+pages:
+    modules/organizer:
+        title: 'translate:title'
+        perm: admin
+        subpages:
+            overview:
+                title: 'translate:title'
+                perm: admin
+            settings:
+                title: 'translate:settings'
+                perm: admin
+
+requires:
+    redaxo: '>=5.20'
+    php:
+        version: '>=8.1'
+    packages:
+        structure: '*'
+        structure/content: '*'
+
+default_config:
+    warn_module_preview_conflict: true
+    display_mode: popover
