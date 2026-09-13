@@ -30,27 +30,13 @@
     var editingIconId = null;
     var previewTimer = null;
 
-    var i18nDict = null;
-
-    function loadI18nDict() {
-        if (null !== i18nDict) {
-            return i18nDict;
-        }
-        var el = document.getElementById('mo-i18n-data');
-        if (!el) {
-            i18nDict = {};
-            return i18nDict;
-        }
-        try {
-            i18nDict = JSON.parse(el.textContent) || {};
-        } catch (e) {
-            i18nDict = {};
-        }
-        return i18nDict;
-    }
+    // JS-Uebersetzungen: boot.php liefert sie ueber
+    // rex_view::setJsProperty('module_organizer', ...) - Teil des Backend-
+    // globalen "rex"-JS-Objekts, das der Core bereits im <head> ausgibt.
+    var i18nDict = (window.rex && window.rex.module_organizer && window.rex.module_organizer.i18n) || {};
 
     function t(key) {
-        return loadI18nDict()['module_organizer_' + key] || key;
+        return i18nDict['module_organizer_' + key] || key;
     }
 
     function isLine(shape) {

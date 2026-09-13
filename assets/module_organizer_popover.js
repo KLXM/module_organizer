@@ -15,51 +15,20 @@
         return '';
     })();
 
-    var i18nDict = null;
-
-    function loadI18nDict() {
-        if (null !== i18nDict) {
-            return i18nDict;
-        }
-        var el = document.getElementById('mo-i18n-data');
-        if (!el) {
-            i18nDict = {};
-            return i18nDict;
-        }
-        try {
-            i18nDict = JSON.parse(el.textContent) || {};
-        } catch (e) {
-            i18nDict = {};
-        }
-        return i18nDict;
-    }
+    // JS-Uebersetzungen + Media-Base-URL: boot.php liefert beides ueber
+    // rex_view::setJsProperty('module_organizer', ...) - Teil des Backend-
+    // globalen "rex"-JS-Objekts, das der Core bereits im <head> ausgibt.
+    var moData = (window.rex && window.rex.module_organizer) || {};
+    var i18nDict = moData.i18n || {};
+    var mediaBaseUrl = moData.mediaBaseUrl || '';
 
     function t(key) {
-        return loadI18nDict()['module_organizer_' + key] || key;
-    }
-
-    var mediaBaseUrl = null;
-
-    function loadMediaBaseUrl() {
-        if (null !== mediaBaseUrl) {
-            return mediaBaseUrl;
-        }
-        var el = document.getElementById('mo-media-base-url');
-        if (!el) {
-            mediaBaseUrl = '';
-            return mediaBaseUrl;
-        }
-        try {
-            mediaBaseUrl = JSON.parse(el.textContent) || '';
-        } catch (e) {
-            mediaBaseUrl = '';
-        }
-        return mediaBaseUrl;
+        return i18nDict['module_organizer_' + key] || key;
     }
 
     function buildMediaIconUrl(filename) {
         if (/\.svg$/i.test(filename)) {
-            return loadMediaBaseUrl() + filename;
+            return mediaBaseUrl + filename;
         }
         return 'index.php?rex_media_type=rex_media_small&rex_media_file=' + encodeURIComponent(filename);
     }

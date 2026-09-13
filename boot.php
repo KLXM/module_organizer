@@ -38,10 +38,15 @@ if (rex::isBackend() && rex::getUser()) {
     }
 
     // JS-Uebersetzungen: jeder Schluessel aus lang/de_de.lang wird fuer die
-    // aktive Locale aufgeloest und als JSON eingebettet - gebraucht sowohl im
-    // Content-Editor (Popover/Overlay) als auch auf der eigenen Organizer-
-    // Seite (Icon-Editor, Sortierstatus). Ohne dieses Tag zeigen alle t()-
-    // Aufrufe in den JS-Dateien nur die rohen Lang-Keys statt Text.
+    // aktive Locale aufgeloest und dem Backend-globalen "rex"-JS-Objekt
+    // mitgegeben - gebraucht sowohl im Content-Editor (Popover/Overlay) als
+    // auch auf der eigenen Organizer-Seite (Icon-Editor, Sortierstatus).
+    // Ohne das zeigen alle t()-Aufrufe in den JS-Dateien nur die rohen
+    // Lang-Keys statt Text. rex_view::setJsProperty() ist der REDAXO-eigene
+    // Weg dafuer (siehe z.B. mediaplace/boot.php) - kein eigenes <script>-Tag
+    // noetig, kein manuelles Nonce-Handling, da der Core-Layout
+    // (fragments/core/top.php) das "rex"-Objekt bereits selbst mit
+    // rex_response::getNonce() ausliefert.
     if ($isContentEdit || $isOwnPage) {
         $i18nMap = [];
         $langFile = $this->getPath('lang/de_de.lang');
@@ -58,18 +63,9 @@ if (rex::isBackend() && rex::getUser()) {
         // ausgeliefert werden (REDAXO-Kernverhalten, kein Bug hier) - fuer
         // media:-Icons mit .svg-Endung nutzen beide JS-Dateien stattdessen
         // diese rohe Medienpool-URL direkt, ohne rex_media_type-Umweg.
-        // Vorbild: mediaplace/boot.php, data-media-base-url via rex_url::media().
-        $mediaBaseUrl = rex_url::media();
-
-        rex_extension::register('OUTPUT_FILTER', static function (rex_extension_point $ep) use ($i18nMap, $mediaBaseUrl) {
-            $script = '<script type="application/json" id="mo-i18n-data">'
-                . json_encode($i18nMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT)
-                . '</script>'
-                . '<script type="application/json" id="mo-media-base-url">'
-                . json_encode($mediaBaseUrl, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT)
-                . '</script>';
-
-            return str_ireplace('</body>', $script . '</body>', $ep->getSubject());
-        });
+        rex_view::setJsProperty('module_organizer', [
+            'i18n' => $i18nMap,
+            'mediaBaseUrl' => rex_url::media(),
+        ]);
     }
 }

@@ -21,64 +21,26 @@
             return '';
         })();
 
-    // JS-Uebersetzungen: boot.php embeddet alle Keys aus lang/de_de.lang, fuer
-    // die aktive Locale via rex_i18n::msg() aufgeloest, als JSON (siehe
-    // #mo-i18n-data in boot.php's OUTPUT_FILTER). Das Tag sitzt am Seitenende
-    // (kurz vor </body>), dieses Script laedt aber synchron viel frueher im
-    // <head>-Bereich - ein einmaliges Auslesen beim Script-Start faende das
-    // Tag also noch nicht. Daher lazy + gecacht ab dem ERSTEN tatsaechlichen
-    // Bedarf (build() laeuft erst bei Klick auf .mo-trigger, also nach
-    // vollstaendigem DOM-Aufbau).
-    var i18nDict = null;
-
-    function loadI18nDict() {
-        if (null !== i18nDict) {
-            return i18nDict;
-        }
-        var el = document.getElementById('mo-i18n-data');
-        if (!el) {
-            i18nDict = {};
-            return i18nDict;
-        }
-        try {
-            i18nDict = JSON.parse(el.textContent) || {};
-        } catch (e) {
-            i18nDict = {};
-        }
-        return i18nDict;
-    }
+    // JS-Uebersetzungen + Media-Base-URL: boot.php liefert beides ueber
+    // rex_view::setJsProperty('module_organizer', ...) - das ist Teil des
+    // Backend-globalen "rex"-JS-Objekts, das der Core (fragments/core/top.php)
+    // bereits im <head> ausgibt, also VOR diesem Script. Kein eigenes
+    // <script>-Tag/Nonce-Handling und kein Lazy-Loading mehr noetig.
+    var moData = (window.rex && window.rex.module_organizer) || {};
+    var i18nDict = moData.i18n || {};
+    var mediaBaseUrl = moData.mediaBaseUrl || '';
 
     function t(key) {
-        return loadI18nDict()['module_organizer_' + key] || key;
+        return i18nDict['module_organizer_' + key] || key;
     }
 
-    // Media-Base-URL: gleiches Lazy-Muster wie i18nDict (Tag sitzt erst am
-    // Seitenende). SVG-Dateien koennen NICHT ueber den Media-Manager
-    // ausgeliefert werden (REDAXO-Kernverhalten) - dafuer die rohe
-    // Medienpool-URL direkt nutzen, alles andere weiterhin per
-    // rex_media_type/rex_media_file (Media-Manager-Thumbnail).
-    var mediaBaseUrl = null;
-
-    function loadMediaBaseUrl() {
-        if (null !== mediaBaseUrl) {
-            return mediaBaseUrl;
-        }
-        var el = document.getElementById('mo-media-base-url');
-        if (!el) {
-            mediaBaseUrl = '';
-            return mediaBaseUrl;
-        }
-        try {
-            mediaBaseUrl = JSON.parse(el.textContent) || '';
-        } catch (e) {
-            mediaBaseUrl = '';
-        }
-        return mediaBaseUrl;
-    }
-
+    // SVG-Dateien koennen NICHT ueber den Media-Manager ausgeliefert werden
+    // (REDAXO-Kernverhalten) - dafuer die rohe Medienpool-URL direkt nutzen,
+    // alles andere weiterhin per rex_media_type/rex_media_file (Media-
+    // Manager-Thumbnail).
     function buildMediaIconUrl(filename) {
         if (/\.svg$/i.test(filename)) {
-            return loadMediaBaseUrl() + filename;
+            return mediaBaseUrl + filename;
         }
         return 'index.php?rex_media_type=rex_media_small&rex_media_file=' + encodeURIComponent(filename);
     }

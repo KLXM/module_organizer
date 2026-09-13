@@ -88,20 +88,12 @@
 
         // SVG-Dateien koennen NICHT ueber den Media-Manager ausgeliefert
         // werden (REDAXO-Kernverhalten) - dafuer die rohe Medienpool-URL
-        // direkt nutzen (boot.php embeddet sie als #mo-media-base-url,
-        // gleiches Muster wie #mo-i18n-data), alles andere weiterhin per
-        // rex_media_type/rex_media_file (Media-Manager-Thumbnail).
+        // direkt nutzen. boot.php liefert sie ueber
+        // rex_view::setJsProperty('module_organizer', ...), Teil des Backend-
+        // globalen "rex"-JS-Objekts (siehe auch module_organizer.js).
         function mediaUrl(filename) {
             if (/\.svg$/i.test(filename)) {
-                var el = document.getElementById('mo-media-base-url');
-                var base = '';
-                if (el) {
-                    try {
-                        base = JSON.parse(el.textContent) || '';
-                    } catch (e) {
-                        base = '';
-                    }
-                }
+                var base = (window.rex && window.rex.module_organizer && window.rex.module_organizer.mediaBaseUrl) || '';
                 return base + filename;
             }
             return 'index.php?rex_media_type=rex_media_small&rex_media_file=' + encodeURIComponent(filename);
