@@ -621,15 +621,25 @@ body.rex-theme-dark #mo-popover {
 }
 
 #mo-popover .mo-popover-row-favorite {
-    color: var(--mo-favorite, #f0ad4e);
-    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--mo-favorite, #f0ad4e);
+    font-size: 12px;
 }
 
 /* Persoenlicher Favoriten-Stern (jeder eingeloggte User) - eigener Button
    statt reinem Icon, damit ein Klick nicht gleichzeitig das Modul einfuegt.
-   Read-only globale Favoriten nutzen weiterhin .mo-popover-row-favorite. */
+   Read-only globale Favoriten nutzen weiterhin .mo-popover-row-favorite -
+   beide Varianten teilen dieselbe Box-Groesse/Zentrierung, damit die Sterne
+   in der Liste buendig auf gleicher Hoehe/Position sitzen. */
 #mo-popover .mo-popover-row-favorite-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
     width: 20px;
     height: 20px;
@@ -639,6 +649,7 @@ body.rex-theme-dark #mo-popover {
     border-radius: 3px;
     color: var(--mo-text-muted, #ccc);
     font-size: 12px;
+    line-height: 1;
     cursor: pointer;
 }
 
