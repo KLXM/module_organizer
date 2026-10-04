@@ -115,16 +115,20 @@
 
     function buildSidebar() {
         var categories = {};
+        var categoryOrder = {};
         currentItems.forEach(function (item) {
             if (item.category_id && item.category_name) {
                 categories[item.category_id] = item.category_name;
+                categoryOrder[item.category_id] = item.category_priority || 0;
             }
         });
 
         var html = '';
         html += '<button type="button" class="mo-filter-btn mo-filter-active" data-filter="all">' + escHtml(t('filter_all')) + '</button>';
         html += '<button type="button" class="mo-filter-btn" data-filter="favorites"><i class="rex-icon fa-star"></i> ' + escHtml(t('filter_favorites')) + '</button>';
-        Object.keys(categories).forEach(function (categoryId) {
+        Object.keys(categories).sort(function (a, b) {
+            return (categoryOrder[a] - categoryOrder[b]) || categories[a].localeCompare(categories[b]);
+        }).forEach(function (categoryId) {
             html += '<button type="button" class="mo-filter-btn" data-filter="cat-' + categoryId + '">' + escHtml(categories[categoryId]) + '</button>';
         });
 
@@ -162,6 +166,12 @@
         return items.slice().sort(function (a, b) {
             if (!!a.is_favorite !== !!b.is_favorite) {
                 return a.is_favorite ? -1 : 1;
+            }
+            // Kategorien in der Reihenfolge des Organizers, Module ohne Kategorie zuletzt
+            var ca = a.category_id ? (a.category_priority || 0) : Number.MAX_SAFE_INTEGER;
+            var cb = b.category_id ? (b.category_priority || 0) : Number.MAX_SAFE_INTEGER;
+            if (ca !== cb) {
+                return ca - cb;
             }
             if (a.priority !== b.priority) {
                 return a.priority - b.priority;

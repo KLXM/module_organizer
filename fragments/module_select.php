@@ -22,7 +22,9 @@ $block = $this->getVar('block', false);
 $displayMode = rex_addon::get('module_organizer')->getConfig('display_mode', 'popover');
 
 $meta = ModuleMetaRepository::getAllIndexedByModuleId();
-$categoryNames = array_column(CategoryRepository::getAll(), 'name', 'id');
+$categories = CategoryRepository::getAll();
+$categoryNames = array_column($categories, 'name', 'id');
+$categoryPriorities = array_column($categories, 'priority', 'id');
 $user = rex::getUser();
 $userFavorites = null !== $user ? UserFavoriteRepository::getForUser((int) $user->getId()) : [];
 
@@ -48,7 +50,9 @@ foreach ($items as $item) {
     $enrichedItems[] = [
         'id' => $moduleId,
         'key' => $item['key'],
-        'title' => $item['title'],
+        // Titel kommt vom Core bereits HTML-escaped (z. B. „&amp;“); das JS setzt ihn per textContent ein –
+        // ohne Rückdekodierung stünde dort buchstäblich „Text &amp; Medien“.
+        'title' => htmlspecialchars_decode($item['title']),
         // $item['href'] kommt vom Core bereits HTML-escaped (rex_context::
         // getUrl() escaped standardmaessig "&" zu "&amp;", gedacht fuer den
         // Einsatz in href="..."-HTML-Attributen). Wir liefern die URL hier
@@ -60,6 +64,8 @@ foreach ($items as $item) {
         'href' => htmlspecialchars_decode($item['href']),
         'category_id' => $categoryId,
         'category_name' => null !== $categoryId ? ($categoryNames[$categoryId] ?? null) : null,
+        // Reihenfolge der Kategorien wie im Organizer-Strukturbaum (nicht alphabetisch)
+        'category_priority' => null !== $categoryId ? (int) ($categoryPriorities[$categoryId] ?? 0) : 0,
         // is_favorite = global (admin-gepflegt) ODER persoenlich durch den
         // aktuellen User markiert - beide erscheinen gemeinsam in der
         // Favoriten-Gruppe der Blockauswahl. is_global_favorite bleibt
