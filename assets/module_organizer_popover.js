@@ -235,7 +235,7 @@
         rest.forEach(function (item) {
             if (item.category_id && item.category_name) {
                 var key = String(item.category_id);
-                byCategory[key] = byCategory[key] || { name: item.category_name, items: [] };
+                byCategory[key] = byCategory[key] || { name: item.category_name, priority: item.category_priority || 0, items: [] };
                 byCategory[key].items.push(item);
             } else {
                 uncategorized.push(item);
@@ -244,7 +244,7 @@
 
         var categoryGroups = Object.keys(byCategory)
             .map(function (key) { return byCategory[key]; })
-            .sort(function (a, b) { return a.name.localeCompare(b.name); });
+            .sort(function (a, b) { return (a.priority - b.priority) || a.name.localeCompare(b.name); });
 
         var renderedAny = false;
 
