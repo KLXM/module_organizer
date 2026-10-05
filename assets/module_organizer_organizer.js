@@ -272,6 +272,82 @@
         // Eigenschaften, kein Seitenwechsel noetig). Die Kategorie-Zuordnung
         // wird NICHT hier gepflegt, sondern rein durch die Baum-Position
         // (Drag&Drop) bestimmt. ----
+        // ---- Vorschaubild: automatisch (aus Icon), keins, Vorlage oder Bild aus MediaPlace ----
+        var previewSelect = document.getElementById('mo-field-preview');
+        var previewThumb = document.getElementById('mo-preview-thumb');
+        var previewsUrl = root ? root.getAttribute('data-previews-url') : '';
+        function renderPreviewThumb(data) {
+            if (!previewThumb) {
+                return;
+            }
+            var key = data.preview_key || '';
+            previewThumb.innerHTML = '';
+            if ('none' === key) {
+                return;
+            }
+            if (0 === key.indexOf('media:')) {
+                var img = document.createElement('img');
+                img.src = 'index.php?rex_media_type=rex_media_medium&rex_media_file=' + encodeURIComponent(key.slice(6));
+                img.alt = '';
+                previewThumb.appendChild(img);
+                return;
+            }
+            var preset = key || data.icon_key || '';
+            if (!preset || preset.indexOf(':') !== -1) {
+                return;
+            }
+            fetch(previewsUrl + preset + '.svg').then(function (r) { return r.ok ? r.text() : ''; }).then(function (svg) {
+                previewThumb.innerHTML = svg;
+            });
+        }
+        function setPreviewField(data) {
+            if (!previewSelect) {
+                return;
+            }
+            var key = data.preview_key || '';
+            var mediaOpt = previewSelect.querySelector('option[value="media"]');
+            if (0 === key.indexOf('media:')) {
+                mediaOpt.hidden = false;
+                mediaOpt.textContent = key.slice(6);
+                previewSelect.value = 'media';
+            } else {
+                mediaOpt.hidden = true;
+                previewSelect.value = key;
+            }
+            renderPreviewThumb(data);
+        }
+        function savePreview(key) {
+            if (!activeModuleId) {
+                return;
+            }
+            var data = modules[activeModuleId] || {};
+            data.preview_key = key || null;
+            setPreviewField(data);
+            fetch('index.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'rex-api-call=module_organizer_save_preview&module_id=' + encodeURIComponent(activeModuleId) + '&preview_key=' + encodeURIComponent(key || '')
+            });
+        }
+        if (previewSelect) {
+            previewSelect.addEventListener('change', function () {
+                if ('media' !== previewSelect.value) {
+                    savePreview(previewSelect.value);
+                }
+            });
+        }
+        var previewMediaPick = document.getElementById('mo-preview-media-pick');
+        if (previewMediaPick) {
+            previewMediaPick.addEventListener('click', function () {
+                if (typeof MP === 'undefined' || typeof MP.open !== 'function') {
+                    return;
+                }
+                MP.open(function (filename) {
+                    savePreview('media:' + filename);
+                }, { filter: 'images' });
+            });
+        }
+
         // Nutzung des Moduls: Anzahl und Seiten (Links in den Editiermodus)
         function renderUsage(usage) {
             var box = document.getElementById('mo-usage');
@@ -323,6 +399,7 @@
             fieldFavorite.checked = !!data.is_favorite;
             fieldDescription.value = data.description || '';
             renderUsage(data.usage || { count: 0, pages: [] });
+            setPreviewField(data);
 
             var iconKey = data.icon_key || '';
             var isMediaIcon = iconKey.indexOf('media:') === 0;

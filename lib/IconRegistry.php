@@ -81,6 +81,23 @@ class IconRegistry
             'info-cards' => 'Info-Karten',
             'folder' => 'Mappe / Themen',
             'embed' => 'Inhalt einbinden',
+            'tabs' => 'Tabs',
+            'testimonial' => 'Kundenstimmen',
+            'logos' => 'Logo-Wand',
+            'steps' => 'Ablauf / Schritte',
+            'countdown' => 'Countdown',
+            'news' => 'News / Beiträge',
+            'product' => 'Produkt',
+            'before-after' => 'Vorher / Nachher',
+            'audio' => 'Audio / Podcast',
+            'chart' => 'Diagramm',
+            'hours' => 'Öffnungszeiten',
+            'price-list' => 'Preisliste / Karte',
+            'notice' => 'Hinweisbox',
+            'carousel' => 'Karussell',
+            'masonry' => 'Masonry',
+            'search' => 'Suche',
+            'stacked-cards' => 'Gestapelte Karten (Scroll)',
         ];
     }
 

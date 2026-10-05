@@ -69,6 +69,7 @@ foreach ($rows as $row) {
         'is_favorite' => $moduleMeta['is_favorite'] ?? false,
         'description' => $moduleMeta['description'] ?? null,
         'icon_key' => $moduleMeta['icon_key'] ?? null,
+        'preview_key' => $moduleMeta['preview_key'] ?? null,
         'usage' => $usage[$moduleId] ?? ['count' => 0, 'pages' => []],
     ];
 }
@@ -218,6 +219,20 @@ $sidebar .= '<div class="form-group"><label for="mo-field-description">' . $addo
 $sidebar .= '<textarea class="form-control" id="mo-field-description" rows="2" maxlength="160"></textarea>';
 $sidebar .= '<p class="help-block">' . $addon->i18n('description_notice') . '</p></div>';
 
+// Vorschaubild (Darstellungen „Kacheln mit Vorschaubildern“ und „Liste mit Vorschau“)
+$previewOptions = '<option value="">' . rex_escape($addon->i18n('preview_auto')) . '</option>';
+$previewOptions .= '<option value="none">' . rex_escape($addon->i18n('preview_none')) . '</option>';
+foreach (\KLXM\ModuleOrganizer\PreviewRegistry::getPresetLabels() as $previewKey => $previewLabel) {
+    $previewOptions .= '<option value="' . rex_escape($previewKey) . '">' . rex_escape($previewLabel) . '</option>';
+}
+$sidebar .= '<div class="form-group mo-preview-field"><label for="mo-field-preview">' . $addon->i18n('preview') . '</label>';
+$sidebar .= '<select class="form-control" id="mo-field-preview">' . $previewOptions . '<option value="media" hidden></option></select>';
+if ($mediaPlaceAvailable) {
+    $sidebar .= '<button type="button" id="mo-preview-media-pick" class="btn btn-default btn-xs" style="margin-top:6px"><i class="rex-icon fa-image"></i> ' . $addon->i18n('preview_media_pick') . '</button>';
+}
+$sidebar .= '<div class="mo-preview-thumb" id="mo-preview-thumb"></div>';
+$sidebar .= '<p class="help-block">' . $addon->i18n('preview_notice') . '</p></div>';
+
 $sidebar .= '<div class="form-group"><label>' . $addon->i18n('icon') . '</label>';
 $sidebar .= '<div class="mo-icon-radio-grid">';
 $sidebar .= '<label class="mo-icon-radio" data-icon-option="">';
@@ -277,6 +292,8 @@ $sidebar .= '</form>';
 
 $content = '<p class="help-block">' . $addon->i18n('tree_notice') . '</p>';
 $content .= '<div id="mo-organizer" data-modules="' . rex_escape(json_encode($modulesData)) . '"'
+    . ' data-previews-url="' . rex_escape($addon->getAssetsUrl('previews/')) . '"'
+    . ' data-icons-url="' . rex_escape($addon->getAssetsUrl('icons/')) . '"'
     . ' data-order-msg-saved="' . rex_escape($addon->i18n('order_saved')) . '"'
     . ' data-order-msg-failed="' . rex_escape($addon->i18n('save_failed')) . '"'
     . ' data-category-name-prompt="' . rex_escape($addon->i18n('category_name_prompt')) . '"'

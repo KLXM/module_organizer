@@ -13,17 +13,32 @@
     // JS-Nachbau-Rendering, damit "was man zeichnet" = "was gespeichert wird".
     var CANVAS_W = 24;
     var CANVAS_H = 18;
-    var MAX_SHAPES = 8;
+    var MAX_SHAPES = 16;
+    var NUDGE = 0.5;
     var PREVIEW_DEBOUNCE = 150;
 
-    var BOX_TYPES = ['text', 'image', 'video', 'media', 'form', 'rect'];
-    var LINE_TYPE = 'line';
-    var TYPES = BOX_TYPES.concat([LINE_TYPE]);
+    var BOX_TYPES = ['text', 'heading', 'image', 'video', 'media', 'form', 'rect', 'circle', 'button', 'star', 'pin', 'check'];
+    var LINE_TYPES = ['line', 'arrow'];
+    var TYPES = BOX_TYPES.concat(LINE_TYPES);
+
+    // Füllstile (siehe lib/CustomIconRenderer.php::STYLES) - Duotone faerbt
+    // "soft" als Hauch und "accent" kraeftig in der Akzentfarbe, "solid"
+    // bleibt in der Konturfarbe, "outline" ist nur Kontur.
+    var STYLES = ['outline', 'soft', 'accent', 'solid'];
+    var DEFAULT_STYLE = {
+        heading: 'solid', text: 'solid', line: 'solid', arrow: 'solid',
+        button: 'accent', star: 'accent', pin: 'accent', check: 'accent'
+    };
+
+    function defaultStyle(type) {
+        return DEFAULT_STYLE[type] || 'soft';
+    }
 
     var modal = null;
     var canvasEl = null;
     var previewEl = null;
-    var shapes = []; // { el, type, x, y, w, h } bzw. bei type==="line": { el, type, x, y, x2, y2 }
+    var shapes = []; // { el, type, style, x, y, w, h } bzw. bei Linien/Pfeilen: { el, type, style, x, y, x2, y2 }
+    var styleBar = null;
     var activeType = 'image';
     var activeShape = null;
     var onSaveCallback = null;
@@ -40,7 +55,7 @@
     }
 
     function isLine(shape) {
-        return LINE_TYPE === shape.type;
+        return LINE_TYPES.indexOf(shape.type) !== -1;
     }
 
     function build() {
@@ -58,14 +73,22 @@
                 '</div>' +
                 '<div class="mo-icon-editor-body">' +
                     '<div class="mo-icon-editor-toolbar"></div>' +
+                    '<div class="mo-icon-editor-actions"></div>' +
                     '<div class="mo-icon-editor-workarea">' +
                         '<div class="mo-icon-editor-canvas-wrap">' +
                             '<div class="mo-icon-editor-canvas"></div>' +
-                            '<p class="help-block">' + t('icon_editor_hint') + '</p>' +
+                            '<p class="help-block">' + t('icon_editor_hint') + ' <span class="mo-icon-editor-count"></span></p>' +
+                            '<p class="help-block mo-icon-editor-keys">' + t('icon_editor_keys') + '</p>' +
                         '</div>' +
                         '<div class="mo-icon-editor-preview-wrap">' +
                             '<div class="mo-icon-editor-preview-label">' + t('icon_editor_preview_label') + '</div>' +
                             '<div class="mo-icon-editor-preview"></div>' +
+                            '<div class="mo-icon-editor-preview-label">' + t('icon_editor_preview_duotone') + '</div>' +
+                            '<div class="mo-icon-editor-preview mo-icon-editor-preview-duo"></div>' +
+                            '<div class="mo-icon-editor-preview-small">' +
+                                '<span class="mo-icon-editor-preview-mini"></span>' +
+                                '<span class="mo-icon-editor-preview-mini mo-icon-editor-preview-duo"></span>' +
+                            '</div>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
@@ -79,7 +102,9 @@
         canvasEl = modal.querySelector('.mo-icon-editor-canvas');
         previewEl = modal.querySelector('.mo-icon-editor-preview');
         buildToolbar();
+        buildActions();
         wireCanvas();
+        document.addEventListener('keydown', onKeydown);
 
         modal.querySelector('.mo-icon-editor-close').addEventListener('click', close);
         modal.querySelector('.mo-icon-editor-cancel').addEventListener('click', close);
@@ -100,37 +125,250 @@
             btn.type = 'button';
             btn.className = 'mo-icon-editor-tool' + (typeKey === activeType ? ' is-active' : '');
             btn.textContent = t('icon_editor_type_' + typeKey);
+            btn.setAttribute('aria-pressed', typeKey === activeType ? 'true' : 'false');
             btn.setAttribute('data-type', typeKey);
             btn.addEventListener('click', function () {
                 activeType = typeKey;
                 toolbar.querySelectorAll('.mo-icon-editor-tool').forEach(function (b) {
                     b.classList.toggle('is-active', b === btn);
+                    b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
                 });
             });
             toolbar.appendChild(btn);
         });
 
-        var deleteBtn = document.createElement('button');
-        deleteBtn.type = 'button';
-        deleteBtn.className = 'mo-icon-editor-tool mo-icon-editor-delete-btn';
-        deleteBtn.textContent = t('icon_editor_delete_shape');
-        deleteBtn.addEventListener('click', function () {
+    }
+
+    function actionButton(container, key, icon, handler, extraClass) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mo-icon-editor-tool ' + (extraClass || '');
+        btn.innerHTML = '<i class="rex-icon ' + icon + '" aria-hidden="true"></i> ' + t('icon_editor_' + key);
+        btn.addEventListener('click', handler);
+        container.appendChild(btn);
+        return btn;
+    }
+
+    // Zweite Leiste: Fuellstil der markierten Form + Bearbeiten (Duplizieren,
+    // Ebenen, Loeschen). Ohne Auswahl ausgegraut.
+    function buildActions() {
+        var bar = modal.querySelector('.mo-icon-editor-actions');
+        bar.innerHTML = '';
+
+        styleBar = document.createElement('div');
+        styleBar.className = 'mo-icon-editor-styles';
+        styleBar.setAttribute('role', 'group');
+        styleBar.setAttribute('aria-label', t('icon_editor_style'));
+        styleBar.innerHTML = '<span class="mo-icon-editor-styles-label">' + t('icon_editor_style') + '</span>';
+        STYLES.forEach(function (styleKey) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'mo-icon-editor-style mo-icon-editor-style-' + styleKey;
+            btn.setAttribute('data-style', styleKey);
+            btn.setAttribute('aria-pressed', 'false');
+            btn.title = t('icon_editor_style_' + styleKey + '_hint');
+            btn.innerHTML = '<span class="mo-icon-editor-swatch" aria-hidden="true"></span>' + t('icon_editor_style_' + styleKey);
+            btn.addEventListener('click', function () {
+                if (activeShape) {
+                    activeShape.style = styleKey;
+                    applyShapeClasses(activeShape);
+                    syncActions();
+                    schedulePreview();
+                }
+            });
+            styleBar.appendChild(btn);
+        });
+        bar.appendChild(styleBar);
+
+        var edit = document.createElement('div');
+        edit.className = 'mo-icon-editor-edit';
+        actionButton(edit, 'duplicate', 'fa-clone', duplicateActive, 'mo-needs-shape');
+        actionButton(edit, 'forward', 'fa-arrow-up', function () { moveLayer(1); }, 'mo-needs-shape');
+        actionButton(edit, 'backward', 'fa-arrow-down', function () { moveLayer(-1); }, 'mo-needs-shape');
+        actionButton(edit, 'delete_shape', 'fa-trash-o', function () {
             if (activeShape) {
                 removeShape(activeShape);
                 schedulePreview();
             }
-        });
-        toolbar.appendChild(deleteBtn);
-
-        var clearBtn = document.createElement('button');
-        clearBtn.type = 'button';
-        clearBtn.className = 'mo-icon-editor-tool mo-icon-editor-clear-btn';
-        clearBtn.textContent = t('icon_editor_clear');
-        clearBtn.addEventListener('click', function () {
+        }, 'mo-needs-shape mo-icon-editor-delete-btn');
+        actionButton(edit, 'clear', 'fa-eraser', function () {
             shapes.slice().forEach(removeShape);
             schedulePreview();
+        }, 'mo-icon-editor-clear-btn');
+        bar.appendChild(edit);
+        syncActions();
+    }
+
+    function syncActions() {
+        if (!modal) {
+            return;
+        }
+        modal.querySelectorAll('.mo-needs-shape').forEach(function (btn) {
+            btn.disabled = !activeShape;
         });
-        toolbar.appendChild(clearBtn);
+        modal.querySelectorAll('.mo-icon-editor-style').forEach(function (btn) {
+            var on = !!activeShape && activeShape.style === btn.getAttribute('data-style');
+            btn.classList.toggle('is-active', on);
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            btn.disabled = !activeShape;
+        });
+        var full = shapes.length >= MAX_SHAPES;
+        canvasEl.classList.toggle('is-full', full);
+        var counter = modal.querySelector('.mo-icon-editor-count');
+        if (counter) {
+            counter.textContent = shapes.length + ' / ' + MAX_SHAPES;
+        }
+    }
+
+    function applyShapeClasses(shape) {
+        STYLES.forEach(function (styleKey) {
+            shape.el.classList.toggle('mo-style-' + styleKey, shape.style === styleKey);
+        });
+    }
+
+    function cloneShape(shape) {
+        var copy = { type: shape.type, style: shape.style, x: shape.x, y: shape.y };
+        var offset = NUDGE * 2;
+        if (isLine(shape)) {
+            copy.x2 = shape.x2;
+            copy.y2 = shape.y2;
+            var maxX = Math.max(shape.x, shape.x2);
+            var maxY = Math.max(shape.y, shape.y2);
+            var dx = maxX + offset <= CANVAS_W ? offset : 0;
+            var dy = maxY + offset <= CANVAS_H ? offset : 0;
+            copy.x += dx; copy.x2 += dx; copy.y += dy; copy.y2 += dy;
+        } else {
+            copy.w = shape.w;
+            copy.h = shape.h;
+            copy.x = clamp(shape.x + offset, 0, CANVAS_W - shape.w);
+            copy.y = clamp(shape.y + offset, 0, CANVAS_H - shape.h);
+        }
+        return copy;
+    }
+
+    function duplicateActive() {
+        if (!activeShape || shapes.length >= MAX_SHAPES) {
+            return;
+        }
+        var copy = cloneShape(activeShape);
+        createShapeElement(copy);
+        shapes.push(copy);
+        selectShape(copy);
+        schedulePreview();
+    }
+
+    // Ebenenreihenfolge = Reihenfolge im Array = Reihenfolge im SVG.
+    function moveLayer(direction) {
+        if (!activeShape) {
+            return;
+        }
+        var index = shapes.indexOf(activeShape);
+        var target = index + direction;
+        if (target < 0 || target >= shapes.length) {
+            return;
+        }
+        shapes.splice(index, 1);
+        shapes.splice(target, 0, activeShape);
+        restack();
+        schedulePreview();
+    }
+
+    function restack() {
+        shapes.forEach(function (s) {
+            canvasEl.appendChild(s.el);
+            if (s.handleStart) {
+                canvasEl.appendChild(s.handleStart);
+                canvasEl.appendChild(s.handleEnd);
+            }
+        });
+    }
+
+    function nudge(shape, dx, dy) {
+        if (isLine(shape)) {
+            var minX = Math.min(shape.x, shape.x2);
+            var maxX = Math.max(shape.x, shape.x2);
+            var minY = Math.min(shape.y, shape.y2);
+            var maxY = Math.max(shape.y, shape.y2);
+            dx = clamp(dx, -minX, CANVAS_W - maxX);
+            dy = clamp(dy, -minY, CANVAS_H - maxY);
+            shape.x += dx; shape.x2 += dx; shape.y += dy; shape.y2 += dy;
+        } else {
+            shape.x = clamp(shape.x + dx, 0, CANVAS_W - shape.w);
+            shape.y = clamp(shape.y + dy, 0, CANVAS_H - shape.h);
+        }
+        updateShapeStyle(shape);
+    }
+
+    function resizeBy(shape, dw, dh) {
+        if (isLine(shape)) {
+            shape.x2 = clamp(shape.x2 + dw, 0, CANVAS_W);
+            shape.y2 = clamp(shape.y2 + dh, 0, CANVAS_H);
+        } else {
+            shape.w = clamp(shape.w + dw, 1, CANVAS_W - shape.x);
+            shape.h = clamp(shape.h + dh, 1, CANVAS_H - shape.y);
+        }
+        updateShapeStyle(shape);
+    }
+
+    // Tastatur, solange der Editor offen ist: Pfeile verschieben (Umschalt =
+    // groesserer Schritt), Alt+Pfeile aendern die Groesse, Entf loescht,
+    // Strg/Cmd+D dupliziert, Tab wechselt die Form, Esc schliesst.
+    function onKeydown(event) {
+        if (!modal || !modal.classList.contains('mo-open')) {
+            return;
+        }
+        var tag = (event.target && event.target.tagName) || '';
+        if ('INPUT' === tag || 'TEXTAREA' === tag || 'SELECT' === tag) {
+            return;
+        }
+        if ('Escape' === event.key) {
+            event.preventDefault();
+            if (activeShape) {
+                selectShape(null);
+            } else {
+                close();
+            }
+            return;
+        }
+        if ('Tab' === event.key && shapes.length && event.target === canvasEl) {
+            event.preventDefault();
+            var index = shapes.indexOf(activeShape);
+            var next = (index + (event.shiftKey ? -1 : 1) + shapes.length) % shapes.length;
+            selectShape(shapes[next]);
+            return;
+        }
+        if (!activeShape) {
+            return;
+        }
+        var step = event.shiftKey ? NUDGE * 4 : NUDGE;
+        var arrows = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
+        if (arrows[event.key]) {
+            event.preventDefault();
+            if (event.altKey) {
+                resizeBy(activeShape, arrows[event.key][0], arrows[event.key][1]);
+            } else {
+                nudge(activeShape, arrows[event.key][0], arrows[event.key][1]);
+            }
+            schedulePreview();
+            return;
+        }
+        if ('Delete' === event.key || 'Backspace' === event.key) {
+            event.preventDefault();
+            removeShape(activeShape);
+            schedulePreview();
+            return;
+        }
+        if ((event.metaKey || event.ctrlKey) && 'd' === event.key.toLowerCase()) {
+            event.preventDefault();
+            duplicateActive();
+            return;
+        }
+        if (!event.metaKey && !event.ctrlKey && !event.altKey && /^[1-4]$/.test(event.key)) {
+            activeShape.style = STYLES[parseInt(event.key, 10) - 1];
+            applyShapeClasses(activeShape);
+            syncActions();
+            schedulePreview();
+        }
     }
 
     function toCanvasCoords(clientX, clientY) {
@@ -153,6 +391,7 @@
         shapes.forEach(function (s) {
             s.el.classList.toggle('is-selected', s === shape);
         });
+        syncActions();
     }
 
     function removeShape(shape) {
@@ -171,6 +410,7 @@
         if (activeShape === shape) {
             activeShape = null;
         }
+        syncActions();
     }
 
     function updateShapeStyle(shape) {
@@ -222,9 +462,13 @@
 
         var el = document.createElement('div');
         el.className = 'mo-icon-editor-shape mo-icon-editor-shape-' + shape.type;
+        if (!shape.style) {
+            shape.style = defaultStyle(shape.type);
+        }
         el.innerHTML = '<span class="mo-icon-editor-shape-label">' + t('icon_editor_type_' + shape.type) + '</span>'
             + '<span class="mo-icon-editor-handle mo-icon-editor-handle-se"></span>';
         shape.el = el;
+        applyShapeClasses(shape);
         updateShapeStyle(shape);
         canvasEl.appendChild(el);
 
@@ -233,6 +477,7 @@
                 return; // Resize wird separat behandelt.
             }
             event.stopPropagation();
+            canvasEl.focus({ preventScroll: true });
             selectShape(shape);
             startDragMove(event, shape);
         });
@@ -249,7 +494,10 @@
 
     function createLineElement(shape) {
         var el = document.createElement('div');
-        el.className = 'mo-icon-editor-line';
+        el.className = 'mo-icon-editor-line mo-icon-editor-line-' + shape.type;
+        if (!shape.style) {
+            shape.style = defaultStyle(shape.type);
+        }
 
         var handleStart = document.createElement('span');
         handleStart.className = 'mo-icon-editor-handle mo-icon-editor-line-handle mo-icon-editor-line-handle-start';
@@ -259,6 +507,7 @@
         shape.el = el;
         shape.handleStart = handleStart;
         shape.handleEnd = handleEnd;
+        applyShapeClasses(shape);
         canvasEl.appendChild(el);
         canvasEl.appendChild(handleStart);
         canvasEl.appendChild(handleEnd);
@@ -266,6 +515,7 @@
 
         el.addEventListener('pointerdown', function (event) {
             event.stopPropagation();
+            canvasEl.focus({ preventScroll: true });
             selectShape(shape);
             startDragMoveLine(event, shape);
         });
@@ -374,10 +624,13 @@
     function wireCanvas() {
         var drawing = null;
 
+        canvasEl.setAttribute('tabindex', '0');
+        canvasEl.setAttribute('aria-label', t('icon_editor_canvas_label'));
         canvasEl.addEventListener('pointerdown', function (event) {
             if (event.target !== canvasEl) {
                 return;
             }
+            canvasEl.focus({ preventScroll: true });
             if (shapes.length >= MAX_SHAPES) {
                 return;
             }
@@ -385,10 +638,10 @@
             var start = toCanvasCoords(event.clientX, event.clientY);
 
             var shape;
-            if (LINE_TYPE === activeType) {
-                shape = { x: snap(start.x), y: snap(start.y), x2: snap(start.x), y2: snap(start.y), type: activeType };
+            if (LINE_TYPES.indexOf(activeType) !== -1) {
+                shape = { x: snap(start.x), y: snap(start.y), x2: snap(start.x), y2: snap(start.y), type: activeType, style: defaultStyle(activeType) };
             } else {
-                shape = { x: snap(start.x), y: snap(start.y), w: 0.5, h: 0.5, type: activeType };
+                shape = { x: snap(start.x), y: snap(start.y), w: 0.5, h: 0.5, type: activeType, style: defaultStyle(activeType) };
             }
             createShapeElement(shape);
             shapes.push(shape);
@@ -413,6 +666,16 @@
 
         document.addEventListener('pointerup', function () {
             if (drawing) {
+                // Nur geklickt statt gezogen: Form in sinnvoller Standardgroesse anlegen
+                if (isLine(drawing) && drawing.x === drawing.x2 && drawing.y === drawing.y2) {
+                    drawing.x2 = clamp(drawing.x + 6, 0, CANVAS_W);
+                    updateShapeStyle(drawing);
+                } else if (!isLine(drawing) && drawing.w <= 0.5 && drawing.h <= 0.5) {
+                    var size = { text: [8, 4], heading: [10, 2.5], button: [6, 2.5], star: [4, 4], pin: [3, 4], check: [3, 3], circle: [4, 4] }[drawing.type] || [6, 5];
+                    drawing.w = Math.min(size[0], CANVAS_W - drawing.x);
+                    drawing.h = Math.min(size[1], CANVAS_H - drawing.y);
+                    updateShapeStyle(drawing);
+                }
                 selectShape(drawing);
                 schedulePreview();
             }
@@ -423,9 +686,9 @@
     function shapesPayload() {
         return shapes.map(function (s) {
             if (isLine(s)) {
-                return { x: s.x, y: s.y, x2: s.x2, y2: s.y2, type: s.type };
+                return { x: s.x, y: s.y, x2: s.x2, y2: s.y2, type: s.type, style: s.style };
             }
-            return { x: s.x, y: s.y, w: s.w, h: s.h, type: s.type };
+            return { x: s.x, y: s.y, w: s.w, h: s.h, type: s.type, style: s.style };
         });
     }
 
@@ -444,8 +707,9 @@
         if (!previewEl) {
             return;
         }
+        var targets = modal.querySelectorAll('.mo-icon-editor-preview, .mo-icon-editor-preview-mini');
         if (0 === shapes.length) {
-            previewEl.innerHTML = '';
+            targets.forEach(function (el) { el.innerHTML = ''; });
             return;
         }
 
@@ -457,7 +721,8 @@
             return response.json();
         }).then(function (result) {
             if (result && result.success) {
-                previewEl.innerHTML = result.svg || '';
+                // Das SVG baut der Server aus Typ+Koordinaten (kein Client-Markup)
+                targets.forEach(function (el) { el.innerHTML = result.svg || ''; });
             }
         }).catch(function () {
             // Vorschau ist rein informativ - ein Fehlschlag blockiert das
@@ -494,9 +759,10 @@
         shapes.slice().forEach(removeShape);
         activeShape = null;
         editingIconId = null;
-        if (previewEl) {
-            previewEl.innerHTML = '';
+        if (modal) {
+            modal.querySelectorAll('.mo-icon-editor-preview, .mo-icon-editor-preview-mini').forEach(function (el) { el.innerHTML = ''; });
         }
+        syncActions();
     }
 
     function open(callback) {
@@ -504,6 +770,7 @@
         reset();
         onSaveCallback = callback;
         modal.classList.add('mo-open');
+        canvasEl.focus({ preventScroll: true });
     }
 
     function close() {
