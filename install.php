@@ -7,6 +7,8 @@ rex_sql_table::get(rex::getTable('module_organizer_category'))
     // Nur in diesen Strukturkategorien anbieten (kommagetrennte IDs, leer = überall), optional inkl. Unterkategorien
     ->ensureColumn(new rex_sql_column('structure_ids', 'varchar(255)', true))
     ->ensureColumn(new rex_sql_column('structure_children', 'tinyint(1)', false, '1'))
+    // Akzentfarbe der Icons dieser Kategorie (Duotone), leer = Palette
+    ->ensureColumn(new rex_sql_column('color', 'varchar(7)', true))
     ->ensureColumn(new rex_sql_column('createdate', 'datetime'))
     ->ensureColumn(new rex_sql_column('createuser', 'varchar(191)'))
     ->ensureColumn(new rex_sql_column('updatedate', 'datetime'))

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0] - 2026-10-05
+
+### Added
+- 🎨 **Icon-Stil Duotone** – Konturen in der ersten, Flächen in einer Akzentfarbe; Paletten REDAXO, Ozean, Warm, Natur, Beere, Violett oder eigene Farben, Live-Vorschau in den Einstellungen; Dunkelmodus mit hellen Konturen; gilt für alle 50 Vorlagen und eigene Icons im gleichen Aufbau
+- 🏷️ **Akzentfarbe je Kategorie** (`CategoryRepository::saveColor()`), Farbpunkt im Strukturbaum; die Bereichs-Einstellungen heißen jetzt „Einstellungen der Kategorie“
+
+
 ## [1.1.0] - 2026-10-05
 
 ### Added

@@ -140,13 +140,16 @@ foreach ($categories as $category) {
     $tree .= '<li class="mo-tree-category" data-category-id="' . $category['id'] . '">';
     $tree .= '<div class="mo-tree-category-header">';
     $tree .= '<i class="rex-icon fa-caret-down mo-tree-toggle" aria-hidden="true"></i>';
+    if ('' !== $category['color']) {
+        $tree .= '<span class="mo-tree-category-color" style="--mo-cat-color:' . rex_escape($category['color']) . '" aria-hidden="true"></span>';
+    }
     $tree .= '<span class="mo-tree-category-name" data-category-name="' . rex_escape($category['name']) . '">' . rex_escape($category['name']) . '</span>';
     // Bereiche: Kategorie nur in bestimmten Strukturkategorien anbieten
     $areaNames = array_values(array_filter(array_map(static fn (int $id): ?string => rex_category::get($id)?->getName(), $category['structure_ids'])));
     if ([] !== $areaNames) {
         $tree .= '<span class="mo-tree-category-areas-badge" title="' . rex_escape($addon->i18n('category_areas_only')) . '"><i class="rex-icon fa-sitemap" aria-hidden="true"></i> ' . rex_escape(implode(', ', $areaNames)) . ($category['structure_children'] ? ' +' : '') . '</span>';
     }
-    $tree .= '<button type="button" class="mo-tree-category-areas" title="' . rex_escape($addon->i18n('category_areas')) . '" aria-expanded="false"><i class="rex-icon fa-sitemap"></i></button>';
+    $tree .= '<button type="button" class="mo-tree-category-areas" title="' . rex_escape($addon->i18n('category_settings')) . '" aria-expanded="false"><i class="rex-icon fa-sliders"></i></button>';
     $tree .= '<button type="button" class="mo-tree-category-rename" title="' . rex_escape($addon->i18n('category_rename')) . '"><i class="rex-icon fa-pencil"></i></button>';
     $tree .= '<button type="button" class="mo-tree-category-delete" title="' . rex_escape($addon->i18n('delete')) . '"><i class="rex-icon fa-trash-o"></i></button>';
     $tree .= '</div>';
@@ -164,6 +167,9 @@ foreach ($categories as $category) {
     $tree .= $select->get();
     $tree .= '<div class="checkbox"><label><input type="checkbox" class="mo-areas-children"' . ($category['structure_children'] ? ' checked' : '') . '> ' . $addon->i18n('category_areas_children') . '</label></div>';
     $tree .= '<p class="help-block">' . $addon->i18n('category_areas_notice') . '</p>';
+    $tree .= '<div class="form-group mo-areas-color"><label><input type="checkbox" class="mo-areas-use-color"' . ('' !== $category['color'] ? ' checked' : '') . '> ' . $addon->i18n('category_color') . '</label> ';
+    $tree .= '<input type="color" class="mo-areas-color-input" value="' . rex_escape('' !== $category['color'] ? $category['color'] : \KLXM\ModuleOrganizer\IconStyle::colors()[1]) . '" aria-label="' . rex_escape($addon->i18n('category_color')) . '">';
+    $tree .= '<p class="help-block">' . $addon->i18n('category_color_notice') . '</p></div>';
     $tree .= '<button type="button" class="btn btn-save btn-xs mo-areas-save">' . $addon->i18n('save') . '</button> ';
     $tree .= '<button type="button" class="btn btn-default btn-xs mo-areas-reset">' . $addon->i18n('category_areas_reset') . '</button>';
     $tree .= '</div>';

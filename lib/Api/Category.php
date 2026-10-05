@@ -60,6 +60,11 @@ class Category extends rex_api_function
             }
             $ids = array_map('intval', rex_request('structure_ids', 'array', []));
             CategoryRepository::saveAreas($id, $ids, rex_request('structure_children', 'bool', false));
+            if (rex_request('use_color', 'bool', false)) {
+                CategoryRepository::saveColor($id, rex_request('color', 'string', ''));
+            } else {
+                CategoryRepository::saveColor($id, '');
+            }
             rex_response::sendJson(['success' => true]);
             exit;
         }

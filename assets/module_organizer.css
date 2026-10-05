@@ -1018,3 +1018,49 @@ body.rex-theme-dark .mo-tree-category-areas-badge { color: #8ab8e8; }
     body.rex-has-theme:not(.rex-theme-light) .mo-tree-usage { background: rgba(255, 255, 255, .12); }
     body.rex-has-theme:not(.rex-theme-light) .mo-tree-category-areas-badge { color: #8ab8e8; }
 }
+
+/* ============================================================
+   Icon-Stil Duotone (Einstellungen → Icon-Stil)
+   Konturen/Texte in --mo-duo-1, Flächen (fill-opacity) in der Akzentfarbe:
+   zarte Grundflächen als Hauch, kräftigere Flächen deutlich farbig.
+   Akzent je Kategorie über --mo-icon-accent (am Tile/an der Zeile gesetzt).
+   ============================================================ */
+body.mo-icons-duotone { --mo-duo-1: var(--mo-duo-1-light, #324050); }
+body.rex-theme-dark.mo-icons-duotone { --mo-duo-1: #e2e8f0; }
+@media (prefers-color-scheme: dark) {
+    body.rex-has-theme:not(.rex-theme-light).mo-icons-duotone { --mo-duo-1: #e2e8f0; }
+}
+body.mo-icons-duotone #mo-overlay .mo-tile-icon,
+body.mo-icons-duotone #mo-popover .mo-popover-row-icon,
+body.mo-icons-duotone .mo-icon-radio svg,
+.mo-duo-preview.is-duotone svg {
+    color: var(--mo-duo-1);
+}
+body.mo-icons-duotone #mo-overlay .mo-tile-icon svg [fill-opacity],
+body.mo-icons-duotone #mo-popover .mo-popover-row-icon svg [fill-opacity],
+body.mo-icons-duotone .mo-icon-radio svg [fill-opacity],
+.mo-duo-preview.is-duotone svg [fill-opacity] {
+    fill: var(--mo-icon-accent, var(--mo-duo-2, #4b9ad9));
+    fill-opacity: .22;
+}
+body.mo-icons-duotone :is(#mo-overlay .mo-tile-icon, #mo-popover .mo-popover-row-icon, .mo-icon-radio) svg :is([fill-opacity="0.18"], [fill-opacity="0.2"], [fill-opacity="0.22"], [fill-opacity="0.25"], [fill-opacity="0.3"], [fill-opacity="0.35"], [fill-opacity="0.4"], [fill-opacity="0.45"], [fill-opacity="0.5"]),
+.mo-duo-preview.is-duotone svg :is([fill-opacity="0.18"], [fill-opacity="0.2"], [fill-opacity="0.22"], [fill-opacity="0.25"], [fill-opacity="0.3"], [fill-opacity="0.35"], [fill-opacity="0.4"], [fill-opacity="0.45"], [fill-opacity="0.5"]) {
+    fill-opacity: .85;
+}
+/* Kategorie-Farbe im Strukturbaum */
+.mo-tree-category-color {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: var(--mo-cat-color);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, .15);
+}
+/* Vorschau in den Einstellungen */
+.mo-duo-preview { --mo-duo-1: #324050; display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; padding: 12px; background: #fff; border: 1px solid #dfe3e9; }
+.mo-duo-preview span { display: inline-grid; place-items: center; width: 64px; height: 48px; }
+.mo-duo-preview svg { width: 48px; height: 36px; }
+body.rex-theme-dark .mo-duo-preview { --mo-duo-1: #e2e8f0 !important; background: #1a202c; border-color: #3a4557; }
+.mo-duo-preview:not(.is-duotone) { color: #777; }
+.mo-palette-swatch { display: inline-block; width: 14px; height: 14px; margin-left: 4px; border-radius: 50%; vertical-align: -2px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .15); }

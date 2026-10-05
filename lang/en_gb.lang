@@ -84,3 +84,16 @@ module_organizer_usage_title = used {0}×
 module_organizer_usage_none = Not used anywhere yet.
 module_organizer_usage_count = used {0}×, on {1} page(s):
 module_organizer_usage_more = Showing the first 30 pages.
+
+# 1.2.0
+module_organizer_category_settings = Category settings: areas and colour
+module_organizer_category_color = Custom accent colour for the icons
+module_organizer_category_color_notice = Applies to the "Duotone" icon style: the fills of this category's icons use this colour, so related modules are recognisable at a glance.
+module_organizer_icon_style = Icon style
+module_organizer_icon_style_mono = Monochrome (one colour, follows the backend)
+module_organizer_icon_style_duotone = Duotone (outlines and fills in two colours)
+module_organizer_icon_palette = Colours
+module_organizer_icon_palette_custom = Custom colours
+module_organizer_icon_color_primary = Outline
+module_organizer_icon_color_secondary = Accent
+module_organizer_icon_style_notice = Duotone colours all preset icons and custom icons in the same style (fills with fill-opacity). In dark mode, outlines become light automatically. Each category can have its own accent colour.

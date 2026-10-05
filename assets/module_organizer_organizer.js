@@ -186,7 +186,9 @@
                 Array.prototype.forEach.call(select.options, function (o) { o.selected = false; });
             }
             var body = 'rex-api-call=module_organizer_category&op=areas&id=' + encodeURIComponent(categoryEl.getAttribute('data-category-id'))
-                + '&structure_children=' + (panel.querySelector('.mo-areas-children').checked ? '1' : '0');
+                + '&structure_children=' + (panel.querySelector('.mo-areas-children').checked ? '1' : '0')
+                + '&use_color=' + (panel.querySelector('.mo-areas-use-color').checked && !resetBtn ? '1' : '0')
+                + '&color=' + encodeURIComponent(panel.querySelector('.mo-areas-color-input').value);
             Array.prototype.forEach.call(select.selectedOptions, function (o) {
                 body += '&structure_ids[]=' + encodeURIComponent(o.value);
             });

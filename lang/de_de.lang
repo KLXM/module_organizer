@@ -12,6 +12,14 @@ module_organizer_display_mode_overlay = Overlay (großes Kachel-Fenster)
 module_organizer_display_mode_overlay_notice = Zentriertes Fenster mit Kachel-Grid und Sidebar-Filtern, ähnlich MediaPlace.
 module_organizer_warn_module_preview_conflict = Warnung anzeigen, wenn ein konkurrierendes Addon (module_preview, nv_modulepreview) aktiv ist
 module_organizer_save = Speichern
+module_organizer_icon_style = Icon-Stil
+module_organizer_icon_style_mono = Monochrom (eine Farbe, passt sich dem Backend an)
+module_organizer_icon_style_duotone = Duotone (Konturen und Flächen in zwei Farben)
+module_organizer_icon_palette = Farben
+module_organizer_icon_palette_custom = Eigene Farben
+module_organizer_icon_color_primary = Kontur
+module_organizer_icon_color_secondary = Akzent
+module_organizer_icon_style_notice = Duotone färbt alle Vorlagen-Icons und eigene Icons im gleichen Stil (Flächen mit fill-opacity). Im Dunkelmodus werden die Konturen automatisch hell. Je Kategorie lässt sich eine eigene Akzentfarbe setzen.
 module_organizer_title_prefix = Modulnamen in der Blockauswahl
 module_organizer_strip_title_prefix = Nummern-Präfix ausblenden (z. B. „001 :: Text & Medien“ → „Text & Medien“)
 module_organizer_title_prefix_pattern = Eigene Regel (regulärer Ausdruck, optional)
@@ -73,6 +81,9 @@ module_organizer_category_areas_label = Nur in diesen Strukturkategorien anbiete
 module_organizer_category_areas_children = Auch in deren Unterkategorien
 module_organizer_category_areas_notice = Nichts ausgewählt = überall. Module dieser Kategorie erscheinen in der Blockauswahl nur in den gewählten Bereichen – z. B. Blöcke für eine Gästemappe nur dort. Bereits eingesetzte Blöcke bleiben unverändert.
 module_organizer_category_areas_reset = Überall anbieten
+module_organizer_category_settings = Einstellungen der Kategorie: Bereiche und Farbe
+module_organizer_category_color = Eigene Akzentfarbe für die Icons
+module_organizer_category_color_notice = Gilt beim Icon-Stil „Duotone“: Die Flächen der Icons dieser Kategorie erscheinen in dieser Farbe – so erkennt man Zusammengehöriges auf einen Blick.
 module_organizer_name = Name
 
 # Popover/Overlay in der Blockauswahl (assets/module_organizer*.js)
