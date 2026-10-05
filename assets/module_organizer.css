@@ -1313,3 +1313,8 @@ html.mo-editor-open { overflow: hidden; }
 .mo-group-count { margin-left: auto; padding: 0 7px; border-radius: 999px; background: var(--mo-tile-hover-bg, #eef2f7); color: var(--mo-text-muted, #777); font-size: 11px; font-weight: 600; }
 #mo-overlay .mo-split-group.mo-group-toggle { padding-right: 16px; }
 @media (prefers-reduced-motion: reduce) { .mo-group-toggle .rex-icon { transition: none; } }
+
+/* 1.6.0: Suche in Icons und Vorschaubildern */
+.mo-preset-search { margin-bottom: 8px; }
+.mo-icon-radio[hidden] { display: none; }
+.mo-preset-search-empty { margin: 0 0 8px; }

@@ -46,9 +46,8 @@ final class PreviewRegistry
         foreach (self::getPresetKeys() as $key) {
             $out[$key] = $labels[$key] ?? $key;
         }
-        asort($out);
 
-        return $out;
+        return IconRegistry::sortLabels($out);
     }
 
     public static function sanitize(?string $key): ?string

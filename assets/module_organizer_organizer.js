@@ -449,6 +449,7 @@
             data.__wasFavorite = !!data.is_favorite;
             fieldModuleId.value = moduleId;
             sidebarTitle.textContent = data.name;
+            document.dispatchEvent(new CustomEvent('mo:module-selected', { detail: { moduleId: moduleId } }));
             fieldFavorite.checked = !!data.is_favorite;
             fieldDescription.value = data.description || '';
             renderUsage(data.usage || { count: 0, pages: [] });
@@ -820,4 +821,66 @@
     }
 
     document.addEventListener('DOMContentLoaded', init);
+})();
+
+// Suche in den Vorlagen (Icons und Vorschaubilder): Bezeichnung, Schlüssel und Suchbegriffe (data-search)
+(function () {
+    'use strict';
+    function norm(value) {
+        return String(value || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+    }
+    function apply(input) {
+        var target = document.querySelector(input.getAttribute('data-target'));
+        if (!target) {
+            return;
+        }
+        var words = norm(input.value).split(/\s+/).filter(Boolean);
+        var matches = function (el) {
+            var hay = norm(el.getAttribute('data-search') || el.textContent);
+            return words.every(function (w) { return hay.indexOf(w) !== -1; });
+        };
+        var visible = 0;
+        if (target.tagName === 'SELECT') {
+            Array.prototype.forEach.call(target.options, function (option) {
+                if (!option.value || option.value === 'media') {
+                    return; // „keine Vorschau“ / interne Option bleibt
+                }
+                var show = !words.length || option.selected || matches(option);
+                option.hidden = !show;
+                option.disabled = !show;
+                if (show) { visible++; }
+            });
+            // einziges Ergebnis gleich auswählen (wie bei einer Auswahlliste mit Suche)
+            if (words.length && visible === 1) {
+                var only = Array.prototype.find.call(target.options, function (o) { return o.value && !o.hidden && o.value !== 'media'; });
+                if (only && target.value !== only.value) {
+                    target.value = only.value;
+                    target.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+        } else {
+            Array.prototype.forEach.call(target.querySelectorAll('[data-icon-option]'), function (label) {
+                var key = label.getAttribute('data-icon-option');
+                var hit = words.length > 0 && key !== '' && matches(label);
+                label.hidden = !(!words.length || key === '' || label.classList.contains('is-selected') || hit);
+                if (hit) { visible++; }
+            });
+            var empty = document.getElementById(input.id + '-empty');
+            if (empty) {
+                empty.hidden = !words.length || visible > 0;
+            }
+        }
+    }
+    document.addEventListener('input', function (e) {
+        if (e.target && e.target.classList && e.target.classList.contains('mo-preset-search')) {
+            apply(e.target);
+        }
+    });
+    // beim Wechsel des Moduls Suche zurücksetzen
+    document.addEventListener('mo:module-selected', function () {
+        Array.prototype.forEach.call(document.querySelectorAll('.mo-preset-search'), function (input) {
+            input.value = '';
+            apply(input);
+        });
+    });
 })();
