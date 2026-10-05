@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.2] - 2026-10-05
+
+### Fixed
+- ⭐ **Persönliche Favoriten** gelten sofort für alle „Block hinzufügen“-Knöpfe der Seite – bisher hatte jeder Knopf eine eigene Datenkopie, ein gesetzter Favorit erschien an anderer Stelle erst nach dem Neuladen
+
+### Changed
+- Stern zum Merken größer und deutlicher (runde Fläche), mit Beschriftung „Zu meinen Favoriten“ / „Aus meinen Favoriten entfernen“ und `aria-pressed`
+- Stern jetzt auch in der geteilten Ansicht (Liste mit Vorschau); globale Favoriten dort mit eigenem Symbol
+
+
 ## [1.4.1] - 2026-10-05
 
 ### Added
