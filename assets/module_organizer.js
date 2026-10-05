@@ -334,6 +334,27 @@
                     text.appendChild(desc);
                 }
                 row.appendChild(text);
+                if (!item.is_global_favorite) {
+                    var star = document.createElement('button');
+                    star.type = 'button';
+                    star.className = 'mo-tile-favorite-toggle mo-split-row-fav' + (item.is_user_favorite ? ' is-active' : '');
+                    star.innerHTML = '<i class="rex-icon ' + (item.is_user_favorite ? 'fa-star' : 'fa-star-o') + '" aria-hidden="true"></i>';
+                    star.title = favLabel(item.is_user_favorite);
+                    star.setAttribute('aria-label', favLabel(item.is_user_favorite) + ': ' + item.title);
+                    star.setAttribute('aria-pressed', item.is_user_favorite ? 'true' : 'false');
+                    star.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        toggleUserFavorite(item, star);
+                    });
+                    row.appendChild(star);
+                } else {
+                    var gstar = document.createElement('span');
+                    gstar.className = 'mo-split-row-fav mo-split-row-fav--global';
+                    gstar.title = t('favorite_global');
+                    gstar.innerHTML = '<i class="rex-icon fa-star" aria-hidden="true"></i>';
+                    row.appendChild(gstar);
+                }
                 grid.appendChild(row);
                 if (!first) { first = item; }
             });
@@ -439,6 +460,21 @@
         });
     }
 
+
+    // Persönliche Favoriten gelten für alle „Block hinzufügen“-Knöpfe der Seite (jeder hat eine eigene
+    // Datenkopie): Änderungen hier merken und beim Öffnen auf die Einträge anwenden.
+    var userFavorites = window.MOUserFavorites = window.MOUserFavorites || {};
+    function applyUserFavorites(items) {
+        (items || []).forEach(function (item) {
+            if (Object.prototype.hasOwnProperty.call(userFavorites, item.id)) {
+                item.is_user_favorite = userFavorites[item.id];
+                item.is_favorite = !!item.is_global_favorite || item.is_user_favorite;
+            }
+        });
+        return items;
+    }
+    function favLabel(on) { return t(on ? 'favorite_remove' : 'favorite_add'); }
+
     function toggleUserFavorite(item, favBtn) {
         var next = !item.is_user_favorite;
         favBtn.disabled = true;
@@ -456,6 +492,7 @@
             if (result && result.success) {
                 item.is_user_favorite = next;
                 item.is_favorite = item.is_global_favorite || next;
+                userFavorites[item.id] = next;
                 render();
             }
         }).catch(function () {
@@ -497,8 +534,10 @@
                 var favBtn = document.createElement('button');
                 favBtn.type = 'button';
                 favBtn.className = 'mo-tile-favorite-toggle' + (item.is_user_favorite ? ' is-active' : '');
-                favBtn.innerHTML = '<i class="rex-icon ' + (item.is_user_favorite ? 'fa-star' : 'fa-star-o') + '"></i>';
-                favBtn.title = t('toggle_favorite');
+                favBtn.innerHTML = '<i class="rex-icon ' + (item.is_user_favorite ? 'fa-star' : 'fa-star-o') + '" aria-hidden="true"></i>';
+                favBtn.title = favLabel(item.is_user_favorite);
+                favBtn.setAttribute('aria-label', favLabel(item.is_user_favorite) + ': ' + item.title);
+                favBtn.setAttribute('aria-pressed', item.is_user_favorite ? 'true' : 'false');
                 favBtn.addEventListener('click', function (event) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -537,7 +576,7 @@
 
     function open(items, mode, tiles) {
         build();
-        currentItems = items || [];
+        currentItems = applyUserFavorites(items || []);
         currentMode = 'split' === mode ? 'split' : 'overlay';
         currentTiles = 'previews' === tiles ? 'previews' : 'icons';
         overlay.classList.toggle('mo-overlay--split', 'split' === currentMode);

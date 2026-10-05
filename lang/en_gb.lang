@@ -204,3 +204,6 @@ module_organizer_editor_delete = Delete
 module_organizer_editor_kind_choose = What are you drawing?
 module_organizer_editor_template_partial = Curved parts of this template are not available as shapes – they are shown underneath for tracing.
 module_organizer_editor_too_many = Too many shapes for this canvas – extra shapes were removed.
+module_organizer_favorite_add = Add to my favourites
+module_organizer_favorite_remove = Remove from my favourites
+module_organizer_favorite_global = Favourite for everyone (set in Module Organizer)

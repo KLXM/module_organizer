@@ -200,3 +200,6 @@ module_organizer_editor_delete = Löschen
 module_organizer_editor_kind_choose = Was zeichnen Sie?
 module_organizer_editor_template_partial = Geschwungene Teile dieser Vorlage gibt es nicht als Form – sie liegen beim Laden zum Durchpausen darunter.
 module_organizer_editor_too_many = Zu viele Formen für diese Fläche – überzählige wurden entfernt.
+module_organizer_favorite_add = Zu meinen Favoriten
+module_organizer_favorite_remove = Aus meinen Favoriten entfernen
+module_organizer_favorite_global = Favorit für alle (im Module Organizer festgelegt)

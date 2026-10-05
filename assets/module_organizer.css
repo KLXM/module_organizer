@@ -1270,3 +1270,26 @@ html.mo-editor-open { overflow: hidden; }
 #mo-editor .mo-ed-kindswitch button:hover { background: rgba(255, 255, 255, .12); }
 #mo-editor .mo-ed-kindswitch button.is-active { background: #fff; color: var(--mo-ed-head); font-weight: 600; }
 #mo-editor .mo-ed-kindswitch button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+
+/* 1.4.2: Stern für persönliche Favoriten gut sichtbar (größer, mit Fläche), auch in der geteilten Ansicht */
+#mo-overlay .mo-tile-favorite-toggle {
+    top: 6px;
+    right: 6px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 50%;
+    background: var(--mo-tile-bg, #fff);
+    font-size: 15px;
+    line-height: 1;
+    z-index: 2;
+}
+#mo-overlay .mo-tile-favorite-toggle:hover, #mo-overlay .mo-tile-favorite-toggle:focus-visible {
+    border-color: var(--mo-user-favorite, #4a90d9);
+    color: var(--mo-user-favorite, #4a90d9);
+}
+#mo-overlay .mo-tile-favorite-toggle:focus-visible { outline: 2px solid var(--mo-user-favorite, #4a90d9); outline-offset: 1px; }
+#mo-overlay .mo-tile-favorite-toggle.is-active { border-color: var(--mo-user-favorite, #4a90d9); }
+#mo-overlay.mo-overlay--split .mo-split-row { position: relative; padding-right: 48px; }
+#mo-overlay .mo-split-row .mo-split-row-fav { top: 50%; right: 8px; margin-top: -15px; }
+#mo-overlay .mo-split-row-fav--global { position: absolute; color: var(--mo-favorite, #f0ad4e); font-size: 14px; display: grid; place-items: center; width: 30px; height: 30px; }
