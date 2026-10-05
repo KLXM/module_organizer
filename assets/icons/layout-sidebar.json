@@ -1,0 +1,1 @@
+{"shapes":[{"type":"rect","style":"soft","x":1.0,"y":1.0,"w":15.5,"h":16.0},{"type":"line","style":"solid","x":4.0,"y":4.0,"x2":13.0,"y2":4.0},{"type":"line","style":"solid","x":4.0,"y":7.0,"x2":13.0,"y2":7.0},{"type":"line","style":"solid","x":4.0,"y":10.0,"x2":10.0,"y2":10.0},{"type":"rect","style":"accent","x":18.0,"y":1.0,"w":5.0,"h":16.0}],"complete":true}

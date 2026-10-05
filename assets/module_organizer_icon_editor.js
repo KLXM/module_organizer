@@ -122,6 +122,10 @@
                 '<div class="mo-ed-header">' +
                     '<strong id="mo-ed-title"></strong>' +
                     '<span class="mo-ed-kind"></span>' +
+                    '<div class="mo-ed-kindswitch" role="group" aria-label="' + esc(t('editor_kind_choose')) + '">' +
+                        '<button type="button" data-kind="icon" aria-pressed="false">' + esc(t('editor_kind_icon')) + ' <small>24×18</small></button>' +
+                        '<button type="button" data-kind="preview" aria-pressed="false">' + esc(t('editor_kind_preview')) + ' <small>16:10</small></button>' +
+                    '</div>' +
                     '<div class="mo-ed-header-tools">' +
                         '<button type="button" class="mo-ed-hbtn" data-act="undo" title="' + esc(t('editor_undo')) + ' (Strg+Z)" aria-label="' + esc(t('editor_undo')) + '"><i class="rex-icon fa-rotate-left" aria-hidden="true"></i></button>' +
                         '<button type="button" class="mo-ed-hbtn" data-act="redo" title="' + esc(t('editor_redo')) + ' (Strg+Umschalt+Z)" aria-label="' + esc(t('editor_redo')) + '"><i class="rex-icon fa-rotate-right" aria-hidden="true"></i></button>' +
@@ -196,6 +200,11 @@
         el.copy = root.querySelector('.mo-ed-copy');
         el.error = root.querySelector('.mo-ed-error');
         el.fullscreenBtn = root.querySelector('[data-act="fullscreen"]');
+        el.kindSwitch = root.querySelector('.mo-ed-kindswitch');
+        el.kindSwitch.addEventListener('click', function (event) {
+            var b = event.target.closest('[data-kind]');
+            if (b) { switchKind(b.getAttribute('data-kind')); }
+        });
 
         buildTools();
         buildBlocks();
@@ -953,7 +962,7 @@
         var tpl = currentTemplate();
         var loadBtn = el.root.querySelector('[data-act="template-load"]');
         loadBtn.disabled = !tpl || !tpl.shapes;
-        el.templateHint.textContent = tpl && !tpl.shapes ? t('editor_template_trace_only') : '';
+        el.templateHint.textContent = !tpl ? '' : (!tpl.shapes ? t('editor_template_trace_only') : (false === tpl.complete ? t('editor_template_partial') : ''));
         if (tpl && settings.underlay) {
             var src = tpl.svg && 0 === String(tpl.svg).indexOf('<') ? 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(tpl.svg) : tpl.svg;
             el.underlay.src = src;
@@ -971,7 +980,12 @@
         remember();
         shapes = tpl.shapes.map(fromData).filter(Boolean).slice(0, canvas.max);
         selected = [];
-        if (!el.name.value && tpl.label) { el.name.value = tpl.label; }
+        if (!el.name.value && (tpl.label || tpl.title)) { el.name.value = tpl.label || tpl.title; }
+        // Kurven der Vorlage gibt es nicht als Form: Original zum Durchpausen einblenden
+        if (false === tpl.complete && !settings.underlay) {
+            settings.underlay = true;
+            applySettings();
+        }
         redraw();
     }
 
@@ -1035,6 +1049,41 @@
         });
     }
 
+    // Art wechseln (nur bei neuen Werken): Formen werden auf die neue Fläche umgerechnet
+    function switchKind(next) {
+        if (next === kind || !KINDS[next] || editingId) { return; }
+        var sx = KINDS[next].w / canvas.w;
+        var sy = KINDS[next].h / canvas.h;
+        shapes.forEach(function (s) {
+            s.x *= sx; s.y *= sy;
+            if (isLine(s)) { s.x2 *= sx; s.y2 *= sy; } else { s.w *= sx; s.h *= sy; }
+        });
+        kind = next;
+        canvas = KINDS[kind];
+        el.error.textContent = shapes.length > canvas.max ? t('editor_too_many') : '';
+        shapes = shapes.slice(0, canvas.max);
+        selected = [];
+        history = [];
+        future = [];
+        syncKind();
+        syncHistoryButtons();
+        loadTemplates();
+        applySettings();
+        redraw();
+    }
+
+    function syncKind() {
+        el.title.textContent = t(editingId ? 'editor_title_edit' : 'editor_title_new_' + kind);
+        el.kind.textContent = editingId ? t('editor_kind_' + kind) + ' · ' + canvas.w + '×' + canvas.h : '';
+        el.kindSwitch.hidden = !!editingId;
+        el.kindSwitch.querySelectorAll('[data-kind]').forEach(function (b) {
+            var on = b.getAttribute('data-kind') === kind;
+            b.classList.toggle('is-active', on);
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        el.root.setAttribute('data-kind', kind);
+    }
+
     // ------------------------------------------------------------------ Öffnen / Schließen
 
     var lastFocus = null;
@@ -1051,13 +1100,11 @@
         history = [];
         future = [];
         dirty = false;
-        el.title.textContent = t(editingId ? 'editor_title_edit' : 'editor_title_new_' + kind);
-        el.kind.textContent = t('editor_kind_' + kind) + ' · ' + canvas.w + '×' + canvas.h;
+        syncKind();
         el.name.value = options.title || '';
         el.copy.hidden = !editingId;
         el.copy.querySelector('input').checked = false;
         el.error.textContent = '';
-        el.root.setAttribute('data-kind', kind);
         lastFocus = document.activeElement;
         el.root.classList.add('mo-open');
         document.documentElement.classList.add('mo-editor-open');

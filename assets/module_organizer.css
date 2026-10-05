@@ -1262,3 +1262,11 @@ html.mo-editor-open { overflow: hidden; }
 }
 .mo-custom-icon-edit:hover, .mo-custom-icon-edit:focus-visible { color: var(--mo-text, #324050); border-color: var(--mo-tile-hover-border, #98a6b3); }
 .mo-preview-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+#mo-editor .mo-ed-kindswitch { display: inline-flex; margin-left: 8px; border: 1px solid rgba(255, 255, 255, .35); }
+#mo-editor .mo-ed-kindswitch[hidden] { display: none; }
+#mo-editor .mo-ed-kindswitch button { padding: 4px 12px; border: 0; background: none; color: #fff; font-size: 12px; cursor: pointer; }
+#mo-editor .mo-ed-kindswitch button small { opacity: .7; font-size: 10px; }
+#mo-editor .mo-ed-kindswitch button + button { border-left: 1px solid rgba(255, 255, 255, .35); }
+#mo-editor .mo-ed-kindswitch button:hover { background: rgba(255, 255, 255, .12); }
+#mo-editor .mo-ed-kindswitch button.is-active { background: #fff; color: var(--mo-ed-head); font-weight: 600; }
+#mo-editor .mo-ed-kindswitch button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }

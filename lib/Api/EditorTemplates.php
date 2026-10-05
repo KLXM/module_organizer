@@ -16,8 +16,8 @@ use rex_response;
  * Vorlagen für den Editor (assets/module_organizer_icon_editor.js):
  * GET ?rex-api-call=module_organizer_editor_templates&kind=icon|preview
  *
- * presets: Vorlagen des Addons – Vorschaubilder mit bearbeitbaren Formen (assets/previews/<key>.json),
- *          Icons nur als Durchpause-Ebene (SVG-Adresse);
+ * presets: Vorlagen des Addons mit bearbeitbaren Formen – Vorschaubilder (assets/previews/<key>.json)
+ *          und Icons (assets/icons/layout-<key>.json; complete=false: Kurven nur zum Durchpausen);
  * own:     eigene Werke derselben Art mit Formen (wieder bearbeitbar bzw. als Vorlage).
  */
 class EditorTemplates extends rex_api_function
@@ -44,11 +44,20 @@ class EditorTemplates extends rex_api_function
                     'label' => $label,
                     'svg' => $addon->getAssetsUrl('previews/' . $key . '.svg'),
                     'shapes' => is_file($shapesFile) ? json_decode((string) file_get_contents($shapesFile), true) : null,
+                    'complete' => true,
                 ];
             }
         } else {
             foreach (IconRegistry::getPresetLabels() as $key => $label) {
-                $presets[] = ['key' => $key, 'label' => $label, 'svg' => $addon->getAssetsUrl('icons/layout-' . $key . '.svg'), 'shapes' => null];
+                $shapesFile = $addon->getPath('assets/icons/layout-' . $key . '.json');
+                $data = is_file($shapesFile) ? json_decode((string) file_get_contents($shapesFile), true) : null;
+                $presets[] = [
+                    'key' => $key,
+                    'label' => $label,
+                    'svg' => $addon->getAssetsUrl('icons/layout-' . $key . '.svg'),
+                    'shapes' => is_array($data) ? ($data['shapes'] ?? null) : null,
+                    'complete' => is_array($data) && !empty($data['complete']),
+                ];
             }
         }
 

@@ -72,7 +72,8 @@ Alle Icons nutzen `currentColor` und passen sich damit Hell- und Dunkelmodus an.
 - **Aufbau wie MediaPlace:** links Werkzeuge, Bausteine und Vorlagen, in der Mitte die Zeichenfläche mit dem echten Ergebnis, rechts Eigenschaften und Vorschau (monochrom, Duotone, Originalgröße). **Vollbild** per Knopf in der Kopfleiste – der Zustand wird gemerkt.
 - **Formen:** Rechteck, Kreis, Linie, Pfeil, Stern, Haken, Marker, Überschrift, Text, Button, Bild, Video, Dokument, Formular, Browserfenster. Icons bis 16, Vorschaubilder bis 60 Formen.
 - **Bausteine:** fertige Gruppen zum Einfügen – Navigation, Bühne, Bild + Text, Karte, 3 Karten, Galerie, Formularzeile, Zitat, Kennzahlen, Liste, Akkordeon, Fußzeile.
-- **Vorlagen:** alle 67 Vorschau-Vorlagen lassen sich *als Formen laden* und abwandeln; eigene Werke ebenso. Icon-Vorlagen (und eingefügtes SVG) lassen sich *durchpausen* – sie liegen blass unter der Fläche.
+- **Icon oder Vorschaubild:** oben in der Kopfleiste umschalten (24×18 bzw. 16:10) – gespeichert wird entsprechend als Icon oder Vorschaubild des gewählten Moduls.
+- **Vorlagen:** alle 67 Icon- und Vorschau-Vorlagen lassen sich *als Formen laden* und abwandeln; eigene Werke ebenso. Geschwungene Teile mancher Icons (und eingefügtes SVG) lassen sich *durchpausen* – sie liegen blass unter der Fläche.
 - **Bearbeiten:** Auswahl per Klick, Umschalt+Klick oder Aufziehen; acht Anfasser (Umschalt hält das Seitenverhältnis), X/Y/Breite/Höhe als Zahlen, Ausrichten (an der Fläche oder an der Auswahl), Verteilen, Ebenen, Duplizieren, Kopieren/Einfügen, Rückgängig/Wiederholen, Raster und Einrasten.
 - **Füllung je Form:** *Kontur*, *Hauch*, *Akzent*, *Voll* und *Grau* – Hauch und Akzent erscheinen bei Duotone in der Akzentfarbe, Grau bleibt neutral.
 - **Tastatur:** Pfeile verschieben (Umschalt = größere Schritte, Alt = Größe), 1–5 Füllung, Strg/Cmd+Z/Umschalt+Z, C/X/V, D, A, Entf, Esc.

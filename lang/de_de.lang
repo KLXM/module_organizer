@@ -197,3 +197,6 @@ module_organizer_preview_edit = Bearbeiten
 module_organizer_icon_edit = Bearbeiten
 module_organizer_editor_save = Speichern
 module_organizer_editor_delete = Löschen
+module_organizer_editor_kind_choose = Was zeichnen Sie?
+module_organizer_editor_template_partial = Geschwungene Teile dieser Vorlage gibt es nicht als Form – sie liegen beim Laden zum Durchpausen darunter.
+module_organizer_editor_too_many = Zu viele Formen für diese Fläche – überzählige wurden entfernt.

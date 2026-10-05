@@ -61,6 +61,23 @@
             window.location.reload();
         }
 
+        // Nach dem Speichern im Editor: je nach Art dem aktiven Modul als Icon oder Vorschaubild zuweisen
+        // (die Art lässt sich im Editor umschalten). Danach neu laden, damit Galerie/Auswahl das Werk zeigen.
+        function onEditorSaved(id, svg, kind) {
+            if (!activeModuleId) {
+                persistSelectionAndReload();
+                return;
+            }
+            if ('preview' === kind) {
+                var saving = savePreview('custom:' + id);
+                (saving || Promise.resolve()).then(persistSelectionAndReload, persistSelectionAndReload);
+                return;
+            }
+            mediaIconKey = 'custom:' + id;
+            var meta = saveMeta();
+            (meta && meta.then ? meta : Promise.resolve()).then(persistSelectionAndReload, persistSelectionAndReload);
+        }
+
         function restoreSelectionAfterReload() {
             var raw;
             try {
@@ -151,17 +168,7 @@
                 if (typeof MOIconEditor === 'undefined') {
                     return;
                 }
-                MOIconEditor.open(function (id, svg) {
-                    if (!activeModuleId) {
-                        return;
-                    }
-                    mediaIconKey = 'custom:' + id;
-                    saveMeta();
-                    // Neu gezeichnetes Icon muss als Galerie-Kachel serverseitig
-                    // gerendert werden, bevor es dort auswaehlbar ist - selbes
-                    // Reload-Muster wie bei Kategorie anlegen/umbenennen/loeschen.
-                    persistSelectionAndReload();
-                });
+                MOIconEditor.open(onEditorSaved, { kind: 'icon' });
             });
         }
 
@@ -354,10 +361,7 @@
             if (typeof MOIconEditor === 'undefined' || !activeModuleId) {
                 return;
             }
-            MOIconEditor.open(function (id) {
-                var saving = savePreview('custom:' + id);
-                (saving || Promise.resolve()).then(persistSelectionAndReload, persistSelectionAndReload);
-            }, options);
+            MOIconEditor.open(onEditorSaved, options);
         }
         var previewDraw = document.getElementById('mo-preview-draw');
         if (previewDraw) {
@@ -382,9 +386,7 @@
             event.preventDefault();
             var shapes = [];
             try { shapes = JSON.parse(btn.getAttribute('data-shapes') || '[]'); } catch (e) { shapes = []; }
-            MOIconEditor.open(function () {
-                persistSelectionAndReload();
-            }, { kind: 'icon', id: parseInt(btn.getAttribute('data-custom-icon-id'), 10), title: btn.getAttribute('data-title') || '', shapes: shapes });
+            MOIconEditor.open(onEditorSaved, { kind: 'icon', id: parseInt(btn.getAttribute('data-custom-icon-id'), 10), title: btn.getAttribute('data-title') || '', shapes: shapes });
         });
 
         var previewMediaPick = document.getElementById('mo-preview-media-pick');
@@ -536,7 +538,7 @@
                 + '&description=' + encodeURIComponent(fieldDescription.value)
                 + '&icon_key=' + encodeURIComponent(iconKey);
 
-            fetch('index.php', {
+            return fetch('index.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body
