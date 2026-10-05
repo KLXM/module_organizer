@@ -222,14 +222,33 @@ $sidebar .= '<p class="help-block">' . $addon->i18n('description_notice') . '</p
 // Vorschaubild (Darstellungen „Kacheln mit Vorschaubildern“ und „Liste mit Vorschau“)
 $previewOptions = '<option value="">' . rex_escape($addon->i18n('preview_auto')) . '</option>';
 $previewOptions .= '<option value="none">' . rex_escape($addon->i18n('preview_none')) . '</option>';
+// eigene, im Editor gezeichnete Vorschaubilder (custom:<id>)
+$customPreviews = CustomIconRepository::getAll('preview');
+$customPreviewData = [];
+if ([] !== $customPreviews) {
+    $previewOptions .= '<optgroup label="' . rex_escape($addon->i18n('preview_own')) . '">';
+    foreach ($customPreviews as $customPreview) {
+        $title = $customPreview['title'] ?: ('#' . $customPreview['id']);
+        $previewOptions .= '<option value="custom:' . $customPreview['id'] . '">' . rex_escape($title) . '</option>';
+        $customPreviewData[$customPreview['id']] = ['svg' => $customPreview['svg'], 'title' => $title, 'shapes' => null !== $customPreview['shapes'] ? json_decode($customPreview['shapes'], true) : null];
+    }
+    $previewOptions .= '</optgroup><optgroup label="' . rex_escape($addon->i18n('editor_template_presets')) . '">';
+}
 foreach (\KLXM\ModuleOrganizer\PreviewRegistry::getPresetLabels() as $previewKey => $previewLabel) {
     $previewOptions .= '<option value="' . rex_escape($previewKey) . '">' . rex_escape($previewLabel) . '</option>';
 }
+if ([] !== $customPreviews) {
+    $previewOptions .= '</optgroup>';
+}
 $sidebar .= '<div class="form-group mo-preview-field"><label for="mo-field-preview">' . $addon->i18n('preview') . '</label>';
 $sidebar .= '<select class="form-control" id="mo-field-preview">' . $previewOptions . '<option value="media" hidden></option></select>';
+$sidebar .= '<div class="mo-preview-actions">';
+$sidebar .= '<button type="button" id="mo-preview-draw" class="btn btn-default btn-xs"><i class="rex-icon fa-pen-ruler"></i> ' . $addon->i18n('preview_draw') . '</button>';
+$sidebar .= '<button type="button" id="mo-preview-edit" class="btn btn-default btn-xs" hidden><i class="rex-icon fa-pen"></i> ' . $addon->i18n('preview_edit') . '</button>';
 if ($mediaPlaceAvailable) {
-    $sidebar .= '<button type="button" id="mo-preview-media-pick" class="btn btn-default btn-xs" style="margin-top:6px"><i class="rex-icon fa-image"></i> ' . $addon->i18n('preview_media_pick') . '</button>';
+    $sidebar .= '<button type="button" id="mo-preview-media-pick" class="btn btn-default btn-xs"><i class="rex-icon fa-image"></i> ' . $addon->i18n('preview_media_pick') . '</button>';
 }
+$sidebar .= '</div>';
 $sidebar .= '<div class="mo-preview-thumb" id="mo-preview-thumb"></div>';
 $sidebar .= '<p class="help-block">' . $addon->i18n('preview_notice') . '</p></div>';
 
@@ -250,6 +269,9 @@ if ([] !== $customIcons) {
         $sidebar .= '<input type="radio" name="mo-icon-key" value="' . rex_escape($iconKey) . '">';
         $sidebar .= $customIcon['svg'];
         $sidebar .= '<span>' . rex_escape($customIcon['title'] ?: ('#' . $customIcon['id'])) . '</span></label>';
+        if (null !== $customIcon['shapes']) {
+            $sidebar .= '<button type="button" class="mo-custom-icon-edit" data-custom-icon-id="' . $customIcon['id'] . '" data-title="' . rex_escape((string) $customIcon['title']) . '" data-shapes="' . rex_escape($customIcon['shapes']) . '" title="' . rex_escape($addon->i18n('icon_edit')) . '" aria-label="' . rex_escape($addon->i18n('icon_edit')) . '"><i class="rex-icon fa-pen" aria-hidden="true"></i></button>';
+        }
         $sidebar .= '<button type="button" class="mo-custom-icon-delete" data-custom-icon-id="' . $customIcon['id'] . '" title="' . rex_escape($addon->i18n('delete')) . '">&times;</button>';
         $sidebar .= '</div>';
     }
@@ -293,6 +315,7 @@ $sidebar .= '</form>';
 $content = '<p class="help-block">' . $addon->i18n('tree_notice') . '</p>';
 $content .= '<div id="mo-organizer" data-modules="' . rex_escape(json_encode($modulesData)) . '"'
     . ' data-previews-url="' . rex_escape($addon->getAssetsUrl('previews/')) . '"'
+    . ' data-custom-previews="' . rex_escape((string) json_encode((object) $customPreviewData)) . '"'
     . ' data-icons-url="' . rex_escape($addon->getAssetsUrl('icons/')) . '"'
     . ' data-order-msg-saved="' . rex_escape($addon->i18n('order_saved')) . '"'
     . ' data-order-msg-failed="' . rex_escape($addon->i18n('save_failed')) . '"'

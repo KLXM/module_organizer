@@ -19,7 +19,7 @@ REDAXO-AddOn, das die Modulauswahl im Content-Editor ("Block hinzufügen") durch
 - 67 vorgefertigte SVG-Layout-Icons, monochrom oder **Duotone** (zwei Farben, Paletten oder eigene Farben, Akzentfarbe je Kategorie) für gängige Modultypen (Bild, Video, Formular, Cards, Hero, FAQ, Zitat, Kalender, Zeitstrahl, Downloads, WLAN, Katalog u. v. m.)
 - Eigene Bilder aus MediaPlace/Medienpool als Icon wählbar
 - SVG-Code einfügen: eigene Icons per Copy & Paste – serverseitig bereinigt (keine Skripte, Event-Attribute oder externen Verweise)
-- Icon-Editor: eigene Duotone-Icons direkt im Backend zeichnen – 14 Formen, Füllstil je Form, Ebenen, Duplizieren, Tastatur, Live-Vorschau monochrom und Duotone
+- Vektor-Editor für eigene Icons und Vorschaubilder: Vollbild, Bausteine, alle Vorlagen als bearbeitbare Formen, Mehrfachauswahl, Ausrichten, Rückgängig, Live-Vorschau monochrom und Duotone
 - Vollständige Unterstützung des REDAXO-Dunkelmodus (manuell gewählt und systemabhängig)
 - Mehrsprachig (Deutsch/Englisch)
 
@@ -65,20 +65,23 @@ Jedes Modul kann ein Vorschau-Icon bekommen:
 
 Alle Icons nutzen `currentColor` und passen sich damit Hell- und Dunkelmodus an.
 
-### Icon-Editor
+### Vektor-Editor (Icons und Vorschaubilder)
 
-**Module → Module Organizer** → Modul wählen → *Eigenes Icon zeichnen*. Werkzeug wählen und auf der 24×18-Fläche aufziehen (ein Klick legt die Form in Standardgröße an), verschieben oder an der Ecke in der Größe ändern.
+**Module → Module Organizer** → Modul wählen → *Eigenes Icon zeichnen* bzw. *Vorschaubild zeichnen*. Eigene Werke lassen sich später über den Stift wieder öffnen und bearbeiten (auch *Als Kopie speichern*).
 
-- **Formen:** Text, Überschrift, Bild, Video, Dokument, Formular, Rechteck, Kreis, Button, Stern, Marker, Haken, Linie, Pfeil – bis zu 16 je Icon.
-- **Füllung je Form:** *Kontur* (nur Umriss), *Hauch* (zarte Fläche – bei Duotone ein Hauch der Akzentfarbe), *Akzent* (kräftige Fläche in der Akzentfarbe), *Voll* (Konturfarbe). So entstehen Icons im selben Aufbau wie die Vorlagen.
-- **Bearbeiten:** Duplizieren, nach vorn/hinten, löschen; die Vorschau zeigt das gespeicherte SVG monochrom, als Duotone und in Originalgröße.
-- **Tastatur:** Pfeile verschieben (Umschalt = größere Schritte), Alt+Pfeile ändern die Größe, 1–4 setzt die Füllung, Tab wechselt die Form, Strg/Cmd+D dupliziert, Entf löscht, Esc hebt die Auswahl auf.
+- **Aufbau wie MediaPlace:** links Werkzeuge, Bausteine und Vorlagen, in der Mitte die Zeichenfläche mit dem echten Ergebnis, rechts Eigenschaften und Vorschau (monochrom, Duotone, Originalgröße). **Vollbild** per Knopf in der Kopfleiste – der Zustand wird gemerkt.
+- **Formen:** Rechteck, Kreis, Linie, Pfeil, Stern, Haken, Marker, Überschrift, Text, Button, Bild, Video, Dokument, Formular, Browserfenster. Icons bis 16, Vorschaubilder bis 60 Formen.
+- **Bausteine:** fertige Gruppen zum Einfügen – Navigation, Bühne, Bild + Text, Karte, 3 Karten, Galerie, Formularzeile, Zitat, Kennzahlen, Liste, Akkordeon, Fußzeile.
+- **Vorlagen:** alle 67 Vorschau-Vorlagen lassen sich *als Formen laden* und abwandeln; eigene Werke ebenso. Icon-Vorlagen (und eingefügtes SVG) lassen sich *durchpausen* – sie liegen blass unter der Fläche.
+- **Bearbeiten:** Auswahl per Klick, Umschalt+Klick oder Aufziehen; acht Anfasser (Umschalt hält das Seitenverhältnis), X/Y/Breite/Höhe als Zahlen, Ausrichten (an der Fläche oder an der Auswahl), Verteilen, Ebenen, Duplizieren, Kopieren/Einfügen, Rückgängig/Wiederholen, Raster und Einrasten.
+- **Füllung je Form:** *Kontur*, *Hauch*, *Akzent*, *Voll* und *Grau* – Hauch und Akzent erscheinen bei Duotone in der Akzentfarbe, Grau bleibt neutral.
+- **Tastatur:** Pfeile verschieben (Umschalt = größere Schritte, Alt = Größe), 1–5 Füllung, Strg/Cmd+Z/Umschalt+Z, C/X/V, D, A, Entf, Esc.
 
-Der Browser schickt nur Formtyp, Koordinaten und Füllstil – das SVG baut `CustomIconRenderer` auf dem Server.
+Der Browser schickt nur Formtyp, Koordinaten und Füllstil – das SVG baut `CustomIconRenderer` auf dem Server; die Formen werden mitgespeichert, damit ein Werk wieder bearbeitbar ist.
 
 ### Vorschaubilder
 
-Neben dem Icon kann jedes Modul ein großes Vorschaubild haben: *Automatisch* (passend zum Icon), eine der 67 Vorlagen, *Keins* oder ein eigenes Bild aus dem Medienpool/MediaPlace (z. B. ein Screenshot des Moduls). Die Vorlagen sind bewusst neutrale Mockups ohne Inhalte – sie verraten nichts über das Projekt und folgen dem Duotone-Stil.
+Neben dem Icon kann jedes Modul ein großes Vorschaubild haben: *Automatisch* (passend zum Icon), eine der 67 Vorlagen, ein im Editor gezeichnetes, *Keins* oder ein eigenes Bild aus dem Medienpool/MediaPlace (z. B. ein Screenshot des Moduls). Die Vorlagen sind bewusst neutrale Mockups ohne Inhalte – sie verraten nichts über das Projekt und folgen dem Duotone-Stil.
 
 ### Icon-Stil: Monochrom oder Duotone
 

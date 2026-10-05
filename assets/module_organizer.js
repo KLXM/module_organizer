@@ -195,6 +195,11 @@
             el.appendChild(img);
             return true;
         }
+        if ('custom' === preview.type && preview.svg) {
+            // im Editor gezeichnet, beim Speichern serverseitig bereinigt (SvgSanitizer)
+            el.innerHTML = preview.svg;
+            return true;
+        }
         if ('preset' === preview.type && preview.key) {
             if (!previewCache[preview.key]) {
                 previewCache[preview.key] = fetch(addonAssetsUrl + 'previews/' + preview.key + '.svg').then(function (response) {

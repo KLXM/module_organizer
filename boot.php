@@ -10,6 +10,7 @@ rex_api_function::register('module_organizer_save_custom_icon', KLXM\ModuleOrgan
 rex_api_function::register('module_organizer_preview_custom_icon', KLXM\ModuleOrganizer\Api\PreviewCustomIcon::class);
 rex_api_function::register('module_organizer_delete_custom_icon', KLXM\ModuleOrganizer\Api\DeleteCustomIcon::class);
 rex_api_function::register('module_organizer_save_preview', KLXM\ModuleOrganizer\Api\SavePreview::class);
+rex_api_function::register('module_organizer_editor_templates', KLXM\ModuleOrganizer\Api\EditorTemplates::class);
 
 // Zuletzt verwendet: beim Einfügen eines Blocks für den Benutzer merken
 rex_extension::register('SLICE_ADDED', static function (rex_extension_point $ep) {
