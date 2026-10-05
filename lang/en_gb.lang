@@ -23,7 +23,7 @@ module_organizer_meta_saved = Saved.
 module_organizer_no_category = No category
 module_organizer_favorite = Pin as favorite at the top
 module_organizer_description = Description (optional)
-module_organizer_description_notice = Short hint text, shown as a tooltip in the overlay.
+module_organizer_description_notice = Short hint, shown below the name in the block selection and included in the search.
 module_organizer_icon = Layout preview icon (optional)
 module_organizer_no_icon = — none —
 module_organizer_icon_media_pick = Choose your own image from MediaPlace
@@ -61,3 +61,26 @@ module_organizer_filter_all = All
 module_organizer_filter_favorites = Favorites
 module_organizer_no_modules_found = No modules found.
 module_organizer_toggle_favorite = Remember as personal favorite
+
+# 1.1.0
+module_organizer_icon_svg_paste_open = Paste SVG code
+module_organizer_icon_svg_paste_title = Icon name
+module_organizer_icon_svg_paste_code = SVG code
+module_organizer_icon_svg_paste_notice = Ideally viewBox="0 0 24 18" and currentColor so the icon fits light and dark mode. Scripts, event attributes and external references are removed on save.
+module_organizer_icon_svg_paste_invalid = No valid SVG – please paste the complete &lt;svg&gt;…&lt;/svg&gt; code.
+module_organizer_title_prefix = Module names in the block selection
+module_organizer_strip_title_prefix = Hide number prefix (e.g. "001 :: Text & Media" → "Text & Media")
+module_organizer_title_prefix_pattern = Custom rule (regular expression, optional)
+module_organizer_title_prefix_pattern_notice = Whatever matches at the start of the name is hidden in the block selection – without delimiters, e.g. <code>^\[\w+\]\s*</code> for "[hero] Stage". Empty = default rule (numbers followed by "::", "-", "|", "." or ":"). Search still finds modules by their full name.
+module_organizer_title_prefix_preview = Preview:
+module_organizer_title_prefix_pattern_invalid = The rule is not a valid regular expression and was not saved.
+module_organizer_category_areas = Areas: offer only in certain structure categories
+module_organizer_category_areas_only = Only in these structure categories
+module_organizer_category_areas_label = Offer only in these structure categories
+module_organizer_category_areas_children = Including their subcategories
+module_organizer_category_areas_notice = Nothing selected = everywhere. Modules of this category appear in the block selection only in the selected areas. Blocks already in use are not affected.
+module_organizer_category_areas_reset = Offer everywhere
+module_organizer_usage_title = used {0}×
+module_organizer_usage_none = Not used anywhere yet.
+module_organizer_usage_count = used {0}×, on {1} page(s):
+module_organizer_usage_more = Showing the first 30 pages.

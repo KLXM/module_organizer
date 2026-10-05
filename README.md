@@ -6,11 +6,17 @@ REDAXO-AddOn, das die Modulauswahl im Content-Editor ("Block hinzufügen") durch
 
 - Ersetzt die Bootstrap-Dropdown-Modulauswahl durch ein Overlay oder ein kompaktes Popover (umschaltbar) – reine Fragment-Überschreibung, kein Eingriff in den Core
 - Live-Suche über Titel, Beschreibung und Modul-Key
+- Bedienung per Tastatur (Pfeiltasten, Pos1/Ende, Enter fügt den ersten Treffer ein)
+- Beschreibungen sichtbar unter dem Modulnamen
+- Nummern-Präfixe wie „001 :: “ in der Blockauswahl ausblenden – Regel per regulärem Ausdruck anpassbar
+- Kategorien nur in bestimmten Strukturkategorien anbieten (optional inkl. Unterkategorien)
+- Nutzung je Modul im Strukturbaum: Anzahl und Seiten mit Link in den Editiermodus
 - Kategorisierung der Module per Drag & Drop in einem zweistufigen Strukturbaum (Kategorien → Module)
 - Globale (admin-gepflegte) und persönliche (pro Benutzer) Favoriten, die in der Blockauswahl immer zuerst erscheinen
 - Kurze Beschreibungstexte pro Modul, die als Tooltip in der Blockauswahl erscheinen
-- 33 vorgefertigte, monochrome SVG-Layout-Icons für gängige Modultypen (Bild, Video, Formular, Cards, Hero, FAQ, Zitat u. v. m.)
+- 50 vorgefertigte, monochrome SVG-Layout-Icons für gängige Modultypen (Bild, Video, Formular, Cards, Hero, FAQ, Zitat, Kalender, Zeitstrahl, Downloads, WLAN, Katalog u. v. m.)
 - Eigene Bilder aus MediaPlace/Medienpool als Icon wählbar
+- SVG-Code einfügen: eigene Icons per Copy & Paste – serverseitig bereinigt (keine Skripte, Event-Attribute oder externen Verweise)
 - Mini-Icon-Editor: eigene Icons direkt im Backend zeichnen (Rechtecke, freie Linien, Platzhalter-Typen), inklusive Live-Vorschau des tatsächlich gespeicherten SVGs
 - Vollständige Unterstützung des REDAXO-Dunkelmodus (manuell gewählt und systemabhängig)
 - Mehrsprachig (Deutsch/Englisch)
@@ -50,9 +56,10 @@ Ein kurzer Satz je Modul („Großes Bild über die ganze Breite – für den Se
 
 Jedes Modul kann ein Vorschau-Icon bekommen:
 
-1. **Vorlagen** – 33 monochrome Layout-Icons (Hero, Cards, Bild + Text, FAQ, Formular, Karte, Statistiken, Zitat …).
+1. **Vorlagen** – 50 monochrome Layout-Icons (Hero, Cards, Bild + Text, FAQ, Formular, Karte, Statistiken, Zitat, Slideshow, Bild-Teaser, Seiten-Navigation, Zeitstrahl, Kalender, Downloads, Standorte, Kontakt, Katalog mit Ort, Info-Karten, Mappe, WLAN, geschützter Bereich Beginn/Ende, Inhalt einbinden …).
 2. **Bild aus dem Medienpool/MediaPlace** – z. B. ein Screenshot des Moduls als echte Vorschau.
-3. **Icon-Editor** – eigenes Icon im Backend zeichnen (Text, Bild, Video, Dokument, Formular, Rechteck, Linie); das SVG wird serverseitig erzeugt.
+3. **SVG-Code einfügen** – eigenes Icon per Copy & Paste. Das SVG wird beim Speichern bereinigt: Skripte, Event-Attribute (`on…`), `foreignObject`, externe Verweise und `javascript:`/`data:`-Werte werden entfernt; ungültiges Markup wird abgelehnt.
+4. **Icon-Editor** – eigenes Icon im Backend zeichnen (Text, Bild, Video, Dokument, Formular, Rechteck, Linie); das SVG wird serverseitig erzeugt.
 
 Alle Icons nutzen `currentColor` und passen sich damit Hell- und Dunkelmodus an.
 
@@ -61,7 +68,24 @@ Alle Icons nutzen `currentColor` und passen sich damit Hell- und Dunkelmodus an.
 - **Popover** – kompakte Liste direkt am Button „Block hinzufügen“, nach Kategorie gruppiert, Favoriten zuerst.
 - **Overlay** – großes Fenster mit Kachel-Raster und Kategorien links (ähnlich MediaPlace); die Icons wirken hier wie kleine Vorschaubilder. Empfehlenswert, sobald Icons gepflegt sind.
 
-In beiden Modi gibt es die Live-Suche über Titel, Beschreibung und Modul-Key.
+In beiden Modi gibt es die Live-Suche über Titel, Beschreibung und Modul-Key. Mit der Tastatur: **Pfeil runter** springt aus der Suche in die Liste, **Enter** fügt den ersten Treffer ein, die **Pfeiltasten** wandern durch die Kacheln (im Overlay zeilenweise wie sichtbar), **Pos1/Ende** springen an Anfang und Ende, **Esc** schließt.
+
+### Modulnamen ohne Nummern-Präfix
+
+Viele sortieren ihre Module mit Präfixen wie `001 :: Text & Medien`. In den Einstellungen lässt sich das Präfix in der Blockauswahl ausblenden – die Modulnamen selbst bleiben unverändert, die Suche findet Module weiterhin auch über den vollen Namen.
+
+- **Standardregel:** Nummer (optional mit Buchstaben) gefolgt von `::`, `-`, `–`, `|`, `.` oder `:` – z. B. `001 :: Text`, `12 - Teaser`, `003. Hero`, `A01 | Karte`.
+- **Eigene Regel:** regulärer Ausdruck ohne Begrenzer, z. B. `^\[\w+\]\s*` für `[hero] Bühne`. Eine Vorschau zeigt, wie die eigenen Module erscheinen; ungültige Ausdrücke werden nicht gespeichert.
+
+### Kategorien nur in bestimmten Bereichen
+
+Über das Symbol <i>Bereiche</i> am Kategorienkopf lässt sich eine Kategorie auf bestimmte Strukturkategorien beschränken, optional inklusive Unterkategorien – z. B. Blöcke für eine Gästemappe nur in der Gästemappe, Landingpage-Blöcke nur unter „Aktionen“. Nichts ausgewählt = überall. Bereits eingesetzte Blöcke bleiben unverändert. Ein Hinweis am Kategorienkopf zeigt die gewählten Bereiche.
+
+Welche Module ein Benutzer überhaupt nutzen darf, regeln weiterhin die REDAXO-Rollen; welche Module in einem Template erlaubt sind, die Template-Einstellungen.
+
+### Nutzung der Module
+
+Im Strukturbaum steht hinter jedem Modul, wie oft es eingesetzt ist (ungenutzte Module rot). Ein Klick auf das Modul zeigt in der Seitenleiste die Seiten, auf denen es vorkommt, mit Link in den Editiermodus – praktisch zum Aufräumen und bevor ein Modul geändert wird. Die Organizer-Seite ist Admins vorbehalten.
 
 ## Einrichtung per Skript
 
@@ -87,14 +111,20 @@ $iconId = CustomIconRepository::save(null, 'Kalender', '<svg xmlns="http://www.w
 ModuleMetaRepository::save(14, $text['id'], false, 'Veranstaltungen aus dem Kalender.', 'custom:' . $iconId);
 ```
 
-**Icon-Schlüssel:** Vorlagen über ihren Namen (`hero`, `cards`, `faq`, `form`, `map`, `stats`, `divider`, `heading`, `text-media-left` …), Medien mit `media:<dateiname>`, eigene Icons mit `custom:<id>`.
+**Icon-Schlüssel:** Vorlagen über ihren Namen (`hero`, `cards`, `faq`, `form`, `map`, `stats`, `divider`, `heading`, `text-media-left`, `slideshow`, `timeline`, `calendar`, `downloads`, `wifi`, `folder` …), Medien mit `media:<dateiname>`, eigene Icons mit `custom:<id>`.
 
-**Eigene SVGs im Stil der Vorlagen:** `viewBox="0 0 24 18"`, Flächen `fill="currentColor"` mit `fill-opacity` 0.08–0.35, Konturen `stroke="currentColor"` mit `stroke-width` 1.2–1.5. Eigene SVGs werden unverändert ausgegeben – nur vertrauenswürdiges Markup speichern (der Icon-Editor erzeugt sicheres SVG serverseitig).
+```php
+// Kategorie nur in Strukturkategorie 12 und darunter anbieten
+CategoryRepository::saveAreas($text['id'], [12], true);
+```
+
+**Eigene SVGs im Stil der Vorlagen:** `viewBox="0 0 24 18"`, Flächen `fill="currentColor"` mit `fill-opacity` 0.08–0.35, Konturen `stroke="currentColor"` mit `stroke-width` 1.2–1.5. `CustomIconRepository::save()` bereinigt jedes SVG (`SvgSanitizer`) und wirft bei ungültigem Markup eine `InvalidArgumentException`.
 
 ## Hinweise
 
 - **Konflikte:** Andere AddOns, die ebenfalls die Modulauswahl ersetzen (`module_preview`, `nv_modulepreview`), überschreiben die Blockauswahl. Der Organizer warnt davor (abschaltbar in den Einstellungen).
 - **Rechte:** Die Verwaltung (Kategorien, globale Favoriten, Icons) ist Admins vorbehalten. Alle Redakteure sehen die geordnete Auswahl und können persönliche Favoriten setzen. Es erscheinen nur Module, die für das Template/den Bereich erlaubt sind.
+- **Update:** Neue Spalten (Bereiche je Kategorie) legt `update.php` an; vorhandene Kategorien, Zuordnungen und Icons bleiben erhalten.
 - **Technik:** Die Blockauswahl wird über eine Fragment-Überschreibung (`fragments/module_select.php`) ersetzt – kein Eingriff in den Core. Daten liegen in `rex_module_organizer_category`, `rex_module_organizer_module`, `rex_module_organizer_user_favorite` und `rex_module_organizer_custom_icon`.
 
 ## Changelog

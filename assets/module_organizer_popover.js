@@ -68,8 +68,47 @@
             '<div class="mo-popover-list"></div>';
         document.body.appendChild(popover);
 
-        popover.querySelector('.mo-popover-search').addEventListener('input', function () {
+        var searchEl = popover.querySelector('.mo-popover-search');
+        searchEl.setAttribute('aria-label', t('search_placeholder'));
+        searchEl.addEventListener('input', function () {
             renderList((this.value || '').trim().toLowerCase());
+        });
+
+        // Tastatur: Pfeil runter springt in die Liste, Enter fügt den ersten Treffer ein,
+        // in der Liste Pfeil hoch/runter, Pos1/Ende; Pfeil hoch in der ersten Zeile zurück zur Suche
+        function rows() {
+            return Array.prototype.slice.call(popover.querySelectorAll('.mo-popover-row'));
+        }
+        searchEl.addEventListener('keydown', function (event) {
+            var all = rows();
+            if ('ArrowDown' === event.key && all.length) {
+                event.preventDefault();
+                all[0].focus();
+            } else if ('Enter' === event.key && all.length) {
+                event.preventDefault();
+                all[0].click();
+            }
+        });
+        popover.querySelector('.mo-popover-list').addEventListener('keydown', function (event) {
+            var all = rows();
+            var index = all.indexOf(document.activeElement);
+            if (-1 === index) {
+                return;
+            }
+            var next = null;
+            if ('ArrowDown' === event.key) {
+                next = all[Math.min(index + 1, all.length - 1)];
+            } else if ('ArrowUp' === event.key) {
+                next = 0 === index ? searchEl : all[index - 1];
+            } else if ('Home' === event.key) {
+                next = all[0];
+            } else if ('End' === event.key) {
+                next = all[all.length - 1];
+            }
+            if (next) {
+                event.preventDefault();
+                next.focus();
+            }
         });
 
         document.addEventListener('click', function (event) {
@@ -136,18 +175,25 @@
         var row = document.createElement('a');
         row.className = 'mo-popover-row';
         row.href = item.href;
-        if (item.description) {
-            row.title = item.description;
-        }
 
         var iconWrap = document.createElement('span');
         iconWrap.className = 'mo-popover-row-icon';
         row.appendChild(iconWrap);
 
+        var text = document.createElement('span');
+        text.className = 'mo-popover-row-text';
         var title = document.createElement('span');
         title.className = 'mo-popover-row-title';
         title.textContent = item.title;
-        row.appendChild(title);
+        text.appendChild(title);
+        // Beschreibung sichtbar (nicht nur als Tooltip – Touch- und Tastaturnutzer sehen sonst nichts)
+        if (item.description) {
+            var desc = document.createElement('span');
+            desc.className = 'mo-popover-row-desc';
+            desc.textContent = item.description;
+            text.appendChild(desc);
+        }
+        row.appendChild(text);
 
         // Globale Favoriten (admin-gepflegt, Organizer-Strukturbaum) sind
         // hier read-only (voller Stern, kein Klick-Handler). Persoenliche
@@ -214,7 +260,7 @@
 
         if (query) {
             items = items.filter(function (item) {
-                var haystack = [item.title, item.description, item.key].join(' ').toLowerCase();
+                var haystack = [item.title, item.full_title, item.description, item.key].join(' ').toLowerCase();
                 return haystack.indexOf(query) !== -1;
             });
         }

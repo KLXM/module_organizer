@@ -85,9 +85,73 @@
             }
         });
 
+        searchInput.setAttribute('aria-label', t('search_placeholder'));
         searchInput.addEventListener('input', function () {
             clearTimeout(searchTimer);
             searchTimer = setTimeout(renderGrid, 200);
+        });
+
+        // Tastatur: Pfeil runter springt ins Raster, Enter fügt den ersten Treffer ein;
+        // im Raster Pfeiltasten (zeilenweise wie sichtbar), Pos1/Ende, Pfeil hoch in der ersten Zeile zurück zur Suche
+        function tiles() {
+            return Array.prototype.slice.call(grid.querySelectorAll('.mo-tile'));
+        }
+        searchInput.addEventListener('keydown', function (event) {
+            if ('ArrowDown' === event.key || 'Enter' === event.key) {
+                clearTimeout(searchTimer);
+                renderGrid();
+                var all = tiles();
+                if (!all.length) {
+                    return;
+                }
+                event.preventDefault();
+                if ('Enter' === event.key) {
+                    all[0].click();
+                } else {
+                    all[0].focus();
+                }
+            }
+        });
+        grid.addEventListener('keydown', function (event) {
+            var all = tiles();
+            var current = document.activeElement;
+            var index = all.indexOf(current);
+            if (-1 === index) {
+                return;
+            }
+            var next = null;
+            if ('ArrowRight' === event.key) {
+                next = all[Math.min(index + 1, all.length - 1)];
+            } else if ('ArrowLeft' === event.key) {
+                next = all[Math.max(index - 1, 0)];
+            } else if ('Home' === event.key) {
+                next = all[0];
+            } else if ('End' === event.key) {
+                next = all[all.length - 1];
+            } else if ('ArrowDown' === event.key || 'ArrowUp' === event.key) {
+                var down = 'ArrowDown' === event.key;
+                var top = current.offsetTop;
+                var left = current.offsetLeft;
+                var candidates = all.filter(function (tile) {
+                    return down ? tile.offsetTop > top : tile.offsetTop < top;
+                });
+                if (!candidates.length) {
+                    next = down ? null : searchInput;
+                } else {
+                    var rowTop = down
+                        ? Math.min.apply(null, candidates.map(function (tile) { return tile.offsetTop; }))
+                        : Math.max.apply(null, candidates.map(function (tile) { return tile.offsetTop; }));
+                    candidates.filter(function (tile) { return tile.offsetTop === rowTop; }).forEach(function (tile) {
+                        if (!next || Math.abs(tile.offsetLeft - left) < Math.abs(next.offsetLeft - left)) {
+                            next = tile;
+                        }
+                    });
+                }
+            }
+            if (next) {
+                event.preventDefault();
+                next.focus();
+            }
         });
     }
 
@@ -158,7 +222,7 @@
         if (!query) {
             return true;
         }
-        var haystack = [item.title, item.description, item.key].join(' ').toLowerCase();
+        var haystack = [item.title, item.full_title, item.description, item.key].join(' ').toLowerCase();
         return haystack.indexOf(query) !== -1;
     }
 
@@ -220,9 +284,6 @@
             var tile = document.createElement('a');
             tile.className = 'mo-tile';
             tile.href = item.href;
-            if (item.description) {
-                tile.title = item.description;
-            }
 
             var iconWrap = document.createElement('div');
             iconWrap.className = 'mo-tile-icon';
@@ -251,6 +312,14 @@
             title.className = 'mo-tile-title';
             title.textContent = item.title;
             tile.appendChild(title);
+
+            // Beschreibung sichtbar (nicht nur als Tooltip)
+            if (item.description) {
+                var desc = document.createElement('div');
+                desc.className = 'mo-tile-desc';
+                desc.textContent = item.description;
+                tile.appendChild(desc);
+            }
 
             grid.appendChild(tile);
 

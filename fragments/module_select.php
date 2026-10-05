@@ -28,11 +28,21 @@ $categoryPriorities = array_column($categories, 'priority', 'id');
 $user = rex::getUser();
 $userFavorites = null !== $user ? UserFavoriteRepository::getForUser((int) $user->getId()) : [];
 
+// Aktuelle Strukturkategorie: Organizer-Kategorien können auf Bereiche beschränkt sein
+$contextArticle = rex_article::get(rex_request('article_id', 'int', 0), rex_request('clang', 'int', rex_clang::getStartId()));
+$contextCategoryId = $contextArticle ? (int) $contextArticle->getCategoryId() : 0;
+$contextPath = $contextArticle ? array_map('intval', $contextArticle->getPathAsArray()) : [];
+$categoriesById = array_column($categories, null, 'id');
+
 $enrichedItems = [];
 foreach ($items as $item) {
     $moduleId = (int) $item['id'];
     $moduleMeta = $meta[$moduleId] ?? null;
     $categoryId = $moduleMeta['category_id'] ?? null;
+    if (null !== $categoryId && isset($categoriesById[$categoryId])
+        && !CategoryRepository::isAvailableIn($categoriesById[$categoryId], $contextCategoryId, $contextPath)) {
+        continue; // Kategorie ist hier nicht vorgesehen
+    }
     $isGlobalFavorite = $moduleMeta['is_favorite'] ?? false;
     $isUserFavorite = isset($userFavorites[$moduleId]);
     $iconKey = $moduleMeta['icon_key'] ?? null;
@@ -52,7 +62,9 @@ foreach ($items as $item) {
         'key' => $item['key'],
         // Titel kommt vom Core bereits HTML-escaped (z. B. „&amp;“); das JS setzt ihn per textContent ein –
         // ohne Rückdekodierung stünde dort buchstäblich „Text &amp; Medien“.
-        'title' => htmlspecialchars_decode($item['title']),
+        'title' => \KLXM\ModuleOrganizer\TitleFormatter::display(htmlspecialchars_decode($item['title'])),
+        // voller Modulname für die Suche (z. B. „001“ oder ein ausgeblendetes Präfix)
+        'full_title' => htmlspecialchars_decode($item['title']),
         // $item['href'] kommt vom Core bereits HTML-escaped (rex_context::
         // getUrl() escaped standardmaessig "&" zu "&amp;", gedacht fuer den
         // Einsatz in href="..."-HTML-Attributen). Wir liefern die URL hier

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" role="img" aria-hidden="true">
+  <path d="M12 1.5v15" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.5"/>
+  <circle cx="12" cy="4" r="1.6" fill="currentColor"/>
+  <circle cx="12" cy="9" r="1.6" fill="currentColor"/>
+  <circle cx="12" cy="14" r="1.6" fill="currentColor"/>
+  <rect x="2" y="2.5" width="7.5" height="3" rx="0.8" fill="currentColor" fill-opacity="0.3"/>
+  <rect x="14.5" y="7.5" width="7.5" height="3" rx="0.8" fill="currentColor" fill-opacity="0.3"/>
+  <rect x="2" y="12.5" width="7.5" height="3" rx="0.8" fill="currentColor" fill-opacity="0.3"/>
+</svg>

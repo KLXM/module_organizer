@@ -52,6 +52,18 @@ class Category extends rex_api_function
             exit;
         }
 
+        if ('areas' === $op) {
+            $id = rex_request('id', 'int', 0);
+            if ($id <= 0) {
+                rex_response::sendJson(['success' => false]);
+                exit;
+            }
+            $ids = array_map('intval', rex_request('structure_ids', 'array', []));
+            CategoryRepository::saveAreas($id, $ids, rex_request('structure_children', 'bool', false));
+            rex_response::sendJson(['success' => true]);
+            exit;
+        }
+
         if ('delete' === $op) {
             $id = rex_request('id', 'int', 0);
             if ($id <= 0) {

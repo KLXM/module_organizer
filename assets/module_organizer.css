@@ -221,6 +221,23 @@ body.rex-theme-dark {
     line-height: 1.3;
 }
 
+/* Beschreibung sichtbar unter dem Titel (max. 3 Zeilen) */
+#mo-overlay .mo-tile-desc {
+    font-size: 11px;
+    line-height: 1.35;
+    text-align: center;
+    color: var(--mo-text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+#mo-overlay .mo-tile:focus-visible {
+    outline: 2px solid var(--mo-tile-hover-border);
+    outline-offset: 2px;
+}
+
 #mo-overlay .mo-tile-favorite {
     position: absolute;
     top: 6px;
@@ -613,11 +630,31 @@ body.rex-theme-dark #mo-popover {
     border-radius: 2px;
 }
 
-#mo-popover .mo-popover-row-title {
+#mo-popover .mo-popover-row-text {
     flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#mo-popover .mo-popover-row-title {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+#mo-popover .mo-popover-row-desc {
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--mo-text-muted, #777);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#mo-popover .mo-popover-row:focus-visible {
+    outline: 2px solid var(--mo-tile-hover-border, #98a6b3);
+    outline-offset: -2px;
 }
 
 #mo-popover .mo-popover-row-favorite {
@@ -933,4 +970,51 @@ body.rex-theme-dark #mo-popover {
 
 .mo-custom-icon-delete:hover {
     color: #d9534f;
+}
+
+/* Organizer: Nutzung je Modul (Zahl im Baum, Liste in der Seitenleiste) */
+.mo-tree-usage {
+    display: inline-block;
+    min-width: 22px;
+    margin-left: auto;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: rgba(50, 64, 80, .1);
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+}
+.mo-tree-usage.is-unused { background: rgba(217, 83, 79, .14); color: #b52b27; }
+.mo-tree-module { display: flex; align-items: center; gap: 4px; }
+.mo-usage { margin-bottom: 12px; padding: 8px 10px; border: 1px solid rgba(0, 0, 0, .08); background: rgba(0, 0, 0, .02); font-size: 12px; }
+.mo-usage-head { margin: 0 0 4px; font-weight: 600; }
+.mo-usage-list { max-height: 160px; overflow-y: auto; margin: 0; padding-left: 18px; }
+
+/* Organizer: Bereiche einer Kategorie */
+.mo-tree-category-areas-badge {
+    margin-left: 8px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: rgba(75, 154, 217, .14);
+    color: #2f7ab8;
+    font-size: 11px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 260px;
+}
+.mo-tree-category-areas-panel { margin: 6px 0 8px 22px; padding: 10px; border: 1px solid rgba(0, 0, 0, .1); background: rgba(0, 0, 0, .02); }
+.mo-tree-category-areas-panel select { margin-bottom: 6px; }
+
+/* Organizer: Icon-Aktionen und SVG-Code einfügen */
+.mo-icon-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.mo-svg-paste { margin-top: 10px; padding: 10px; border: 1px solid rgba(0, 0, 0, .1); background: rgba(0, 0, 0, .02); }
+.mo-svg-paste-code { font-family: monospace; font-size: 12px; }
+
+body.rex-theme-dark .mo-tree-usage { background: rgba(255, 255, 255, .12); }
+body.rex-theme-dark .mo-tree-category-areas-badge { color: #8ab8e8; }
+@media (prefers-color-scheme: dark) {
+    body.rex-has-theme:not(.rex-theme-light) .mo-tree-usage { background: rgba(255, 255, 255, .12); }
+    body.rex-has-theme:not(.rex-theme-light) .mo-tree-category-areas-badge { color: #8ab8e8; }
 }

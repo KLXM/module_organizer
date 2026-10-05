@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0] - 2026-10-05
+
+### Added
+- ⌨️ **Tastatur-Bedienung** in Popover und Overlay: Pfeil runter aus der Suche in die Liste, Enter fügt den ersten Treffer ein, Pfeiltasten (im Overlay zeilenweise), Pos1/Ende, Pfeil hoch zurück zur Suche
+- 💬 **Beschreibungen sichtbar** unter dem Modulnamen (statt nur als Tooltip – auch für Touch- und Tastaturnutzer)
+- ✂️ **Nummern-Präfix ausblenden** (z. B. „001 :: Text“ → „Text“) mit Standardregel und eigener Regel als regulärem Ausdruck, Live-Vorschau in den Einstellungen; die Suche findet weiterhin den vollen Namen
+- 🗺️ **Kategorien nur in bestimmten Strukturkategorien** anbieten, optional inklusive Unterkategorien (`CategoryRepository::saveAreas()`)
+- 📊 **Nutzung je Modul** im Strukturbaum (Anzahl, ungenutzte rot) und in der Seitenleiste (Seiten mit Link in den Editiermodus)
+- 🧩 **17 neue Layout-Icons** (Downloads, Slideshow, Bild-Teaser, Seiten-Navigation, Zeitstrahl, Deko am Seitenrand, Begrüßung, Standorte, Kontakt, Kalender, Katalog mit Ort, Info-Karten, Mappe, WLAN, geschützter Bereich Beginn/Ende, Inhalt einbinden) – jetzt 50 Vorlagen
+- 📋 **SVG-Code einfügen** als eigenes Icon
+
+### Security
+- 🛡️ **SVG-Bereinigung** (`SvgSanitizer`) für alle eigenen Icons – Icon-Editor, eingefügter Code und `CustomIconRepository::save()`: Allowlist für Elemente/Attribute, entfernt Skripte, Event-Attribute, `foreignObject`, externe Verweise, `javascript:`/`data:`; DOCTYPE/Entities werden abgelehnt
+
+
 ## [1.0.0] - 2026-10-05
 
 ### Fixed
