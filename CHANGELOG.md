@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.0] - 2026-10-05
+
+### Added
+- ✏️ **Vektor-Editor** statt Mini-Editor – Aufbau wie MediaPlace (Werkzeuge, Zeichenfläche mit echtem Ergebnis, Eigenschaften, Vorschau), **Vollbild** (gemerkt), Mehrfachauswahl per Aufziehen/Umschalt, acht Anfasser, Zahlenfelder, Ausrichten/Verteilen, Ebenen, Kopieren/Einfügen, Rückgängig/Wiederholen, Raster und Einrasten
+- 🖼️ **Vorschaubilder zeichnen** (16:10) – automatisch dem Modul zugewiesen, in der Auswahl unter „Eigene Vorschaubilder“
+- 🧱 **Bausteine** – Navigation, Bühne, Bild + Text, Karte, 3 Karten, Galerie, Formularzeile, Zitat, Kennzahlen, Liste, Akkordeon, Fußzeile
+- 📐 **Vorlagen als Formen** – alle 67 Vorschau-Vorlagen (`assets/previews/<key>.json`) und eigene Werke laden und abwandeln; Icon-Vorlagen durchpausen
+- 🔁 **Wieder bearbeiten** – eigene Icons und Vorschaubilder speichern ihre Formen (Spalten `kind`, `shapes`), Bearbeiten-Knopf, „Als Kopie speichern“
+- 🎨 Neue Formen *Browserfenster* und Füllstil *Grau* (neutral, ohne Akzentfarbe)
+
+### Changed
+- Gelöschte eigene Vorschaubilder setzen betroffene Module auf „automatisch“ zurück
+
+
 ## [1.3.0] - 2026-10-05
 
 ### Added

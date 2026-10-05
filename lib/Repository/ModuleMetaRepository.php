@@ -158,6 +158,11 @@ class ModuleMetaRepository
             'UPDATE ' . rex::getTable('module_organizer_module') . ' SET icon_key = NULL WHERE icon_key = :key',
             ['key' => 'custom:' . $customIconId],
         );
+        // gezeichnete Vorschaubilder: zurück auf „automatisch“
+        $sql->setQuery(
+            'UPDATE ' . rex::getTable('module_organizer_module') . ' SET preview_key = NULL WHERE preview_key = :key',
+            ['key' => 'custom:' . $customIconId],
+        );
 
         self::$cache = null;
     }

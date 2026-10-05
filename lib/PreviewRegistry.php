@@ -2,6 +2,7 @@
 
 namespace KLXM\ModuleOrganizer;
 
+use KLXM\ModuleOrganizer\Repository\CustomIconRepository;
 use rex_addon;
 use rex_media;
 use rex_media_manager;
@@ -14,7 +15,8 @@ use rex_url;
  * Projektinhalte. Sie folgen dem Icon-Aufbau (currentColor + fill-opacity) und übernehmen so
  * Duotone-Palette und Kategorie-Farbe. Ohne eigene Wahl wird die Vorlage zum Icon genutzt.
  *
- * preview_key: null/'' = automatisch (aus dem Icon), 'none' = keins, Vorlagen-Schlüssel, 'media:<datei>'
+ * preview_key: null/'' = automatisch (aus dem Icon), 'none' = keins, Vorlagen-Schlüssel, 'media:<datei>',
+ * 'custom:<id>' = im Editor gezeichnetes Vorschaubild
  */
 final class PreviewRegistry
 {
@@ -61,6 +63,9 @@ final class PreviewRegistry
         if (str_starts_with($key, 'media:') && null !== rex_media::get(substr($key, 6))) {
             return $key;
         }
+        if (null !== self::custom($key)) {
+            return $key;
+        }
 
         return null;
     }
@@ -68,7 +73,7 @@ final class PreviewRegistry
     /**
      * Tatsächliches Vorschaubild eines Moduls.
      *
-     * @return array{type: string, key?: string, url?: string}|null type: preset | media
+     * @return array{type: string, key?: string, url?: string, svg?: string}|null type: preset | media | custom
      */
     public static function resolve(?string $previewKey, ?string $iconKey): ?array
     {
@@ -85,8 +90,24 @@ final class PreviewRegistry
 
             return ['type' => 'media', 'url' => $isSvg ? rex_url::media($file) : rex_media_manager::getUrl('rex_media_medium', $file)];
         }
+        $custom = self::custom($previewKey);
+        if (null !== $custom) {
+            // bereits beim Speichern bereinigt (SvgSanitizer)
+            return ['type' => 'custom', 'svg' => $custom['svg']];
+        }
         $key = '' !== $previewKey ? $previewKey : (string) $iconKey;
 
         return in_array($key, self::getPresetKeys(), true) ? ['type' => 'preset', 'key' => $key] : null;
+    }
+
+    /** @return array{id: int, title: ?string, svg: string, kind: string, shapes: ?string}|null */
+    private static function custom(string $key): ?array
+    {
+        if (!preg_match('/^custom:(\d+)$/', $key, $m)) {
+            return null;
+        }
+        $item = CustomIconRepository::get((int) $m[1]);
+
+        return null !== $item && 'preview' === $item['kind'] ? $item : null;
     }
 }

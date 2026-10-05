@@ -31,9 +31,10 @@ class PreviewCustomIcon extends rex_api_function
         }
 
         $rawShapes = json_decode(rex_request('shapes', 'string', ''), true);
-        $shapes = CustomIconRenderer::sanitizeShapes($rawShapes);
+        $kind = 'preview' === rex_request('kind', 'string', 'icon') ? 'preview' : 'icon';
+        $shapes = CustomIconRenderer::sanitizeShapes($rawShapes, $kind);
 
-        $svg = CustomIconRenderer::render($shapes);
+        $svg = CustomIconRenderer::render($shapes, $kind);
 
         rex_response::sendJson(['success' => true, 'svg' => $svg]);
         exit;

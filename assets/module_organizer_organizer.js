@@ -276,6 +276,8 @@
         var previewSelect = document.getElementById('mo-field-preview');
         var previewThumb = document.getElementById('mo-preview-thumb');
         var previewsUrl = root ? root.getAttribute('data-previews-url') : '';
+        var customPreviews = {};
+        try { customPreviews = JSON.parse((root && root.getAttribute('data-custom-previews')) || '{}') || {}; } catch (e) { customPreviews = {}; }
         function renderPreviewThumb(data) {
             if (!previewThumb) {
                 return;
@@ -290,6 +292,12 @@
                 img.src = 'index.php?rex_media_type=rex_media_medium&rex_media_file=' + encodeURIComponent(key.slice(6));
                 img.alt = '';
                 previewThumb.appendChild(img);
+                return;
+            }
+            if (0 === key.indexOf('custom:')) {
+                var own = customPreviews[key.slice(7)];
+                // bereits beim Speichern bereinigt (SvgSanitizer)
+                previewThumb.innerHTML = own ? own.svg : '';
                 return;
             }
             var preset = key || data.icon_key || '';
@@ -315,6 +323,11 @@
                 previewSelect.value = key;
             }
             renderPreviewThumb(data);
+            var editBtn = document.getElementById('mo-preview-edit');
+            if (editBtn) {
+                var own = 0 === key.indexOf('custom:') ? customPreviews[key.slice(7)] : null;
+                editBtn.hidden = !own || !own.shapes;
+            }
         }
         function savePreview(key) {
             if (!activeModuleId) {
@@ -323,7 +336,7 @@
             var data = modules[activeModuleId] || {};
             data.preview_key = key || null;
             setPreviewField(data);
-            fetch('index.php', {
+            return fetch('index.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'rex-api-call=module_organizer_save_preview&module_id=' + encodeURIComponent(activeModuleId) + '&preview_key=' + encodeURIComponent(key || '')
@@ -336,6 +349,44 @@
                 }
             });
         }
+        // ---- Vorschaubild im Editor zeichnen / bearbeiten ----
+        function openPreviewEditor(options) {
+            if (typeof MOIconEditor === 'undefined' || !activeModuleId) {
+                return;
+            }
+            MOIconEditor.open(function (id) {
+                var saving = savePreview('custom:' + id);
+                (saving || Promise.resolve()).then(persistSelectionAndReload, persistSelectionAndReload);
+            }, options);
+        }
+        var previewDraw = document.getElementById('mo-preview-draw');
+        if (previewDraw) {
+            previewDraw.addEventListener('click', function () { openPreviewEditor({ kind: 'preview' }); });
+        }
+        var previewEdit = document.getElementById('mo-preview-edit');
+        if (previewEdit) {
+            previewEdit.addEventListener('click', function () {
+                var key = previewSelect ? previewSelect.value : '';
+                var own = 0 === key.indexOf('custom:') ? customPreviews[key.slice(7)] : null;
+                if (own) {
+                    openPreviewEditor({ kind: 'preview', id: parseInt(key.slice(7), 10), title: own.title, shapes: own.shapes || [] });
+                }
+            });
+        }
+        // ---- eigenes Icon bearbeiten ----
+        document.addEventListener('click', function (event) {
+            var btn = event.target.closest('.mo-custom-icon-edit');
+            if (!btn || typeof MOIconEditor === 'undefined') {
+                return;
+            }
+            event.preventDefault();
+            var shapes = [];
+            try { shapes = JSON.parse(btn.getAttribute('data-shapes') || '[]'); } catch (e) { shapes = []; }
+            MOIconEditor.open(function () {
+                persistSelectionAndReload();
+            }, { kind: 'icon', id: parseInt(btn.getAttribute('data-custom-icon-id'), 10), title: btn.getAttribute('data-title') || '', shapes: shapes });
+        });
+
         var previewMediaPick = document.getElementById('mo-preview-media-pick');
         if (previewMediaPick) {
             previewMediaPick.addEventListener('click', function () {

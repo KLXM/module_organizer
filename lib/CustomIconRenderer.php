@@ -19,13 +19,29 @@ class CustomIconRenderer
     public const MAX_SHAPES = 16;
 
     /**
+     * Zeichenflächen: Icon (24×18) und Vorschaubild (32×20 = 16:10, wie die Vorschau-Vorlagen).
+     * [Breite, Höhe, max. Formen, Strichstärken-Faktor]
+     *
+     * @var array<string, array{0: int, 1: int, 2: int, 3: float}>
+     */
+    public const KINDS = [
+        'icon' => [24, 18, 16, 1.0],
+        'preview' => [32, 20, 60, 0.4],
+    ];
+
+    /** Strichstärken-Faktor der aktuellen Zeichenfläche (Vorschaubilder zeichnen feiner) */
+    private static float $strokeScale = 1.0;
+    private static string $kind = 'icon';
+
+    /**
      * Füllstile je Form – passend zur Duotone-Konvention der Vorlagen-Icons:
      * outline = nur Kontur, soft = zarte Fläche (fill-opacity < .18 → Hauch der Akzentfarbe),
-     * accent = kräftige Fläche (fill-opacity ≥ .18 → Akzentfarbe), solid = volle Konturfarbe.
+     * accent = kräftige Fläche (fill-opacity ≥ .18 → Akzentfarbe), solid = volle Konturfarbe,
+     * muted = graue Fläche ohne Akzent (opacity statt fill-opacity – Duotone färbt sie nicht).
      *
      * @var list<string>
      */
-    public const STYLES = ['outline', 'soft', 'accent', 'solid'];
+    public const STYLES = ['outline', 'soft', 'accent', 'solid', 'muted'];
 
     /** @var list<string> Formen aus zwei Punkten statt Box */
     public const LINE_TYPES = ['line', 'arrow'];
@@ -33,7 +49,7 @@ class CustomIconRenderer
     /** @return list<string> */
     public static function getValidTypes(): array
     {
-        return ['text', 'heading', 'image', 'video', 'media', 'form', 'rect', 'circle', 'button', 'star', 'pin', 'check', 'line', 'arrow'];
+        return ['text', 'heading', 'image', 'video', 'media', 'form', 'rect', 'circle', 'button', 'star', 'pin', 'check', 'browser', 'line', 'arrow'];
     }
 
     /** Vorgabe-Stil, wenn der Client keinen (gültigen) liefert */
@@ -41,6 +57,7 @@ class CustomIconRenderer
     {
         return match ($type) {
             'heading' => 'solid',
+            'browser' => 'muted',
             'button', 'star', 'pin', 'check' => 'accent',
             'line', 'arrow', 'text' => 'solid',
             default => 'soft',
@@ -51,17 +68,18 @@ class CustomIconRenderer
      * @param mixed $shapes rohe, noch ungeprüfte Client-Eingabe (json_decode-Ergebnis)
      * @return list<array{x: float, y: float, w: float, h: float, type: string, style: string, x2?: float, y2?: float}>
      */
-    public static function sanitizeShapes($shapes): array
+    public static function sanitizeShapes($shapes, string $kind = 'icon'): array
     {
         if (!is_array($shapes)) {
             return [];
         }
+        [$canvasW, $canvasH, $maxShapes] = self::KINDS[$kind] ?? self::KINDS['icon'];
 
         $validTypes = self::getValidTypes();
         $result = [];
 
         foreach ($shapes as $shape) {
-            if (count($result) >= self::MAX_SHAPES) {
+            if (count($result) >= $maxShapes) {
                 break;
             }
             if (!is_array($shape)) {
@@ -79,10 +97,10 @@ class CustomIconRenderer
             // Box - eigene, einfachere Validierung (nur Punkte in Canvas-
             // Grenzen klemmen, kein Mindest-Rechteck noetig).
             if (in_array($type, self::LINE_TYPES, true)) {
-                $x = self::clampFloat($shape['x'] ?? 0, 0, self::CANVAS_WIDTH);
-                $y = self::clampFloat($shape['y'] ?? 0, 0, self::CANVAS_HEIGHT);
-                $x2 = self::clampFloat($shape['x2'] ?? 0, 0, self::CANVAS_WIDTH);
-                $y2 = self::clampFloat($shape['y2'] ?? 0, 0, self::CANVAS_HEIGHT);
+                $x = self::clampFloat($shape['x'] ?? 0, 0, $canvasW);
+                $y = self::clampFloat($shape['y'] ?? 0, 0, $canvasH);
+                $x2 = self::clampFloat($shape['x2'] ?? 0, 0, $canvasW);
+                $y2 = self::clampFloat($shape['y2'] ?? 0, 0, $canvasH);
                 if (abs($x2 - $x) < 0.2 && abs($y2 - $y) < 0.2) {
                     continue;
                 }
@@ -90,14 +108,14 @@ class CustomIconRenderer
                 continue;
             }
 
-            $x = self::clampFloat($shape['x'] ?? 0, 0, self::CANVAS_WIDTH);
-            $y = self::clampFloat($shape['y'] ?? 0, 0, self::CANVAS_HEIGHT);
-            $w = self::clampFloat($shape['w'] ?? 0, 0.5, self::CANVAS_WIDTH);
-            $h = self::clampFloat($shape['h'] ?? 0, 0.5, self::CANVAS_HEIGHT);
+            $x = self::clampFloat($shape['x'] ?? 0, 0, $canvasW);
+            $y = self::clampFloat($shape['y'] ?? 0, 0, $canvasH);
+            $w = self::clampFloat($shape['w'] ?? 0, 0.5, $canvasW);
+            $h = self::clampFloat($shape['h'] ?? 0, 0.5, $canvasH);
 
             // Rechteck darf nicht ueber den Canvas-Rand hinausragen.
-            $w = min($w, self::CANVAS_WIDTH - $x);
-            $h = min($h, self::CANVAS_HEIGHT - $y);
+            $w = min($w, $canvasW - $x);
+            $h = min($h, $canvasH - $y);
             if ($w < 0.5 || $h < 0.5) {
                 continue;
             }
@@ -118,15 +136,26 @@ class CustomIconRenderer
     /**
      * @param list<array{x: float, y: float, w: float, h: float, type: string, style: string, x2?: float, y2?: float}> $shapes
      */
-    public static function render(array $shapes): string
+    public static function render(array $shapes, string $kind = 'icon'): string
     {
+        $kind = isset(self::KINDS[$kind]) ? $kind : 'icon';
+        [$canvasW, $canvasH, , $scale] = self::KINDS[$kind];
+        self::$strokeScale = $scale;
+        self::$kind = $kind;
         $body = '';
         foreach ($shapes as $shape) {
             $body .= self::renderShape($shape);
         }
+        self::$strokeScale = 1.0;
+        self::$kind = 'icon';
 
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' . self::CANVAS_WIDTH . ' ' . self::CANVAS_HEIGHT
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' . $canvasW . ' ' . $canvasH
             . '" role="img" aria-hidden="true">' . $body . '</svg>';
+    }
+
+    private static function sw(float $width): string
+    {
+        return self::num($width * self::$strokeScale);
     }
 
     /**
@@ -156,6 +185,7 @@ class CustomIconRenderer
             'star' => self::renderStar($x, $y, $w, $h, $style),
             'pin' => self::renderPin($x, $y, $w, $h, $style),
             'check' => self::renderCheck($x, $y, $w, $h, $style),
+            'browser' => self::renderBrowser($x, $y, $w, $h, $style),
             default => self::renderText($x, $y, $w, $h, $style),
         };
     }
@@ -167,11 +197,16 @@ class CustomIconRenderer
      */
     private static function paint(string $style): string
     {
+        // Vorschaubilder: Konturen zarter (wie die Vorlagen)
+        $soft = 'preview' === self::$kind ? ' stroke-opacity="0.4"' : '';
+        $width = 'preview' === self::$kind ? '0.1' : self::sw(0.6);
+
         return match ($style) {
-            'outline' => 'fill="none" stroke="currentColor" stroke-width="0.6"',
+            'outline' => 'fill="none" stroke="currentColor" stroke-width="' . $width . '"' . $soft,
             'accent' => 'fill="currentColor" fill-opacity="0.35"',
             'solid' => 'fill="currentColor"',
-            default => 'fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="0.6"',
+            'muted' => 'fill="currentColor" opacity="0.08"',
+            default => 'fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="' . $width . '"' . $soft,
         };
     }
 
@@ -186,6 +221,7 @@ class CustomIconRenderer
     {
         return match ($style) {
             'soft', 'outline' => ' stroke-opacity="0.55"',
+            'muted' => ' stroke-opacity="0.3"',
             default => '',
         };
     }
@@ -209,13 +245,26 @@ class CustomIconRenderer
 
     private static function renderImage(float $x, float $y, float $w, float $h, string $style): string
     {
+        if ('preview' === self::$kind) {
+            // Fotoplatzhalter wie die Vorschau-Vorlagen: Fläche, gefüllte Berge, Sonne rechts
+            $b = $y + $h;
+            $fill = 'solid' === $style ? 'fill="#fff" fill-opacity="0.35"' : 'fill="currentColor" fill-opacity="0.5"';
+
+            return self::rect($x, $y, $w, $h, self::paint($style))
+                . sprintf(
+                    '<path d="M%s %sL%s %sL%s %sL%s %sL%s %sZ" %s/>',
+                    self::num($x), self::num($b), self::num($x + $w * 0.3), self::num($y + $h * 0.45), self::num($x + $w * 0.5), self::num($y + $h * 0.7),
+                    self::num($x + $w * 0.68), self::num($y + $h * 0.5), self::num($x + $w), self::num($b), $fill,
+                )
+                . sprintf('<circle cx="%s" cy="%s" r="%s" %s/>', self::num($x + $w * 0.8), self::num($y + $h * 0.28), self::num(max(0.3, min($w, $h) * 0.09)), str_replace('0.5', '0.45', $fill));
+        }
         $svg = self::rect($x, $y, $w, $h, self::paint($style));
         $cx = $x + $w * 0.28;
         $cy = $y + $h * 0.3;
         $r = min($w, $h) * 0.12;
         $svg .= sprintf('<circle cx="%s" cy="%s" r="%s" fill="' . self::ink($style) . '"/>', self::num($cx), self::num($cy), self::num(max(0.3, $r)));
         $svg .= sprintf(
-            '<path d="M%s %sl%s -%sa1 1 0 0 1 1.4 0l%s %s" fill="none" stroke="' . self::ink($style) . '" stroke-width="0.6"/>',
+            '<path d="M%s %sl%s -%sa1 1 0 0 1 1.4 0l%s %s" fill="none" stroke="' . self::ink($style) . '" stroke-width="' . self::sw(0.6) . '"/>',
             self::num($x + $w * 0.08),
             self::num($y + $h * 0.85),
             self::num($w * 0.3),
@@ -271,7 +320,7 @@ class CustomIconRenderer
             self::num($w),
         );
         $svg .= sprintf(
-            '<path d="M%s %sv%sh%s" fill="none" stroke="' . self::ink($style) . '" stroke-width="0.5"/>',
+            '<path d="M%s %sv%sh%s" fill="none" stroke="' . self::ink($style) . '" stroke-width="' . self::sw(0.5) . '"/>',
             self::num($x + $w - $fold),
             self::num($y),
             self::num($fold),
@@ -279,7 +328,7 @@ class CustomIconRenderer
         );
         $lineY = $y + $h * 0.55;
         $svg .= sprintf(
-            '<path d="M%s %sh%sM%s %sh%s" stroke="' . self::ink($style) . '" stroke-width="0.6" stroke-linecap="round"/>',
+            '<path d="M%s %sh%sM%s %sh%s" stroke="' . self::ink($style) . '" stroke-width="' . self::sw(0.6) . '" stroke-linecap="round"/>',
             self::num($x + $w * 0.15),
             self::num($lineY),
             self::num($w * 0.7),
@@ -331,7 +380,7 @@ class CustomIconRenderer
             }
         }
 
-        return '<path d="' . $d . '" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round"' . self::strokeOpacity($style) . '/>';
+        return '<path d="' . $d . '" fill="none" stroke="currentColor" stroke-width="' . self::sw(0.9) . '" stroke-linecap="round" stroke-linejoin="round"' . self::strokeOpacity($style) . '/>';
     }
 
     private static function renderCircle(float $x, float $y, float $w, float $h, string $style): string
@@ -358,9 +407,9 @@ class CustomIconRenderer
             self::paint($style),
         );
         // Beschriftung als kurzer Strich in der Mitte (bei voller Fläche ausgespart)
-        if ($w >= 3 && 'solid' !== $style) {
+        if ($w >= 3 && 'solid' !== $style && 'icon' === self::$kind) {
             $svg .= sprintf(
-                '<path d="M%s %sh%s" stroke="currentColor" stroke-width="0.7" stroke-linecap="round"/>',
+                '<path d="M%s %sh%s" stroke="currentColor" stroke-width="' . self::sw(0.7) . '" stroke-linecap="round"/>',
                 self::num($x + $w * 0.3),
                 self::num($y + $h / 2),
                 self::num($w * 0.4),
@@ -385,7 +434,7 @@ class CustomIconRenderer
         );
         if ($h >= 2.5) {
             $svg .= sprintf(
-                '<path d="M%s %sh%s" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-opacity="0.55"/>',
+                '<path d="M%s %sh%s" stroke="currentColor" stroke-width="' . self::sw(0.7) . '" stroke-linecap="round" stroke-opacity="0.55"/>',
                 self::num($x + 0.35),
                 self::num($y + $h * 0.85),
                 self::num($w * 0.6),
@@ -456,7 +505,7 @@ class CustomIconRenderer
         // Kreis mit Haken
         $svg = self::renderCircle($x, $y, $w, $h, $style);
         $svg .= sprintf(
-            '<path d="M%s %sL%s %sL%s %s" fill="none" stroke="%s" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>',
+            '<path d="M%s %sL%s %sL%s %s" fill="none" stroke="%s" stroke-width="' . self::sw(0.8) . '" stroke-linecap="round" stroke-linejoin="round"/>',
             self::num($x + $w * 0.28),
             self::num($y + $h * 0.52),
             self::num($x + $w * 0.44),
@@ -469,8 +518,41 @@ class CustomIconRenderer
         return $svg;
     }
 
+    private static function renderBrowser(float $x, float $y, float $w, float $h, string $style): string
+    {
+        // Browserfenster: Rahmen, Titelleiste mit drei Punkten und Adresszeile
+        $bar = min($h * 0.2, 'preview' === self::$kind ? 1.6 : 2.4);
+        $svg = self::rect($x, $y, $w, $h, self::paint($style));
+        $svg .= sprintf('<rect x="%s" y="%s" width="%s" height="%s" rx="0.6" fill="none" stroke="currentColor" stroke-width="' . self::sw(0.6) . '" stroke-opacity="0.35"/>', self::num($x), self::num($y), self::num($w), self::num($h));
+        $svg .= sprintf('<path d="M%s %sh%s" stroke="currentColor" stroke-width="' . self::sw(0.4) . '" stroke-opacity="0.3"/>', self::num($x), self::num($y + $bar), self::num($w));
+        $r = $bar * 0.16;
+        for ($i = 0; $i < 3; ++$i) {
+            $svg .= sprintf('<circle cx="%s" cy="%s" r="%s" fill="currentColor" opacity="0.4"/>', self::num($x + $bar * 0.6 + $i * $r * 3.4), self::num($y + $bar / 2), self::num($r));
+        }
+        $svg .= sprintf('<rect x="%s" y="%s" width="%s" height="%s" rx="%s" fill="currentColor" opacity="0.15"/>', self::num($x + $bar * 0.6 + $r * 10), self::num($y + $bar * 0.36), self::num(min($w * 0.3, 9)), self::num($bar * 0.28), self::num($bar * 0.14));
+
+        return $svg;
+    }
+
     private static function renderText(float $x, float $y, float $w, float $h, string $style): string
     {
+        if ('preview' === self::$kind) {
+            // Vorschaubild: Zeilen im festen Abstand, so viele wie in die Höhe passen
+            $gap = 0.9;
+            $lines = max(1, min(14, (int) floor(($h - 0.2) / $gap) + 1));
+            $svg = '';
+            for ($i = 0; $i < $lines; ++$i) {
+                $svg .= sprintf(
+                    '<path d="M%s %sh%s" stroke="currentColor" stroke-width="' . self::sw(0.9) . '" stroke-linecap="round"%s/>',
+                    self::num($x + 0.2),
+                    self::num($y + 0.2 + $gap * $i),
+                    self::num(max(0.1, $w * ($i === $lines - 1 && $lines > 1 ? 0.62 : 1) - 0.4)),
+                    self::strokeOpacity($style),
+                );
+            }
+
+            return $svg;
+        }
         $lines = 3;
         $gap = $h / ($lines + 0.5);
         $svg = '';
@@ -478,7 +560,7 @@ class CustomIconRenderer
             $lineY = $y + $gap * ($i + 0.7);
             $lineW = $w * (2 === $i ? 0.6 : 1);
             $svg .= sprintf(
-                '<path d="M%s %sh%s" stroke="currentColor" stroke-width="0.9" stroke-linecap="round"%s/>',
+                '<path d="M%s %sh%s" stroke="currentColor" stroke-width="' . self::sw(0.9) . '" stroke-linecap="round"%s/>',
                 self::num($x),
                 self::num($lineY),
                 self::num($lineW),

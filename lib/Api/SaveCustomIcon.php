@@ -32,6 +32,8 @@ class SaveCustomIcon extends rex_api_function
         }
 
         $id = rex_request('id', 'int', 0);
+        $kind = 'preview' === rex_request('kind', 'string', 'icon') ? 'preview' : 'icon';
+        $shapesJson = null;
         $title = rex_request('title', 'string', '');
         $rawSvg = rex_request('svg', 'string', '');
 
@@ -40,18 +42,21 @@ class SaveCustomIcon extends rex_api_function
             $svg = $rawSvg;
         } else {
             $rawShapes = json_decode(rex_request('shapes', 'string', ''), true);
-            $shapes = CustomIconRenderer::sanitizeShapes($rawShapes);
+            $shapes = CustomIconRenderer::sanitizeShapes($rawShapes, $kind);
 
             if ([] === $shapes) {
                 rex_response::sendJson(['success' => false, 'error' => 'no_shapes']);
                 exit;
             }
 
-            $svg = CustomIconRenderer::render($shapes);
+            $svg = CustomIconRenderer::render($shapes, $kind);
+            $shapesJson = (string) json_encode($shapes);
         }
 
         try {
-            $savedId = CustomIconRepository::save($id > 0 ? $id : null, $title, $svg);
+            // vorhandenes Werk nur mit gleicher Art überschreiben, sonst neu anlegen
+            $existing = $id > 0 ? CustomIconRepository::get($id) : null;
+            $savedId = CustomIconRepository::save(null !== $existing && $existing['kind'] === $kind ? $id : null, $title, $svg, $kind, $shapesJson);
         } catch (\InvalidArgumentException) {
             rex_response::sendJson(['success' => false, 'error' => 'invalid_svg']);
             exit;
