@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.1] - 2026-10-05
+
+### Added
+- 🧩 **Icon-Vorlagen als Formen** – alle 67 Icon-Vorlagen lassen sich im Editor laden (`assets/icons/layout-<key>.json`); geschwungene Teile, die es nicht als Form gibt, werden beim Laden automatisch zum Durchpausen eingeblendet
+- 🔀 **Umschalter Icon | Vorschaubild** in der Kopfleiste des Editors (bei neuen Werken); vorhandene Formen werden auf die neue Fläche umgerechnet, gespeichert wird je nach Wahl als Icon oder als Vorschaubild des Moduls
+
+### Fixed
+- Nach dem Speichern eines Icons wird erst die Zuweisung gespeichert, dann neu geladen
+
+
 ## [1.4.0] - 2026-10-05
 
 ### Added
