@@ -1,5 +1,5 @@
 package: module_organizer
-version: '1.1.0'
+version: '1.2.0'
 author: KLXM Crossmedia GmbH
 supportpage: https://github.com/KLXM/module_organizer
 
@@ -26,3 +26,5 @@ requires:
 default_config:
     warn_module_preview_conflict: true
     display_mode: popover
+    icon_style: mono
+    icon_palette: redaxo

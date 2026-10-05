@@ -78,6 +78,8 @@ foreach ($items as $item) {
         'category_name' => null !== $categoryId ? ($categoryNames[$categoryId] ?? null) : null,
         // Reihenfolge der Kategorien wie im Organizer-Strukturbaum (nicht alphabetisch)
         'category_priority' => null !== $categoryId ? (int) ($categoryPriorities[$categoryId] ?? 0) : 0,
+        // Akzentfarbe der Kategorie (Duotone)
+        'category_color' => null !== $categoryId && isset($categoriesById[$categoryId]) ? $categoriesById[$categoryId]['color'] : '',
         // is_favorite = global (admin-gepflegt) ODER persoenlich durch den
         // aktuellen User markiert - beide erscheinen gemeinsam in der
         // Favoriten-Gruppe der Blockauswahl. is_global_favorite bleibt

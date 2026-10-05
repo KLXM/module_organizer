@@ -17,6 +17,18 @@ if (rex::isBackend() && rex::getUser()) {
     $bust = $bust->bindTo($this);
 
     $isContentEdit = 'index.php?page=content/edit' === rex_url::currentBackendPage();
+
+    // Icon-Stil Duotone: Klasse und Farben am body – gilt für Popover, Overlay und die Organizer-Seite
+    if (\KLXM\ModuleOrganizer\IconStyle::isDuotone()) {
+        rex_extension::register('PAGE_BODY_ATTR', static function (rex_extension_point $ep): array {
+            $attr = $ep->getSubject();
+            $attr['class'][] = 'mo-icons-duotone';
+            // der Core gibt Body-Attribute nur als Array aus (Werte mit Leerzeichen verbunden)
+            $attr['style'] = (array) ($attr['style'] ?? []);
+            $attr['style'][] = \KLXM\ModuleOrganizer\IconStyle::bodyStyle() . ';';
+            return $attr;
+        });
+    }
     $isOwnPage = str_starts_with((string) rex_request('page', 'string', ''), 'modules/organizer');
 
     if ($isContentEdit) {

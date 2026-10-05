@@ -219,6 +219,10 @@
             row.appendChild(favBtn);
         }
 
+        // Duotone: Akzentfarbe der Kategorie
+        if (item.category_color) {
+            iconWrap.style.setProperty('--mo-icon-accent', item.category_color);
+        }
         if (item.icon_key && item.icon_key.indexOf('media:') === 0) {
             var filename = item.icon_key.slice('media:'.length);
             var img = document.createElement('img');

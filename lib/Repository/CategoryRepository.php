@@ -8,7 +8,7 @@ use rex_sql;
 class CategoryRepository
 {
     /**
-     * @return list<array{id: int, name: string, priority: int, structure_ids: list<int>, structure_children: bool}>
+     * @return list<array{id: int, name: string, priority: int, structure_ids: list<int>, structure_children: bool, color: string}>
      */
     public static function getAll(): array
     {
@@ -24,6 +24,7 @@ class CategoryRepository
                 'priority' => (int) $row['priority'],
                 'structure_ids' => array_values(array_filter(array_map('intval', explode(',', (string) ($row['structure_ids'] ?? ''))))),
                 'structure_children' => (bool) ($row['structure_children'] ?? true),
+                'color' => \KLXM\ModuleOrganizer\IconStyle::color((string) ($row['color'] ?? '')),
             ];
         }
 
@@ -43,6 +44,18 @@ class CategoryRepository
         $sql->setWhere(['id' => $id]);
         $sql->setValue('structure_ids', [] !== $ids ? implode(',', $ids) : null);
         $sql->setValue('structure_children', $includeChildren ? 1 : 0);
+        $sql->addGlobalUpdateFields();
+        $sql->update();
+    }
+
+    /** Akzentfarbe der Icons dieser Kategorie (Duotone), leer = Palette */
+    public static function saveColor(int $id, string $color): void
+    {
+        $color = \KLXM\ModuleOrganizer\IconStyle::color($color);
+        $sql = rex_sql::factory();
+        $sql->setTable(rex::getTable('module_organizer_category'));
+        $sql->setWhere(['id' => $id]);
+        $sql->setValue('color', '' !== $color ? $color : null);
         $sql->addGlobalUpdateFields();
         $sql->update();
     }
