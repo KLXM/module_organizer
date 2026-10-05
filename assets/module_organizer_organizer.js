@@ -165,6 +165,87 @@
             });
         }
 
+        // ---- Bereiche: Kategorie nur in bestimmten Strukturkategorien anbieten ----
+        document.addEventListener('click', function (event) {
+            var toggle = event.target.closest('.mo-tree-category-areas');
+            var saveBtn = event.target.closest('.mo-areas-save');
+            var resetBtn = event.target.closest('.mo-areas-reset');
+            if (!toggle && !saveBtn && !resetBtn) {
+                return;
+            }
+            event.preventDefault();
+            var categoryEl = event.target.closest('.mo-tree-category');
+            var panel = categoryEl.querySelector('.mo-tree-category-areas-panel');
+            if (toggle) {
+                panel.hidden = !panel.hidden;
+                toggle.setAttribute('aria-expanded', panel.hidden ? 'false' : 'true');
+                return;
+            }
+            var select = panel.querySelector('select');
+            if (resetBtn) {
+                Array.prototype.forEach.call(select.options, function (o) { o.selected = false; });
+            }
+            var body = 'rex-api-call=module_organizer_category&op=areas&id=' + encodeURIComponent(categoryEl.getAttribute('data-category-id'))
+                + '&structure_children=' + (panel.querySelector('.mo-areas-children').checked ? '1' : '0');
+            Array.prototype.forEach.call(select.selectedOptions, function (o) {
+                body += '&structure_ids[]=' + encodeURIComponent(o.value);
+            });
+            fetch('index.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body
+            }).then(function (response) {
+                return response.json();
+            }).then(function (result) {
+                if (result && result.success) {
+                    persistSelectionAndReload();
+                }
+            });
+        });
+
+        // ---- SVG-Code einfügen (serverseitig bereinigt, siehe lib/SvgSanitizer.php) ----
+        var svgPasteOpen = document.getElementById('mo-svg-paste-open');
+        var svgPaste = document.getElementById('mo-svg-paste');
+        if (svgPasteOpen && svgPaste) {
+            var svgCode = document.getElementById('mo-svg-paste-code');
+            var svgTitle = document.getElementById('mo-svg-paste-title');
+            var svgError = document.getElementById('mo-svg-paste-error');
+            var toggleSvgPaste = function (show) {
+                svgPaste.hidden = !show;
+                svgPasteOpen.setAttribute('aria-expanded', show ? 'true' : 'false');
+                svgError.hidden = true;
+                if (show) {
+                    svgCode.focus();
+                }
+            };
+            svgPasteOpen.addEventListener('click', function () { toggleSvgPaste(svgPaste.hidden); });
+            document.getElementById('mo-svg-paste-cancel').addEventListener('click', function () { toggleSvgPaste(false); });
+            document.getElementById('mo-svg-paste-save').addEventListener('click', function () {
+                if (!activeModuleId || '' === svgCode.value.trim()) {
+                    return;
+                }
+                fetch('index.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'rex-api-call=module_organizer_save_custom_icon'
+                        + '&svg=' + encodeURIComponent(svgCode.value)
+                        + '&title=' + encodeURIComponent(svgTitle.value)
+                }).then(function (response) {
+                    return response.json();
+                }).then(function (result) {
+                    if (result && result.success) {
+                        mediaIconKey = 'custom:' + result.id;
+                        saveMeta();
+                        persistSelectionAndReload();
+                    } else {
+                        svgError.hidden = false;
+                    }
+                }).catch(function () {
+                    svgError.hidden = false;
+                });
+            });
+        }
+
         document.addEventListener('click', function (event) {
             var deleteBtn = event.target.closest('.mo-custom-icon-delete');
             if (!deleteBtn) {
@@ -189,6 +270,44 @@
         // Eigenschaften, kein Seitenwechsel noetig). Die Kategorie-Zuordnung
         // wird NICHT hier gepflegt, sondern rein durch die Baum-Position
         // (Drag&Drop) bestimmt. ----
+        // Nutzung des Moduls: Anzahl und Seiten (Links in den Editiermodus)
+        function renderUsage(usage) {
+            var box = document.getElementById('mo-usage');
+            if (!box) {
+                return;
+            }
+            box.innerHTML = '';
+            var head = document.createElement('p');
+            head.className = 'mo-usage-head';
+            head.textContent = usage.count > 0
+                ? box.getAttribute('data-label-count').replace('{0}', usage.count).replace('{1}', usage.pages.length)
+                : box.getAttribute('data-label-none');
+            box.appendChild(head);
+            if (!usage.pages.length) {
+                return;
+            }
+            var list = document.createElement('ul');
+            list.className = 'mo-usage-list';
+            usage.pages.forEach(function (page) {
+                var li = document.createElement('li');
+                var a = document.createElement('a');
+                a.href = page.url;
+                a.textContent = page.name;
+                li.appendChild(a);
+                if (page.n > 1) {
+                    li.appendChild(document.createTextNode(' (' + page.n + '×)'));
+                }
+                list.appendChild(li);
+            });
+            box.appendChild(list);
+            if (usage.pages.length >= 30) {
+                var more = document.createElement('p');
+                more.className = 'help-block';
+                more.textContent = box.getAttribute('data-label-more');
+                box.appendChild(more);
+            }
+        }
+
         function selectModule(moduleId) {
             var data = modules[moduleId];
             if (!data) {
@@ -201,6 +320,7 @@
             sidebarTitle.textContent = data.name;
             fieldFavorite.checked = !!data.is_favorite;
             fieldDescription.value = data.description || '';
+            renderUsage(data.usage || { count: 0, pages: [] });
 
             var iconKey = data.icon_key || '';
             var isMediaIcon = iconKey.indexOf('media:') === 0;

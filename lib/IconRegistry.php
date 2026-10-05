@@ -64,6 +64,23 @@ class IconRegistry
             'social' => 'Social Media',
             'breadcrumb' => 'Breadcrumb',
             'sidebar' => 'Sidebar-Layout',
+            'downloads' => 'Downloads',
+            'slideshow' => 'Slideshow',
+            'image-teaser' => 'Bild-Teaser',
+            'page-nav' => 'Seiten-Navigation',
+            'timeline' => 'Zeitstrahl',
+            'side-decoration' => 'Deko am Seitenrand',
+            'greeting' => 'Begrüßung',
+            'locations' => 'Standorte',
+            'contact' => 'Kontakt & Anfahrt',
+            'calendar' => 'Kalender',
+            'catalog' => 'Katalog mit Ort',
+            'restricted-start' => 'Geschützter Bereich (Beginn)',
+            'wifi' => 'WLAN',
+            'restricted-end' => 'Geschützter Bereich (Ende)',
+            'info-cards' => 'Info-Karten',
+            'folder' => 'Mappe / Themen',
+            'embed' => 'Inhalt einbinden',
         ];
     }
 

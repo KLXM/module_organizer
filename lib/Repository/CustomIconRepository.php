@@ -53,8 +53,19 @@ class CustomIconRepository
         ];
     }
 
+    /**
+     * Speichert ein Icon. Das SVG wird immer bereinigt (SvgSanitizer) – egal ob es aus dem Icon-Editor,
+     * aus eingefügtem SVG-Code oder aus einem Setup-Skript kommt.
+     *
+     * @throws \InvalidArgumentException wenn kein gültiges SVG übrig bleibt
+     */
     public static function save(?int $id, ?string $title, string $svg): int
     {
+        $svg = \KLXM\ModuleOrganizer\SvgSanitizer::sanitize($svg);
+        if (null === $svg) {
+            throw new \InvalidArgumentException('Invalid SVG');
+        }
+
         $sql = rex_sql::factory();
         $sql->setTable(rex::getTable('module_organizer_custom_icon'));
         $sql->setValue('title', '' !== trim((string) $title) ? trim((string) $title) : null);

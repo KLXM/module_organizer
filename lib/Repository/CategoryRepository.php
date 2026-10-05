@@ -8,12 +8,12 @@ use rex_sql;
 class CategoryRepository
 {
     /**
-     * @return list<array{id: int, name: string, priority: int}>
+     * @return list<array{id: int, name: string, priority: int, structure_ids: list<int>, structure_children: bool}>
      */
     public static function getAll(): array
     {
         $rows = rex_sql::factory()->getArray(
-            'SELECT id, name, priority FROM ' . rex::getTable('module_organizer_category') . ' ORDER BY priority, name',
+            'SELECT * FROM ' . rex::getTable('module_organizer_category') . ' ORDER BY priority, name',
         );
 
         $result = [];
@@ -22,10 +22,47 @@ class CategoryRepository
                 'id' => (int) $row['id'],
                 'name' => (string) $row['name'],
                 'priority' => (int) $row['priority'],
+                'structure_ids' => array_values(array_filter(array_map('intval', explode(',', (string) ($row['structure_ids'] ?? ''))))),
+                'structure_children' => (bool) ($row['structure_children'] ?? true),
             ];
         }
 
         return $result;
+    }
+
+    /**
+     * Kategorie nur in bestimmten Strukturkategorien anbieten (leer = überall).
+     *
+     * @param list<int> $structureIds
+     */
+    public static function saveAreas(int $id, array $structureIds, bool $includeChildren): void
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $structureIds))));
+        $sql = rex_sql::factory();
+        $sql->setTable(rex::getTable('module_organizer_category'));
+        $sql->setWhere(['id' => $id]);
+        $sql->setValue('structure_ids', [] !== $ids ? implode(',', $ids) : null);
+        $sql->setValue('structure_children', $includeChildren ? 1 : 0);
+        $sql->addGlobalUpdateFields();
+        $sql->update();
+    }
+
+    /**
+     * Ist eine Kategorie in der Strukturkategorie $categoryId (inkl. Pfad) verfügbar?
+     *
+     * @param array{structure_ids: list<int>, structure_children: bool} $category
+     * @param list<int> $path Elternkategorien der aktuellen Kategorie (von oben)
+     */
+    public static function isAvailableIn(array $category, int $categoryId, array $path): bool
+    {
+        if ([] === $category['structure_ids']) {
+            return true;
+        }
+        if (in_array($categoryId, $category['structure_ids'], true)) {
+            return true;
+        }
+
+        return $category['structure_children'] && [] !== array_intersect($path, $category['structure_ids']);
     }
 
     public static function save(?int $id, string $name, int $priority): void

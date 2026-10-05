@@ -12,6 +12,12 @@ module_organizer_display_mode_overlay = Overlay (großes Kachel-Fenster)
 module_organizer_display_mode_overlay_notice = Zentriertes Fenster mit Kachel-Grid und Sidebar-Filtern, ähnlich MediaPlace.
 module_organizer_warn_module_preview_conflict = Warnung anzeigen, wenn ein konkurrierendes Addon (module_preview, nv_modulepreview) aktiv ist
 module_organizer_save = Speichern
+module_organizer_title_prefix = Modulnamen in der Blockauswahl
+module_organizer_strip_title_prefix = Nummern-Präfix ausblenden (z. B. „001 :: Text & Medien“ → „Text & Medien“)
+module_organizer_title_prefix_pattern = Eigene Regel (regulärer Ausdruck, optional)
+module_organizer_title_prefix_pattern_notice = Was am Anfang des Namens passt, wird in der Blockauswahl ausgeblendet – ohne Begrenzer, z. B. <code>^\[\w+\]\s*</code> für „[hero] Bühne“. Leer = Standardregel (Nummern mit „::“, „-“, „|“, „.“ oder „:“). Die Suche findet Module weiterhin auch über den vollen Namen.
+module_organizer_title_prefix_preview = Vorschau:
+module_organizer_title_prefix_pattern_invalid = Die Regel ist kein gültiger regulärer Ausdruck und wurde nicht gespeichert.
 
 # Konflikt-Warnung
 module_organizer_conflict_warning = <strong>Konflikt erkannt:</strong> Folgende Addon(s) überschreiben ebenfalls die Modul-Auswahl im Content-Editor per Extension Point und würden das Kachel-Overlay von Module Organizer wieder überschreiben: <strong>%s</strong>. Bitte deaktivieren, damit das Overlay im Content-Editor sichtbar wird.
@@ -22,8 +28,12 @@ module_organizer_sidebar_empty_hint = Modul im Baum anklicken, um Favorit, Besch
 module_organizer_meta_saved = Gespeichert.
 module_organizer_no_category = Ohne Kategorie
 module_organizer_favorite = Als Favorit vorne einsortieren
+module_organizer_usage_title = {0}× eingesetzt
+module_organizer_usage_none = Wird noch nirgends verwendet.
+module_organizer_usage_count = {0}× eingesetzt, auf {1} Seite(n):
+module_organizer_usage_more = Es werden die ersten 30 Seiten gezeigt.
 module_organizer_description = Beschreibung (optional)
-module_organizer_description_notice = Kurzer Hinweistext, erscheint im Overlay als Tooltip.
+module_organizer_description_notice = Kurzer Hinweistext, erscheint in der Blockauswahl unter dem Namen und wird von der Suche erfasst.
 module_organizer_icon = Layout-Vorschau-Icon (optional)
 module_organizer_no_icon = — keins —
 module_organizer_icon_media_pick = Eigenes Bild aus MediaPlace wählen
@@ -33,6 +43,11 @@ module_organizer_icon_editor_title = Icon zeichnen
 module_organizer_icon_editor_hint = Rechteck oder Linie auf die Fläche ziehen, verschieben oder in der Größe ändern. Bis zu 8 Bereiche möglich. Die Vorschau rechts zeigt das tatsächliche Ergebnis.
 module_organizer_icon_editor_cancel = Abbrechen
 module_organizer_icon_editor_save = Icon speichern
+module_organizer_icon_svg_paste_open = SVG-Code einfügen
+module_organizer_icon_svg_paste_title = Name des Icons
+module_organizer_icon_svg_paste_code = SVG-Code
+module_organizer_icon_svg_paste_notice = Am besten viewBox="0 0 24 18" und currentColor, dann passt das Icon zu Hell- und Dunkelmodus. Skripte, Event-Attribute und externe Verweise werden beim Speichern entfernt.
+module_organizer_icon_svg_paste_invalid = Kein gültiges SVG – bitte den kompletten &lt;svg&gt;…&lt;/svg&gt;-Code einfügen.
 module_organizer_icon_editor_delete_shape = Bereich löschen
 module_organizer_icon_editor_clear = Alles löschen
 module_organizer_icon_editor_preview_label = Vorschau
@@ -52,6 +67,12 @@ module_organizer_category_rename = Kategorie umbenennen
 module_organizer_category_name_prompt = Name der Kategorie:
 module_organizer_category_delete_confirm = Kategorie wirklich löschen? Enthaltene Module werden zu "Ohne Kategorie" verschoben.
 module_organizer_delete = Löschen
+module_organizer_category_areas = Bereiche: nur in bestimmten Strukturkategorien anbieten
+module_organizer_category_areas_only = Nur in diesen Strukturkategorien
+module_organizer_category_areas_label = Nur in diesen Strukturkategorien anbieten
+module_organizer_category_areas_children = Auch in deren Unterkategorien
+module_organizer_category_areas_notice = Nichts ausgewählt = überall. Module dieser Kategorie erscheinen in der Blockauswahl nur in den gewählten Bereichen – z. B. Blöcke für eine Gästemappe nur dort. Bereits eingesetzte Blöcke bleiben unverändert.
+module_organizer_category_areas_reset = Überall anbieten
 module_organizer_name = Name
 
 # Popover/Overlay in der Blockauswahl (assets/module_organizer*.js)

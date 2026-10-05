@@ -27,6 +27,34 @@ $rows = rex_sql::factory()->getArray($sql);
 $meta = ModuleMetaRepository::getAllIndexedByModuleId();
 $categories = CategoryRepository::getAll();
 
+// Nutzung: wie oft und auf welchen Seiten jedes Modul eingesetzt ist (nur Live-Version, keine Arbeitsversion)
+$usage = [];
+$usageRows = rex_sql::factory()->getArray(
+    'SELECT s.module_id, s.article_id, s.clang_id, COUNT(*) AS n
+     FROM ' . rex::getTable('article_slice') . ' s
+     WHERE s.revision = 0
+     GROUP BY s.module_id, s.article_id, s.clang_id
+     ORDER BY s.article_id',
+);
+foreach ($usageRows as $usageRow) {
+    $moduleId = (int) $usageRow['module_id'];
+    $usage[$moduleId] ??= ['count' => 0, 'pages' => []];
+    $usage[$moduleId]['count'] += (int) $usageRow['n'];
+    if (count($usage[$moduleId]['pages']) < 30) {
+        $article = rex_article::get((int) $usageRow['article_id'], (int) $usageRow['clang_id']);
+        if (null !== $article) {
+            $usage[$moduleId]['pages'][] = [
+                // Kategorie dazu, damit gleichnamige Seiten unterscheidbar sind
+                'name' => $article->getName()
+                    . (null !== $article->getCategory() && $article->getCategory()->getId() !== $article->getId() ? ' – ' . $article->getCategory()->getName() : (null !== $article->getParent() ? ' – ' . $article->getParent()->getName() : ''))
+                    . (count(rex_clang::getAll()) > 1 ? ' (' . rex_clang::get((int) $usageRow['clang_id'])?->getCode() . ')' : ''),
+                'url' => rex_url::backendPage('content/edit', ['article_id' => $article->getId(), 'clang' => $article->getClangId(), 'mode' => 'edit'], false),
+                'n' => (int) $usageRow['n'],
+            ];
+        }
+    }
+}
+
 // Alle Modul-Metadaten als JSON einbetten, damit die Sidebar (module_organizer_organizer.js)
 // beim Klick auf ein Element ohne AJAX-Request die aktuellen Werte anzeigen kann -
 // Vorbild: mform-Formbuilder-Sidebar (Klick -> sofortige Properties-Anzeige).
@@ -41,6 +69,7 @@ foreach ($rows as $row) {
         'is_favorite' => $moduleMeta['is_favorite'] ?? false,
         'description' => $moduleMeta['description'] ?? null,
         'icon_key' => $moduleMeta['icon_key'] ?? null,
+        'usage' => $usage[$moduleId] ?? ['count' => 0, 'pages' => []],
     ];
 }
 
@@ -74,7 +103,7 @@ foreach ($rows as $row) {
  * @param array<string, mixed> $row
  * @param array<int, array{id: int, module_id: int, category_id: ?int, is_favorite: bool, description: ?string, icon_key: ?string, priority: int}> $meta
  */
-function mo_render_module_row(array $row, array $meta): string
+function mo_render_module_row(array $row, array $meta, array $usage = []): string
 {
     $moduleId = (int) $row['id'];
     $name = rex_escape(rex_i18n::translate((string) $row['name'], false));
@@ -83,6 +112,8 @@ function mo_render_module_row(array $row, array $meta): string
     $html .= '<i class="rex-icon fa-arrows mo-tree-handle" aria-hidden="true"></i> ';
     $html .= '<span class="mo-tree-module-name">' . $name . '</span>';
     $html .= $isFavorite ? ' <i class="rex-icon fa-star mo-tree-favorite" aria-hidden="true"></i>' : '';
+    $count = (int) ($usage[$moduleId]['count'] ?? 0);
+    $html .= ' <span class="mo-tree-usage' . (0 === $count ? ' is-unused' : '') . '" title="' . rex_escape(rex_i18n::msg('module_organizer_usage_title', (string) $count)) . '">' . $count . '</span>';
     $html .= '</li>';
 
     return $html;
@@ -99,7 +130,7 @@ if ([] !== $favoriteRows) {
     $tree .= '</div>';
     $tree .= '<ul class="mo-tree-modules mo-tree-modules-readonly" data-category-id="favorites">';
     foreach ($favoriteRows as $row) {
-        $tree .= mo_render_module_row($row, $meta);
+        $tree .= mo_render_module_row($row, $meta, $usage);
     }
     $tree .= '</ul>';
     $tree .= '</li>';
@@ -110,12 +141,35 @@ foreach ($categories as $category) {
     $tree .= '<div class="mo-tree-category-header">';
     $tree .= '<i class="rex-icon fa-caret-down mo-tree-toggle" aria-hidden="true"></i>';
     $tree .= '<span class="mo-tree-category-name" data-category-name="' . rex_escape($category['name']) . '">' . rex_escape($category['name']) . '</span>';
+    // Bereiche: Kategorie nur in bestimmten Strukturkategorien anbieten
+    $areaNames = array_values(array_filter(array_map(static fn (int $id): ?string => rex_category::get($id)?->getName(), $category['structure_ids'])));
+    if ([] !== $areaNames) {
+        $tree .= '<span class="mo-tree-category-areas-badge" title="' . rex_escape($addon->i18n('category_areas_only')) . '"><i class="rex-icon fa-sitemap" aria-hidden="true"></i> ' . rex_escape(implode(', ', $areaNames)) . ($category['structure_children'] ? ' +' : '') . '</span>';
+    }
+    $tree .= '<button type="button" class="mo-tree-category-areas" title="' . rex_escape($addon->i18n('category_areas')) . '" aria-expanded="false"><i class="rex-icon fa-sitemap"></i></button>';
     $tree .= '<button type="button" class="mo-tree-category-rename" title="' . rex_escape($addon->i18n('category_rename')) . '"><i class="rex-icon fa-pencil"></i></button>';
     $tree .= '<button type="button" class="mo-tree-category-delete" title="' . rex_escape($addon->i18n('delete')) . '"><i class="rex-icon fa-trash-o"></i></button>';
     $tree .= '</div>';
+    $select = new rex_category_select(false, false, false, false);
+    $select->setName('structure_ids[]');
+    $select->setId('mo-areas-' . $category['id']);
+    $select->setMultiple();
+    $select->setSize(8);
+    $select->setAttribute('class', 'form-control');
+    foreach ($category['structure_ids'] as $structureId) {
+        $select->setSelected($structureId);
+    }
+    $tree .= '<div class="mo-tree-category-areas-panel" hidden>';
+    $tree .= '<label for="mo-areas-' . $category['id'] . '">' . $addon->i18n('category_areas_label') . '</label>';
+    $tree .= $select->get();
+    $tree .= '<div class="checkbox"><label><input type="checkbox" class="mo-areas-children"' . ($category['structure_children'] ? ' checked' : '') . '> ' . $addon->i18n('category_areas_children') . '</label></div>';
+    $tree .= '<p class="help-block">' . $addon->i18n('category_areas_notice') . '</p>';
+    $tree .= '<button type="button" class="btn btn-save btn-xs mo-areas-save">' . $addon->i18n('save') . '</button> ';
+    $tree .= '<button type="button" class="btn btn-default btn-xs mo-areas-reset">' . $addon->i18n('category_areas_reset') . '</button>';
+    $tree .= '</div>';
     $tree .= '<ul class="mo-tree-modules" data-category-id="' . $category['id'] . '">';
     foreach ($byCategory[$category['id']] as $row) {
-        $tree .= mo_render_module_row($row, $meta);
+        $tree .= mo_render_module_row($row, $meta, $usage);
     }
     $tree .= '</ul>';
     $tree .= '</li>';
@@ -128,7 +182,7 @@ $tree .= '<span class="mo-tree-category-name">' . $addon->i18n('no_category') . 
 $tree .= '</div>';
 $tree .= '<ul class="mo-tree-modules" data-category-id="0">';
 foreach ($uncategorizedRows as $row) {
-    $tree .= mo_render_module_row($row, $meta);
+    $tree .= mo_render_module_row($row, $meta, $usage);
 }
 $tree .= '</ul>';
 $tree .= '</li>';
@@ -151,6 +205,7 @@ $sidebar .= '<form id="mo-sidebar-form" class="mo-sidebar-form" hidden>';
 $sidebar .= '<input type="hidden" id="mo-field-module-id" value="">';
 $sidebar .= '<h4 id="mo-sidebar-title" class="mo-sidebar-title"></h4>';
 
+$sidebar .= '<div class="mo-usage" id="mo-usage" data-label-none="' . rex_escape($addon->i18n('usage_none')) . '" data-label-count="' . rex_escape($addon->i18n('usage_count')) . '" data-label-more="' . rex_escape($addon->i18n('usage_more')) . '"></div>';
 $sidebar .= '<div class="checkbox"><label><input type="checkbox" id="mo-field-favorite"> ' . $addon->i18n('favorite') . '</label></div>';
 
 $sidebar .= '<div class="form-group"><label for="mo-field-description">' . $addon->i18n('description') . '</label>';
@@ -191,7 +246,21 @@ if ($mediaPlaceAvailable) {
     $sidebar .= '</div>';
 }
 
+$sidebar .= '<div class="mo-icon-actions">';
 $sidebar .= '<button type="button" id="mo-icon-editor-open" class="btn btn-default btn-sm"><i class="rex-icon fa-pencil-square-o"></i> ' . $addon->i18n('icon_editor_open') . '</button>';
+$sidebar .= '<button type="button" id="mo-svg-paste-open" class="btn btn-default btn-sm" aria-expanded="false" aria-controls="mo-svg-paste"><i class="rex-icon fa-code"></i> ' . $addon->i18n('icon_svg_paste_open') . '</button>';
+$sidebar .= '</div>';
+// SVG-Code einfügen: wird serverseitig bereinigt (SvgSanitizer), danach wie ein gezeichnetes Icon gespeichert
+$sidebar .= '<div id="mo-svg-paste" class="mo-svg-paste" hidden>';
+$sidebar .= '<div class="form-group"><label for="mo-svg-paste-title">' . $addon->i18n('icon_svg_paste_title') . '</label>';
+$sidebar .= '<input type="text" class="form-control" id="mo-svg-paste-title" maxlength="100"></div>';
+$sidebar .= '<div class="form-group"><label for="mo-svg-paste-code">' . $addon->i18n('icon_svg_paste_code') . '</label>';
+$sidebar .= '<textarea class="form-control mo-svg-paste-code" id="mo-svg-paste-code" rows="5" spellcheck="false" placeholder="&lt;svg viewBox=&quot;0 0 24 18&quot;&gt;…&lt;/svg&gt;"></textarea>';
+$sidebar .= '<p class="help-block">' . $addon->i18n('icon_svg_paste_notice') . '</p></div>';
+$sidebar .= '<p class="mo-svg-paste-error text-danger" id="mo-svg-paste-error" role="alert" hidden>' . $addon->i18n('icon_svg_paste_invalid') . '</p>';
+$sidebar .= '<button type="button" id="mo-svg-paste-save" class="btn btn-save btn-sm">' . $addon->i18n('icon_editor_save') . '</button> ';
+$sidebar .= '<button type="button" id="mo-svg-paste-cancel" class="btn btn-default btn-sm">' . $addon->i18n('icon_editor_cancel') . '</button>';
+$sidebar .= '</div>';
 
 $sidebar .= '</div>';
 
