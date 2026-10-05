@@ -1293,3 +1293,23 @@ html.mo-editor-open { overflow: hidden; }
 #mo-overlay.mo-overlay--split .mo-split-row { position: relative; padding-right: 48px; }
 #mo-overlay .mo-split-row .mo-split-row-fav { top: 50%; right: 8px; margin-top: -15px; }
 #mo-overlay .mo-split-row-fav--global { position: absolute; color: var(--mo-favorite, #f0ad4e); font-size: 14px; display: grid; place-items: center; width: 30px; height: 30px; }
+
+/* 1.5.0: Kategorien in der Blockauswahl auf-/zuklappen */
+.mo-group-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    border: 0;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+}
+.mo-group-toggle .rex-icon { font-size: 10px; transition: transform .15s ease; }
+.mo-group-toggle.is-collapsed .rex-icon { transform: rotate(-90deg); }
+.mo-group-toggle:hover { color: var(--mo-text, #324050); }
+.mo-group-toggle:focus-visible { outline: 2px solid var(--mo-user-favorite, #4a90d9); outline-offset: -2px; }
+.mo-group-count { margin-left: auto; padding: 0 7px; border-radius: 999px; background: var(--mo-tile-hover-bg, #eef2f7); color: var(--mo-text-muted, #777); font-size: 11px; font-weight: 600; }
+#mo-overlay .mo-split-group.mo-group-toggle { padding-right: 16px; }
+@media (prefers-reduced-motion: reduce) { .mo-group-toggle .rex-icon { transition: none; } }

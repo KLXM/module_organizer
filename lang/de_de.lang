@@ -203,3 +203,7 @@ module_organizer_editor_too_many = Zu viele Formen für diese Fläche – überz
 module_organizer_favorite_add = Zu meinen Favoriten
 module_organizer_favorite_remove = Aus meinen Favoriten entfernen
 module_organizer_favorite_global = Favorit für alle (im Module Organizer festgelegt)
+module_organizer_categories_collapsed = Kategorien in der Blockauswahl
+module_organizer_categories_collapsed_open = aufgeklappt
+module_organizer_categories_collapsed_closed = zugeklappt
+module_organizer_categories_collapsed_notice = Gilt für die kompakte Liste und die Liste mit Vorschau. Jede Kategorie lässt sich per Klick auf- und zuklappen, der Zustand wird je Browser gemerkt. Bei einer Suche sind immer alle Treffer zu sehen.

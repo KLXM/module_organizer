@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.5.0] - 2026-10-05
+
+### Added
+- 📂 **Kategorien auf- und zuklappen** in der kompakten Liste und der geteilten Ansicht – Kopf als Knopf mit Pfeil und Anzahl der Blöcke, `aria-expanded`, per Tastatur bedienbar; der Zustand wird je Browser gemerkt
+- ⚙️ **Einstellung „Kategorien in der Blockauswahl“:** aufgeklappt (Standard) oder zugeklappt – hilfreich bei vielen Modulen; Favoriten und „Zuletzt verwendet“ bleiben offen, bei der Suche ist immer alles sichtbar
+
+### Changed
+- Pfeiltasten springen nur über sichtbare Einträge
+- README: Kategorien ohne erlaubte Module (REDAXO-Rollenrechte) erscheinen nicht in der Blockauswahl
+
+
 ## [1.4.2] - 2026-10-05
 
 ### Fixed

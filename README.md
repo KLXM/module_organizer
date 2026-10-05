@@ -102,6 +102,10 @@ Duotone funktioniert mit allen Vorlagen und mit eigenen Icons im gleichen Aufbau
 
 „Zuletzt verwendet“ merkt sich je Benutzer die fünf zuletzt eingefügten Blöcke (Popover, Overlay und geteilte Ansicht).
 
+**Kategorien auf- und zuklappen:** In der kompakten Liste und der geteilten Ansicht lässt sich jede Kategorie per Klick auf ihren Kopf auf- und zuklappen; die Zahl zeigt, wie viele Blöcke darin liegen. In den Einstellungen wird festgelegt, ob die Kategorien beim Öffnen **aufgeklappt** (Standard) oder **zugeklappt** sind – praktisch bei vielen Modulen. Was ein Benutzer auf- oder zuklappt, merkt sich der Browser. Favoriten und „Zuletzt verwendet“ bleiben immer offen, bei einer Suche sind alle Treffer zu sehen.
+
+**Kategorien nach Benutzerrechten:** Die Blockauswahl zeigt nur Module, für die der Benutzer über seine REDAXO-Rolle Rechte hat. Eine Kategorie, in der er kein einziges Modul nutzen darf, erscheint deshalb gar nicht erst – eine eigene Rechteverwaltung im Organizer ist nicht nötig.
+
 In beiden Modi gibt es die Live-Suche über Titel, Beschreibung und Modul-Key. Mit der Tastatur: **Pfeil runter** springt aus der Suche in die Liste, **Enter** fügt den ersten Treffer ein, die **Pfeiltasten** wandern durch die Kacheln (im Overlay zeilenweise wie sichtbar), **Pos1/Ende** springen an Anfang und Ende, **Esc** schließt.
 
 ### Modulnamen ohne Nummern-Präfix
