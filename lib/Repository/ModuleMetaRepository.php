@@ -7,11 +7,11 @@ use rex_sql;
 
 class ModuleMetaRepository
 {
-    /** @var array<int, array{id: int, module_id: int, category_id: ?int, is_favorite: bool, description: ?string, icon_key: ?string, priority: int}>|null */
+    /** @var array<int, array{id: int, module_id: int, category_id: ?int, is_favorite: bool, description: ?string, icon_key: ?string, preview_key: ?string, priority: int}>|null */
     private static ?array $cache = null;
 
     /**
-     * @return array<int, array{id: int, module_id: int, category_id: ?int, is_favorite: bool, description: ?string, icon_key: ?string, priority: int}>
+     * @return array<int, array{id: int, module_id: int, category_id: ?int, is_favorite: bool, description: ?string, icon_key: ?string, preview_key: ?string, priority: int}>
      */
     public static function getAllIndexedByModuleId(): array
     {
@@ -33,6 +33,7 @@ class ModuleMetaRepository
                 'is_favorite' => (bool) $row['is_favorite'],
                 'description' => null === $row['description'] ? null : (string) $row['description'],
                 'icon_key' => null === $row['icon_key'] ? null : (string) $row['icon_key'],
+                'preview_key' => null === ($row['preview_key'] ?? null) ? null : (string) $row['preview_key'],
                 'priority' => (int) $row['priority'],
             ];
         }
@@ -43,7 +44,7 @@ class ModuleMetaRepository
     }
 
     /**
-     * @return array{id: int, module_id: int, category_id: ?int, is_favorite: bool, description: ?string, icon_key: ?string, priority: int}|null
+     * @return array{id: int, module_id: int, category_id: ?int, is_favorite: bool, description: ?string, icon_key: ?string, preview_key: ?string, priority: int}|null
      */
     public static function getByModuleId(int $moduleId): ?array
     {
@@ -75,6 +76,21 @@ class ModuleMetaRepository
             $sql->insert();
         }
 
+        self::$cache = null;
+    }
+
+    /** Vorschaubild eines Moduls speichern (null = automatisch) */
+    public static function savePreview(int $moduleId, ?string $previewKey): void
+    {
+        if (null === self::getByModuleId($moduleId)) {
+            self::save($moduleId, null, false, null, null);
+        }
+        $sql = rex_sql::factory();
+        $sql->setTable(rex::getTable('module_organizer_module'));
+        $sql->setWhere(['module_id' => $moduleId]);
+        $sql->setValue('preview_key', $previewKey);
+        $sql->addGlobalUpdateFields();
+        $sql->update();
         self::$cache = null;
     }
 

@@ -7,10 +7,11 @@ $addon = rex_addon::get('module_organizer');
 
 if ('' !== rex_post('mo_save', 'string', '')) {
     $displayMode = rex_post('display_mode', 'string', 'popover');
-    if (!in_array($displayMode, ['popover', 'overlay'], true)) {
+    if (!in_array($displayMode, ['popover', 'overlay', 'split'], true)) {
         $displayMode = 'popover';
     }
     $addon->setConfig('display_mode', $displayMode);
+    $addon->setConfig('overlay_tiles', 'previews' === rex_post('overlay_tiles', 'string', '') ? 'previews' : 'icons');
     $addon->setConfig('warn_module_preview_conflict', '' !== rex_post('warn_module_preview_conflict', 'string', ''));
     $addon->setConfig('strip_title_prefix', '' !== rex_post('strip_title_prefix', 'string', ''));
     $addon->setConfig('icon_style', 'duotone' === rex_post('icon_style', 'string', '') ? 'duotone' : 'mono');
@@ -51,6 +52,14 @@ $form .= '<div class="radio"><label><input type="radio" name="display_mode" valu
 $form .= '<p class="help-block" style="margin-left:20px;margin-top:-4px;">' . $addon->i18n('display_mode_popover_notice') . '</p>';
 $form .= '<div class="radio"><label><input type="radio" name="display_mode" value="overlay"' . ('overlay' === $displayMode ? ' checked' : '') . '> ' . $addon->i18n('display_mode_overlay') . '</label></div>';
 $form .= '<p class="help-block" style="margin-left:20px;margin-top:-4px;">' . $addon->i18n('display_mode_overlay_notice') . '</p>';
+$overlayTiles = $addon->getConfig('overlay_tiles', 'icons');
+$form .= '<div style="margin-left:20px;margin-top:-4px">';
+foreach (['icons', 'previews'] as $tiles) {
+    $form .= '<label class="radio-inline"><input type="radio" name="overlay_tiles" value="' . $tiles . '"' . ($overlayTiles === $tiles ? ' checked' : '') . '> ' . $addon->i18n('overlay_tiles_' . $tiles) . '</label> ';
+}
+$form .= '</div>';
+$form .= '<div class="radio"><label><input type="radio" name="display_mode" value="split"' . ('split' === $displayMode ? ' checked' : '') . '> ' . $addon->i18n('display_mode_split') . '</label></div>';
+$form .= '<p class="help-block" style="margin-left:20px;margin-top:-4px;">' . $addon->i18n('display_mode_split_notice') . '</p>';
 $form .= '</div>';
 
 // Icon-Stil mit Live-Vorschau

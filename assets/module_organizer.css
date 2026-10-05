@@ -922,6 +922,129 @@ body.rex-theme-dark #mo-popover {
     z-index: 1;
 }
 
+/* 1.3.0: Fuellstil + Bearbeiten-Leiste, Duotone-Vorschau, Formen nach Stil */
+#mo-icon-editor .mo-icon-editor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: -4px 0 12px;
+    padding: 8px 0 0;
+    border-top: 1px solid var(--mo-header-border, #dfe3e9);
+}
+
+#mo-icon-editor .mo-icon-editor-styles,
+#mo-icon-editor .mo-icon-editor-edit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
+#mo-icon-editor .mo-icon-editor-styles-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: var(--mo-text-muted, #777);
+    margin-right: 4px;
+}
+
+#mo-icon-editor .mo-icon-editor-style {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border: 1px solid var(--mo-tile-border, #dfe3e9);
+    border-radius: 4px;
+    background: var(--mo-tile-bg, #fff);
+    color: var(--mo-text, #324050);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#mo-icon-editor .mo-icon-editor-style.is-active {
+    border-color: var(--mo-duo-2, #4b9ad9);
+    box-shadow: inset 0 0 0 1px var(--mo-duo-2, #4b9ad9);
+}
+
+#mo-icon-editor .mo-icon-editor-swatch {
+    width: 16px;
+    height: 12px;
+    border-radius: 2px;
+    border: 1.5px solid var(--mo-text, #324050);
+    box-sizing: border-box;
+}
+
+#mo-icon-editor .mo-icon-editor-style-soft .mo-icon-editor-swatch { background: color-mix(in srgb, var(--mo-duo-2, #4b9ad9) 22%, transparent); }
+#mo-icon-editor .mo-icon-editor-style-accent .mo-icon-editor-swatch { background: var(--mo-duo-2, #4b9ad9); border-color: transparent; }
+#mo-icon-editor .mo-icon-editor-style-solid .mo-icon-editor-swatch { background: var(--mo-text, #324050); }
+
+#mo-icon-editor .mo-icon-editor-tool:disabled,
+#mo-icon-editor .mo-icon-editor-style:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+#mo-icon-editor .mo-icon-editor-edit .mo-icon-editor-delete-btn,
+#mo-icon-editor .mo-icon-editor-edit .mo-icon-editor-clear-btn {
+    margin-left: 0;
+}
+
+#mo-icon-editor .mo-icon-editor-canvas:focus-visible {
+    outline: 2px solid var(--mo-duo-2, #4b9ad9);
+    outline-offset: 2px;
+}
+
+#mo-icon-editor .mo-icon-editor-canvas.is-full {
+    cursor: default;
+}
+
+#mo-icon-editor .mo-icon-editor-keys {
+    font-size: 11px;
+    margin-top: 0;
+}
+
+/* Formen auf der Zeichenflaeche zeigen ihren Stil grob an */
+#mo-icon-editor .mo-icon-editor-shape.mo-style-outline { background: transparent; opacity: .7; }
+#mo-icon-editor .mo-icon-editor-shape.mo-style-soft { background: var(--mo-duo-2, #4b9ad9); opacity: .3; }
+#mo-icon-editor .mo-icon-editor-shape.mo-style-accent { background: var(--mo-duo-2, #4b9ad9); border-color: var(--mo-duo-2, #4b9ad9); opacity: .7; }
+#mo-icon-editor .mo-icon-editor-shape.mo-style-solid { opacity: .7; }
+#mo-icon-editor .mo-icon-editor-shape.mo-style-outline .mo-icon-editor-shape-label { color: var(--mo-text, #324050); }
+#mo-icon-editor .mo-icon-editor-shape.is-selected { opacity: .85; border-color: #d9534f; }
+#mo-icon-editor .mo-icon-editor-shape-circle,
+#mo-icon-editor .mo-icon-editor-shape-check { border-radius: 50%; }
+#mo-icon-editor .mo-icon-editor-shape-button { border-radius: 999px; }
+#mo-icon-editor .mo-icon-editor-line-arrow::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    top: -6px;
+    border: 5px solid transparent;
+    border-left: 8px solid var(--mo-filter-active-bg, #324050);
+}
+#mo-icon-editor .mo-icon-editor-line-arrow.is-selected::after { border-left-color: #d9534f; }
+
+/* Duotone-Vorschau: gleiche Regeln wie Blockauswahl (zart < .18, kraeftig ab .18) */
+#mo-icon-editor .mo-icon-editor-preview-wrap .mo-icon-editor-preview-label + .mo-icon-editor-preview { margin-bottom: 12px; }
+#mo-icon-editor .mo-icon-editor-preview-duo { color: var(--mo-duo-1, var(--mo-text, #324050)); }
+#mo-icon-editor .mo-icon-editor-preview-duo svg [fill-opacity] { fill: var(--mo-duo-2, #4b9ad9); fill-opacity: .22; }
+#mo-icon-editor .mo-icon-editor-preview-duo svg :is([fill-opacity="0.18"], [fill-opacity="0.35"]) { fill-opacity: .85; }
+#mo-icon-editor .mo-icon-editor-preview-small {
+    display: flex;
+    gap: 12px;
+    align-self: flex-start;
+}
+#mo-icon-editor .mo-icon-editor-preview-mini {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 30px;
+    color: var(--mo-text, #324050);
+}
+#mo-icon-editor .mo-icon-editor-preview-mini svg { width: 32px; height: 24px; }
+
 #mo-icon-editor .mo-icon-editor-footer {
     display: flex;
     justify-content: flex-end;
@@ -1064,3 +1187,101 @@ body.mo-icons-duotone :is(#mo-overlay .mo-tile-icon, #mo-popover .mo-popover-row
 body.rex-theme-dark .mo-duo-preview { --mo-duo-1: #e2e8f0 !important; background: #1a202c; border-color: #3a4557; }
 .mo-duo-preview:not(.is-duotone) { color: #777; }
 .mo-palette-swatch { display: inline-block; width: 14px; height: 14px; margin-left: 4px; border-radius: 50%; vertical-align: -2px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .15); }
+
+/* ============================================================
+   Vorschaubilder (Mockups im Screenshot-Stil)
+   ============================================================ */
+#mo-overlay .mo-split-preview { display: none; }
+#mo-overlay .mo-grid.mo-grid--previews { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+#mo-overlay .mo-tile-icon.mo-tile-preview { width: 100%; height: auto; aspect-ratio: 16 / 10; color: var(--mo-text-muted); }
+#mo-overlay .mo-tile-icon.mo-tile-preview svg,
+#mo-overlay .mo-tile-icon.mo-tile-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+#mo-overlay .mo-grid--previews .mo-tile { align-items: stretch; }
+#mo-overlay .mo-grid--previews .mo-tile-title { text-align: left; font-size: 13px; font-weight: 600; }
+#mo-overlay .mo-grid--previews .mo-tile-desc { text-align: left; }
+
+/* ============================================================
+   Liste mit Vorschau: links Liste, rechts Vorschaubild
+   ============================================================ */
+#mo-overlay.mo-overlay--split .mo-sidebar { display: none; }
+#mo-overlay.mo-overlay--split .mo-grid.mo-split-list {
+    display: block;
+    flex: 0 0 min(420px, 45%);
+    padding: 8px 0;
+    border-right: 1px solid var(--mo-sidebar-border);
+    background: var(--mo-sidebar-bg);
+}
+#mo-overlay.mo-overlay--split .mo-split-group {
+    padding: 12px 16px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--mo-text-muted);
+}
+#mo-overlay.mo-overlay--split .mo-split-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border: 0;
+    border-left: 3px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    text-align: left;
+}
+#mo-overlay.mo-overlay--split .mo-split-row:hover,
+#mo-overlay.mo-overlay--split .mo-split-row:focus {
+    background: var(--mo-tile-hover-bg);
+    border-left-color: var(--mo-tile-hover-border);
+}
+#mo-overlay.mo-overlay--split .mo-split-row-icon { flex: none; width: 40px; height: 30px; }
+#mo-overlay.mo-overlay--split .mo-split-row-text { display: flex; flex-direction: column; min-width: 0; }
+#mo-overlay.mo-overlay--split .mo-split-row .mo-tile-title { text-align: left; font-size: 13px; font-weight: 600; }
+#mo-overlay.mo-overlay--split .mo-split-row .mo-tile-desc { text-align: left; -webkit-line-clamp: 1; }
+#mo-overlay.mo-overlay--split .mo-split-preview {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    padding: 24px 28px;
+    color: var(--mo-text);
+}
+#mo-overlay .mo-split-preview-image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    margin-bottom: 18px;
+    color: var(--mo-text-muted);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .08);
+}
+#mo-overlay .mo-split-preview-image svg,
+#mo-overlay .mo-split-preview-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+#mo-overlay .mo-split-preview-image.is-icon { display: grid; place-items: center; background: var(--mo-tile-bg); box-shadow: inset 0 0 0 1px var(--mo-tile-border); }
+#mo-overlay .mo-split-preview-image.is-icon svg,
+#mo-overlay .mo-split-preview-image.is-icon img { width: 40%; height: auto; }
+#mo-overlay .mo-split-preview-title { margin: 0 0 2px; font-size: 20px; font-weight: 600; color: var(--mo-text); }
+#mo-overlay .mo-split-preview-category { margin: 0 0 10px; font-size: 12px; color: var(--mo-text-muted); text-transform: uppercase; letter-spacing: .05em; }
+#mo-overlay .mo-split-preview-desc { margin: 0 0 18px; font-size: 14px; line-height: 1.5; }
+#mo-overlay .mo-split-insert { align-self: flex-start; }
+@media (max-width: 760px) {
+    #mo-overlay.mo-overlay--split .mo-split-preview { display: none; }
+    #mo-overlay.mo-overlay--split .mo-grid.mo-split-list { flex: 1; }
+}
+
+/* Duotone auch für Vorschaubilder */
+body.mo-icons-duotone #mo-overlay :is(.mo-tile-preview, .mo-split-preview-image) svg { color: var(--mo-duo-1); }
+body.mo-icons-duotone #mo-overlay :is(.mo-tile-preview, .mo-split-preview-image) svg [fill-opacity] { fill: var(--mo-icon-accent, var(--mo-duo-2, #4b9ad9)); fill-opacity: .22; }
+body.mo-icons-duotone #mo-overlay :is(.mo-tile-preview, .mo-split-preview-image) svg :is([fill-opacity="0.18"], [fill-opacity="0.2"], [fill-opacity="0.3"], [fill-opacity="0.35"], [fill-opacity="0.45"], [fill-opacity="0.5"]) { fill-opacity: .85; }
+
+/* Organizer: Vorschaubild in der Seitenleiste */
+.mo-preview-field .mo-preview-thumb { margin-top: 8px; aspect-ratio: 16 / 10; color: #8a96a3; border: 1px solid #dfe3e9; }
+.mo-preview-field .mo-preview-thumb svg, .mo-preview-field .mo-preview-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+body.mo-icons-duotone .mo-preview-field .mo-preview-thumb svg { color: var(--mo-duo-1); }
+body.mo-icons-duotone .mo-preview-field .mo-preview-thumb svg [fill-opacity] { fill: var(--mo-duo-2, #4b9ad9); fill-opacity: .22; }
+body.mo-icons-duotone .mo-preview-field .mo-preview-thumb svg :is([fill-opacity="0.18"], [fill-opacity="0.2"], [fill-opacity="0.3"], [fill-opacity="0.35"], [fill-opacity="0.45"], [fill-opacity="0.5"]) { fill-opacity: .85; }
+
+#mo-icon-editor .mo-icon-editor-count { display: block; margin-top: 4px; font-weight: 600; color: var(--mo-text, #324050); }

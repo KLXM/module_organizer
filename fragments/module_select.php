@@ -27,6 +27,8 @@ $categoryNames = array_column($categories, 'name', 'id');
 $categoryPriorities = array_column($categories, 'priority', 'id');
 $user = rex::getUser();
 $userFavorites = null !== $user ? UserFavoriteRepository::getForUser((int) $user->getId()) : [];
+$userRecent = null !== $user ? \KLXM\ModuleOrganizer\Repository\UserRecentRepository::getForUser((int) $user->getId()) : [];
+$tileStyle = 'previews' === rex_addon::get('module_organizer')->getConfig('overlay_tiles', 'icons') ? 'previews' : 'icons';
 
 // Aktuelle Strukturkategorie: Organizer-Kategorien können auf Bereiche beschränkt sein
 $contextArticle = rex_article::get(rex_request('article_id', 'int', 0), rex_request('clang', 'int', rex_clang::getStartId()));
@@ -93,11 +95,14 @@ foreach ($items as $item) {
         'icon_key' => $iconKey,
         'custom_svg' => $customSvg,
         'priority' => $moduleMeta['priority'] ?? 0,
+        // Vorschaubild (Vorlage oder Medienpool) und „Zuletzt verwendet“ (Rang, 0 = nein)
+        'preview' => \KLXM\ModuleOrganizer\PreviewRegistry::resolve($moduleMeta['preview_key'] ?? null, $iconKey),
+        'recent_rank' => $userRecent[$moduleId] ?? 0,
     ];
 }
 ?>
 <div class="dropdown<?= $block ? ' btn-block' : '' ?>">
-    <button type="button" class="btn btn-default<?= $block ? ' btn-block' : '' ?> mo-trigger" data-mo-mode="<?= rex_escape($displayMode) ?>" data-mo-items="<?= rex_escape(json_encode($enrichedItems)) ?>">
+    <button type="button" class="btn btn-default<?= $block ? ' btn-block' : '' ?> mo-trigger" data-mo-mode="<?= rex_escape($displayMode) ?>" data-mo-tiles="<?= $tileStyle ?>" data-mo-items="<?= rex_escape(json_encode($enrichedItems)) ?>">
         <b><?= $buttonLabel ?></b>
         <i class="rex-icon fa-th-large" aria-hidden="true"></i>
     </button>

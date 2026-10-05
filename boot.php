@@ -9,6 +9,16 @@ rex_api_function::register('module_organizer_toggle_user_favorite', KLXM\ModuleO
 rex_api_function::register('module_organizer_save_custom_icon', KLXM\ModuleOrganizer\Api\SaveCustomIcon::class);
 rex_api_function::register('module_organizer_preview_custom_icon', KLXM\ModuleOrganizer\Api\PreviewCustomIcon::class);
 rex_api_function::register('module_organizer_delete_custom_icon', KLXM\ModuleOrganizer\Api\DeleteCustomIcon::class);
+rex_api_function::register('module_organizer_save_preview', KLXM\ModuleOrganizer\Api\SavePreview::class);
+
+// Zuletzt verwendet: beim Einfügen eines Blocks für den Benutzer merken
+rex_extension::register('SLICE_ADDED', static function (rex_extension_point $ep) {
+    $user = rex::getUser();
+    if (null !== $user) {
+        KLXM\ModuleOrganizer\Repository\UserRecentRepository::add((int) $user->getId(), (int) $ep->getParam('module_id'));
+    }
+    return $ep->getSubject();
+});
 
 if (rex::isBackend() && rex::getUser()) {
     $bust = function (string $file) {

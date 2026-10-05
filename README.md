@@ -4,7 +4,7 @@ REDAXO-AddOn, das die Modulauswahl im Content-Editor ("Block hinzufügen") durch
 
 ## Features
 
-- Ersetzt die Bootstrap-Dropdown-Modulauswahl durch ein Overlay oder ein kompaktes Popover (umschaltbar) – reine Fragment-Überschreibung, kein Eingriff in den Core
+- Ersetzt die Bootstrap-Dropdown-Modulauswahl durch ein Overlay, eine geteilte Ansicht (Liste links, große Vorschau rechts) oder ein kompaktes Popover (umschaltbar) – reine Fragment-Überschreibung, kein Eingriff in den Core
 - Live-Suche über Titel, Beschreibung und Modul-Key
 - Bedienung per Tastatur (Pfeiltasten, Pos1/Ende, Enter fügt den ersten Treffer ein)
 - Beschreibungen sichtbar unter dem Modulnamen
@@ -13,11 +13,13 @@ REDAXO-AddOn, das die Modulauswahl im Content-Editor ("Block hinzufügen") durch
 - Nutzung je Modul im Strukturbaum: Anzahl und Seiten mit Link in den Editiermodus
 - Kategorisierung der Module per Drag & Drop in einem zweistufigen Strukturbaum (Kategorien → Module)
 - Globale (admin-gepflegte) und persönliche (pro Benutzer) Favoriten, die in der Blockauswahl immer zuerst erscheinen
+- „Zuletzt verwendet“ je Benutzer – die fünf zuletzt eingefügten Blöcke stehen gleich oben
+- 67 neutrale Vorschaubilder (Mockups) je Layout – oder ein eigener Screenshot aus dem Medienpool
 - Kurze Beschreibungstexte pro Modul, die als Tooltip in der Blockauswahl erscheinen
-- 50 vorgefertigte SVG-Layout-Icons, monochrom oder **Duotone** (zwei Farben, Paletten oder eigene Farben, Akzentfarbe je Kategorie) für gängige Modultypen (Bild, Video, Formular, Cards, Hero, FAQ, Zitat, Kalender, Zeitstrahl, Downloads, WLAN, Katalog u. v. m.)
+- 67 vorgefertigte SVG-Layout-Icons, monochrom oder **Duotone** (zwei Farben, Paletten oder eigene Farben, Akzentfarbe je Kategorie) für gängige Modultypen (Bild, Video, Formular, Cards, Hero, FAQ, Zitat, Kalender, Zeitstrahl, Downloads, WLAN, Katalog u. v. m.)
 - Eigene Bilder aus MediaPlace/Medienpool als Icon wählbar
 - SVG-Code einfügen: eigene Icons per Copy & Paste – serverseitig bereinigt (keine Skripte, Event-Attribute oder externen Verweise)
-- Mini-Icon-Editor: eigene Icons direkt im Backend zeichnen (Rechtecke, freie Linien, Platzhalter-Typen), inklusive Live-Vorschau des tatsächlich gespeicherten SVGs
+- Icon-Editor: eigene Duotone-Icons direkt im Backend zeichnen – 14 Formen, Füllstil je Form, Ebenen, Duplizieren, Tastatur, Live-Vorschau monochrom und Duotone
 - Vollständige Unterstützung des REDAXO-Dunkelmodus (manuell gewählt und systemabhängig)
 - Mehrsprachig (Deutsch/Englisch)
 
@@ -56,12 +58,27 @@ Ein kurzer Satz je Modul („Großes Bild über die ganze Breite – für den Se
 
 Jedes Modul kann ein Vorschau-Icon bekommen:
 
-1. **Vorlagen** – 50 monochrome Layout-Icons (Hero, Cards, Bild + Text, FAQ, Formular, Karte, Statistiken, Zitat, Slideshow, Bild-Teaser, Seiten-Navigation, Zeitstrahl, Kalender, Downloads, Standorte, Kontakt, Katalog mit Ort, Info-Karten, Mappe, WLAN, geschützter Bereich Beginn/Ende, Inhalt einbinden …).
+1. **Vorlagen** – 67 Layout-Icons (Hero, Cards, Bild + Text, FAQ, Formular, Karte, Statistiken, Zitat, Slideshow, Bild-Teaser, Seiten-Navigation, Zeitstrahl, Kalender, Downloads, Standorte, Kontakt, Katalog mit Ort, Info-Karten, Mappe, WLAN, geschützter Bereich Beginn/Ende, Inhalt einbinden, Tabs, Stimmen, Logos, Schritte, Countdown, News, Produkt, Vorher/Nachher, Audio, Diagramm, Öffnungszeiten, Preisliste, Hinweis, Karussell, Masonry, Suche, gestapelte Karten …).
 2. **Bild aus dem Medienpool/MediaPlace** – z. B. ein Screenshot des Moduls als echte Vorschau.
 3. **SVG-Code einfügen** – eigenes Icon per Copy & Paste. Das SVG wird beim Speichern bereinigt: Skripte, Event-Attribute (`on…`), `foreignObject`, externe Verweise und `javascript:`/`data:`-Werte werden entfernt; ungültiges Markup wird abgelehnt.
-4. **Icon-Editor** – eigenes Icon im Backend zeichnen (Text, Bild, Video, Dokument, Formular, Rechteck, Linie); das SVG wird serverseitig erzeugt.
+4. **Icon-Editor** – eigenes Icon im Backend zeichnen; das SVG wird serverseitig erzeugt (siehe unten).
 
 Alle Icons nutzen `currentColor` und passen sich damit Hell- und Dunkelmodus an.
+
+### Icon-Editor
+
+**Module → Module Organizer** → Modul wählen → *Eigenes Icon zeichnen*. Werkzeug wählen und auf der 24×18-Fläche aufziehen (ein Klick legt die Form in Standardgröße an), verschieben oder an der Ecke in der Größe ändern.
+
+- **Formen:** Text, Überschrift, Bild, Video, Dokument, Formular, Rechteck, Kreis, Button, Stern, Marker, Haken, Linie, Pfeil – bis zu 16 je Icon.
+- **Füllung je Form:** *Kontur* (nur Umriss), *Hauch* (zarte Fläche – bei Duotone ein Hauch der Akzentfarbe), *Akzent* (kräftige Fläche in der Akzentfarbe), *Voll* (Konturfarbe). So entstehen Icons im selben Aufbau wie die Vorlagen.
+- **Bearbeiten:** Duplizieren, nach vorn/hinten, löschen; die Vorschau zeigt das gespeicherte SVG monochrom, als Duotone und in Originalgröße.
+- **Tastatur:** Pfeile verschieben (Umschalt = größere Schritte), Alt+Pfeile ändern die Größe, 1–4 setzt die Füllung, Tab wechselt die Form, Strg/Cmd+D dupliziert, Entf löscht, Esc hebt die Auswahl auf.
+
+Der Browser schickt nur Formtyp, Koordinaten und Füllstil – das SVG baut `CustomIconRenderer` auf dem Server.
+
+### Vorschaubilder
+
+Neben dem Icon kann jedes Modul ein großes Vorschaubild haben: *Automatisch* (passend zum Icon), eine der 67 Vorlagen, *Keins* oder ein eigenes Bild aus dem Medienpool/MediaPlace (z. B. ein Screenshot des Moduls). Die Vorlagen sind bewusst neutrale Mockups ohne Inhalte – sie verraten nichts über das Projekt und folgen dem Duotone-Stil.
 
 ### Icon-Stil: Monochrom oder Duotone
 
@@ -76,7 +93,10 @@ Duotone funktioniert mit allen Vorlagen und mit eigenen Icons im gleichen Aufbau
 ### Darstellung (Einstellungen)
 
 - **Popover** – kompakte Liste direkt am Button „Block hinzufügen“, nach Kategorie gruppiert, Favoriten zuerst.
-- **Overlay** – großes Fenster mit Kachel-Raster und Kategorien links (ähnlich MediaPlace); die Icons wirken hier wie kleine Vorschaubilder. Empfehlenswert, sobald Icons gepflegt sind.
+- **Overlay** – großes Fenster mit Kachel-Raster und Kategorien links (ähnlich MediaPlace). Kacheln wahlweise mit Icons oder mit Vorschaubildern.
+- **Geteilt** – Liste links (Favoriten, Zuletzt verwendet, Kategorien), rechts das große Vorschaubild des markierten Blocks mit Beschreibung und Button *Einfügen*. Ideal für Redakteure, die die Blöcke noch nicht kennen.
+
+„Zuletzt verwendet“ merkt sich je Benutzer die fünf zuletzt eingefügten Blöcke (Popover, Overlay und geteilte Ansicht).
 
 In beiden Modi gibt es die Live-Suche über Titel, Beschreibung und Modul-Key. Mit der Tastatur: **Pfeil runter** springt aus der Suche in die Liste, **Enter** fügt den ersten Treffer ein, die **Pfeiltasten** wandern durch die Kacheln (im Overlay zeilenweise wie sichtbar), **Pos1/Ende** springen an Anfang und Ende, **Esc** schließt.
 

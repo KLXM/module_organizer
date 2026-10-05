@@ -22,6 +22,8 @@ rex_sql_table::get(rex::getTable('module_organizer_module'))
     ->ensureColumn(new rex_sql_column('is_favorite', 'tinyint(1)', false, '0'))
     ->ensureColumn(new rex_sql_column('description', 'text', true))
     ->ensureColumn(new rex_sql_column('icon_key', 'varchar(191)', true))
+    // Vorschaubild: leer = automatisch aus dem Icon, „none“ = keins, Vorlagen-Schlüssel oder media:<datei>
+    ->ensureColumn(new rex_sql_column('preview_key', 'varchar(191)', true))
     ->ensureColumn(new rex_sql_column('priority', 'int(11)', false, '0'))
     ->ensureColumn(new rex_sql_column('createdate', 'datetime'))
     ->ensureColumn(new rex_sql_column('createuser', 'varchar(191)'))
@@ -35,6 +37,15 @@ rex_sql_table::get(rex::getTable('module_organizer_user_favorite'))
     ->ensureColumn(new rex_sql_column('user_id', 'int(11)'))
     ->ensureColumn(new rex_sql_column('module_id', 'int(11)'))
     ->ensureColumn(new rex_sql_column('createdate', 'datetime'))
+    ->ensureIndex(new rex_sql_index('user_module', ['user_id', 'module_id'], rex_sql_index::UNIQUE))
+    ->ensure();
+
+// Zuletzt verwendete Module je Benutzer (Blockauswahl „Zuletzt verwendet“)
+rex_sql_table::get(rex::getTable('module_organizer_user_recent'))
+    ->ensurePrimaryIdColumn()
+    ->ensureColumn(new rex_sql_column('user_id', 'int(11)'))
+    ->ensureColumn(new rex_sql_column('module_id', 'int(11)'))
+    ->ensureColumn(new rex_sql_column('used_at', 'datetime'))
     ->ensureIndex(new rex_sql_index('user_module', ['user_id', 'module_id'], rex_sql_index::UNIQUE))
     ->ensure();
 

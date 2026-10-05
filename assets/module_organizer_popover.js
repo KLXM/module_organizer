@@ -304,6 +304,18 @@
             renderedAny = true;
         }
 
+        // Zuletzt verwendet (je Benutzer) – nur ohne Suchbegriff, damit die Trefferliste kurz bleibt
+        var recent = query ? [] : items.filter(function (item) { return item.recent_rank > 0; })
+            .sort(function (a, b) { return a.recent_rank - b.recent_rank; });
+        if (recent.length > 0) {
+            if (renderedAny) {
+                list.appendChild(renderDivider());
+            }
+            list.appendChild(renderGroupHeader(t('filter_recent')));
+            recent.forEach(function (item) { list.appendChild(renderRow(item)); });
+            renderedAny = true;
+        }
+
         categoryGroups.forEach(function (group) {
             if (renderedAny) {
                 list.appendChild(renderDivider());

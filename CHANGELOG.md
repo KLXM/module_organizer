@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0] - 2026-10-05
+
+### Added
+- 🖼️ **Vorschaubilder** je Modul: 67 neutrale Mockups (Duotone-fähig), automatisch passend zum Icon, oder eigenes Bild aus Medienpool/MediaPlace (`PreviewRegistry`, Spalte `preview_key`)
+- 🪟 **Geteilte Ansicht** – Liste links, großes Vorschaubild mit Beschreibung und *Einfügen* rechts; Overlay-Kacheln wahlweise mit Icons oder Vorschaubildern
+- 🕘 **Zuletzt verwendet** je Benutzer (letzte fünf eingefügte Blöcke) in Popover, Overlay und geteilter Ansicht (`UserRecentRepository`, Tabelle `module_organizer_user_recent`)
+- 🧩 **17 neue Layout-Icons** (Tabs, Stimmen, Logos, Schritte, Countdown, News, Produkt, Vorher/Nachher, Audio, Diagramm, Öffnungszeiten, Preisliste, Hinweis, Karussell, Masonry, Suche, gestapelte Karten) – jetzt 67 Vorlagen
+- ✏️ **Icon-Editor für Duotone** – neue Formen (Überschrift, Kreis, Button, Stern, Marker, Haken, Pfeil), Füllstil je Form (Kontur, Hauch, Akzent, Voll), Duplizieren, Ebenen nach vorn/hinten, Tastatur (Pfeile, Alt+Pfeile, 1–4, Tab, Strg/Cmd+D, Entf), Vorschau monochrom/Duotone/Originalgröße, bis zu 16 Formen
+
+
 ## [1.2.0] - 2026-10-05
 
 ### Added
