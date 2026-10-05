@@ -77,7 +77,7 @@
         // Tastatur: Pfeil runter springt in die Liste, Enter fügt den ersten Treffer ein,
         // in der Liste Pfeil hoch/runter, Pos1/Ende; Pfeil hoch in der ersten Zeile zurück zur Suche
         function rows() {
-            return Array.prototype.slice.call(popover.querySelectorAll('.mo-popover-row'));
+            return Array.prototype.slice.call(popover.querySelectorAll('.mo-popover-row:not([hidden])'));
         }
         searchEl.addEventListener('keydown', function (event) {
             var all = rows();
@@ -260,6 +260,38 @@
         return row;
     }
 
+
+    // Kategorien auf-/zuklappen: Standard aus den Einstellungen, Zustand je Kategorie im Browser gemerkt
+    function collapseDefault() {
+        return !!(window.rex && window.rex.module_organizer && 'closed' === window.rex.module_organizer.categoriesCollapsed);
+    }
+    function collapseState() {
+        try { return JSON.parse(window.localStorage.getItem('mo-collapsed') || '{}') || {}; } catch (e) { return {}; }
+    }
+    function isCollapsed(key) {
+        var st = collapseState();
+        return Object.prototype.hasOwnProperty.call(st, key) ? !!st[key] : collapseDefault();
+    }
+    function setCollapsed(key, value) {
+        var st = collapseState();
+        st[key] = !!value;
+        try { window.localStorage.setItem('mo-collapsed', JSON.stringify(st)); } catch (e) { /* ohne Speicher: nur bis zum Neuladen */ }
+    }
+    function makeToggle(header, key, rows) {
+        var collapsed = isCollapsed(key);
+        header.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        header.classList.toggle('is-collapsed', collapsed);
+        rows.forEach(function (r) { r.hidden = collapsed; });
+        header.addEventListener('click', function (e) {
+            e.preventDefault();
+            var now = header.getAttribute('aria-expanded') === 'true';
+            header.setAttribute('aria-expanded', now ? 'false' : 'true');
+            header.classList.toggle('is-collapsed', now);
+            rows.forEach(function (r) { r.hidden = now; });
+            setCollapsed(key, now);
+        });
+    }
+
     function renderGroupHeader(label) {
         var header = document.createElement('div');
         header.className = 'mo-popover-group-header';
@@ -303,7 +335,7 @@
         rest.forEach(function (item) {
             if (item.category_id && item.category_name) {
                 var key = String(item.category_id);
-                byCategory[key] = byCategory[key] || { name: item.category_name, priority: item.category_priority || 0, items: [] };
+                byCategory[key] = byCategory[key] || { key: key, name: item.category_name, priority: item.category_priority || 0, items: [] };
                 byCategory[key].items.push(item);
             } else {
                 uncategorized.push(item);
@@ -338,8 +370,24 @@
             if (renderedAny) {
                 list.appendChild(renderDivider());
             }
-            list.appendChild(renderGroupHeader(group.name));
-            sortItems(group.items).forEach(function (item) { list.appendChild(renderRow(item)); });
+            var rows = sortItems(group.items).map(renderRow);
+            if (query) {
+                // Suche: alle Treffer zeigen
+                list.appendChild(renderGroupHeader(group.name));
+            } else {
+                var head = document.createElement('button');
+                head.type = 'button';
+                head.className = 'mo-popover-group-header mo-group-toggle';
+                head.innerHTML = '<i class="rex-icon fa-chevron-down" aria-hidden="true"></i> ';
+                head.appendChild(document.createTextNode(group.name));
+                var count = document.createElement('span');
+                count.className = 'mo-group-count';
+                count.textContent = String(rows.length);
+                head.appendChild(count);
+                list.appendChild(head);
+                makeToggle(head, 'cat-' + group.key, rows);
+            }
+            rows.forEach(function (row) { list.appendChild(row); });
             renderedAny = true;
         });
 

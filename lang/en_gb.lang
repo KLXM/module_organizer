@@ -207,3 +207,7 @@ module_organizer_editor_too_many = Too many shapes for this canvas – extra sha
 module_organizer_favorite_add = Add to my favourites
 module_organizer_favorite_remove = Remove from my favourites
 module_organizer_favorite_global = Favourite for everyone (set in Module Organizer)
+module_organizer_categories_collapsed = Categories in the block picker
+module_organizer_categories_collapsed_open = expanded
+module_organizer_categories_collapsed_closed = collapsed
+module_organizer_categories_collapsed_notice = Applies to the compact list and the list with preview. Each category can be expanded or collapsed with a click; the state is remembered per browser. When searching, all results are shown.

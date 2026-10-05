@@ -13,6 +13,7 @@ if ('' !== rex_post('mo_save', 'string', '')) {
     $addon->setConfig('display_mode', $displayMode);
     $addon->setConfig('overlay_tiles', 'previews' === rex_post('overlay_tiles', 'string', '') ? 'previews' : 'icons');
     $addon->setConfig('warn_module_preview_conflict', '' !== rex_post('warn_module_preview_conflict', 'string', ''));
+    $addon->setConfig('categories_collapsed', 'closed' === rex_post('categories_collapsed', 'string', '') ? 'closed' : 'open');
     $addon->setConfig('strip_title_prefix', '' !== rex_post('strip_title_prefix', 'string', ''));
     $addon->setConfig('icon_style', 'duotone' === rex_post('icon_style', 'string', '') ? 'duotone' : 'mono');
     $palette = rex_post('icon_palette', 'string', 'redaxo');
@@ -61,6 +62,14 @@ $form .= '</div>';
 $form .= '<div class="radio"><label><input type="radio" name="display_mode" value="split"' . ('split' === $displayMode ? ' checked' : '') . '> ' . $addon->i18n('display_mode_split') . '</label></div>';
 $form .= '<p class="help-block" style="margin-left:20px;margin-top:-4px;">' . $addon->i18n('display_mode_split_notice') . '</p>';
 $form .= '</div>';
+
+// Kategorien in der Blockauswahl auf-/zuklappen
+$collapsed = 'closed' === $addon->getConfig('categories_collapsed', 'open') ? 'closed' : 'open';
+$form .= '<div class="form-group"><label>' . $addon->i18n('categories_collapsed') . '</label><div>';
+foreach (['open', 'closed'] as $state) {
+    $form .= '<label class="radio-inline"><input type="radio" name="categories_collapsed" value="' . $state . '"' . ($collapsed === $state ? ' checked' : '') . '> ' . $addon->i18n('categories_collapsed_' . $state) . '</label> ';
+}
+$form .= '</div><p class="help-block">' . $addon->i18n('categories_collapsed_notice') . '</p></div>';
 
 // Icon-Stil mit Live-Vorschau
 $previewIcons = '';

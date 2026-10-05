@@ -89,6 +89,7 @@ if (rex::isBackend() && rex::getUser()) {
         rex_view::setJsProperty('module_organizer', [
             'i18n' => $i18nMap,
             'mediaBaseUrl' => rex_url::media(),
+            'categoriesCollapsed' => 'closed' === $this->getConfig('categories_collapsed', 'open') ? 'closed' : 'open',
         ]);
     }
 }

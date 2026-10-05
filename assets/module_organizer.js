@@ -115,7 +115,7 @@
         // Tastatur: Pfeil runter springt ins Raster, Enter fügt den ersten Treffer ein;
         // im Raster Pfeiltasten (zeilenweise wie sichtbar), Pos1/Ende, Pfeil hoch in der ersten Zeile zurück zur Suche
         function tiles() {
-            return Array.prototype.slice.call(grid.querySelectorAll('.mo-tile'));
+            return Array.prototype.slice.call(grid.querySelectorAll('.mo-tile:not([hidden])'));
         }
         searchInput.addEventListener('keydown', function (event) {
             if ('ArrowDown' === event.key || 'Enter' === event.key) {
@@ -273,6 +273,38 @@
         previewPane.appendChild(insert);
     }
 
+
+    // Kategorien auf-/zuklappen: Standard aus den Einstellungen, Zustand je Kategorie im Browser gemerkt
+    function collapseDefault() {
+        return !!(window.rex && window.rex.module_organizer && 'closed' === window.rex.module_organizer.categoriesCollapsed);
+    }
+    function collapseState() {
+        try { return JSON.parse(window.localStorage.getItem('mo-collapsed') || '{}') || {}; } catch (e) { return {}; }
+    }
+    function isCollapsed(key) {
+        var st = collapseState();
+        return Object.prototype.hasOwnProperty.call(st, key) ? !!st[key] : collapseDefault();
+    }
+    function setCollapsed(key, value) {
+        var st = collapseState();
+        st[key] = !!value;
+        try { window.localStorage.setItem('mo-collapsed', JSON.stringify(st)); } catch (e) { /* ohne Speicher: nur bis zum Neuladen */ }
+    }
+    function makeToggle(header, key, rows) {
+        var collapsed = isCollapsed(key);
+        header.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        header.classList.toggle('is-collapsed', collapsed);
+        rows.forEach(function (r) { r.hidden = collapsed; });
+        header.addEventListener('click', function (e) {
+            e.preventDefault();
+            var now = header.getAttribute('aria-expanded') === 'true';
+            header.setAttribute('aria-expanded', now ? 'false' : 'true');
+            header.classList.toggle('is-collapsed', now);
+            rows.forEach(function (r) { r.hidden = now; });
+            setCollapsed(key, now);
+        });
+    }
+
     // Liste mit Vorschau: Gruppen Favoriten, Zuletzt verwendet, Kategorien, ohne Kategorie
     function renderSplit() {
         var query = (searchInput.value || '').trim().toLowerCase();
@@ -302,16 +334,28 @@
         });
         order.sort(function (a, b) { return (byCat[a].prio - byCat[b].prio) || byCat[a].label.localeCompare(byCat[b].label); });
         order.forEach(function (id) {
-            groups.push({ label: byCat[id].label, items: byCat[id].items.slice().sort(function (a, b) { return (a.priority - b.priority) || a.title.localeCompare(b.title); }) });
+            groups.push({ key: 'cat-' + id, label: byCat[id].label, items: byCat[id].items.slice().sort(function (a, b) { return (a.priority - b.priority) || a.title.localeCompare(b.title); }) });
         });
         if (rest.length) { groups.push({ label: t('no_category'), items: rest }); }
 
         var first = null;
         groups.forEach(function (group) {
-            var head = document.createElement('div');
-            head.className = 'mo-split-group';
-            head.textContent = group.label;
+            var toggle = !!group.key && !query;
+            var head = document.createElement(toggle ? 'button' : 'div');
+            head.className = 'mo-split-group' + (toggle ? ' mo-group-toggle' : '');
+            if (toggle) {
+                head.type = 'button';
+                head.innerHTML = '<i class="rex-icon fa-chevron-down" aria-hidden="true"></i> ';
+                head.appendChild(document.createTextNode(group.label));
+                var count = document.createElement('span');
+                count.className = 'mo-group-count';
+                count.textContent = String(group.items.length);
+                head.appendChild(count);
+            } else {
+                head.textContent = group.label;
+            }
             grid.appendChild(head);
+            var groupRows = [];
             group.items.forEach(function (item) {
                 var row = document.createElement('a');
                 row.className = 'mo-tile mo-split-row';
@@ -356,8 +400,13 @@
                     row.appendChild(gstar);
                 }
                 grid.appendChild(row);
-                if (!first) { first = item; }
+                groupRows.push(row);
             });
+            if (toggle) { makeToggle(head, group.key, groupRows); }
+            if (!first) {
+                var open = groupRows.filter(function (r) { return !r.hidden; })[0];
+                if (open) { first = open.__moItem; }
+            }
         });
         previewPane.__item = null;
         showPreview(first);
