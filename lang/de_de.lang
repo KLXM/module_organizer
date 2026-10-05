@@ -207,3 +207,6 @@ module_organizer_categories_collapsed = Kategorien in der Blockauswahl
 module_organizer_categories_collapsed_open = aufgeklappt
 module_organizer_categories_collapsed_closed = zugeklappt
 module_organizer_categories_collapsed_notice = Gilt für die kompakte Liste und die Liste mit Vorschau. Jede Kategorie lässt sich per Klick auf- und zuklappen, der Zustand wird je Browser gemerkt. Bei einer Suche sind immer alle Treffer zu sehen.
+module_organizer_preset_search = Suchen (z. B. Akkordeon, Reiter, Raster) …
+module_organizer_preset_search_preview = Vorschaubilder durchsuchen
+module_organizer_preset_search_none = Keine passende Vorlage.

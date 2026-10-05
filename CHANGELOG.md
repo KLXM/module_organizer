@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.6.0] - 2026-10-05
+
+### Added
+- 🧩 Neue Vorlagen **Raster / Grid** und **Nur Text** – als Icon und als Vorschaubild (auch als Formen im Editor)
+- 🔍 **Suche** über den Icons und den Vorschaubildern: findet Bezeichnung, Schlüssel und Synonyme (z. B. „Accordion“, „Aufklappen“, „Reiter“, „Registerkarten“, „Kacheln“, „Fließtext“, „Bühne“); ein einziger Treffer bei den Vorschaubildern wird direkt gewählt
+
+### Changed
+- Icons und Vorschaubilder alphabetisch sortiert (deutsche Sortierung)
+
+
 ## [1.5.0] - 2026-10-05
 
 ### Added

@@ -98,7 +98,71 @@ class IconRegistry
             'masonry' => 'Masonry',
             'search' => 'Suche',
             'stacked-cards' => 'Gestapelte Karten (Scroll)',
+            'grid' => 'Raster / Grid',
+            'text' => 'Nur Text',
         ];
+    }
+
+    /**
+     * Zusätzliche Suchbegriffe je Vorlage (Synonyme, englische Namen), damit die Suche
+     * z. B. „Accordion“, „Reiter“ oder „Kacheln“ findet.
+     *
+     * @return array<string, string>
+     */
+    public static function getPresetKeywords(): array
+    {
+        return [
+            'accordion' => 'accordion aufklappen ausklappen collapse toggle details',
+            'tabs' => 'tab reiter registerkarten register umschalten',
+            'grid' => 'raster kacheln tiles spalten zeilen gitter teaser',
+            'text' => 'fließtext fliesstext absatz paragraph editor wysiwyg richtext rte copy',
+            'cards' => 'karten teaser kacheln',
+            'columns' => 'spalten mehrspaltig',
+            'faq' => 'fragen antworten accordion',
+            'hero' => 'bühne buehne header stage banner',
+            'cta' => 'call to action handlungsaufforderung button aktion',
+            'gallery' => 'bilder fotos lightbox',
+            'slideshow' => 'slider karussell bilder',
+            'carousel' => 'slider slideshow',
+            'image-text' => 'text media bild',
+            'text-media-left' => 'bild text media',
+            'heading' => 'headline titel h1 h2',
+            'divider' => 'trennlinie abstand spacer',
+            'quote' => 'zitat blockquote',
+            'table' => 'tabelle daten',
+            'form' => 'formular kontaktformular eingabe',
+            'map' => 'karte standort anfahrt',
+            'downloads' => 'dateien pdf dokumente',
+            'stats' => 'zahlen kennzahlen counter',
+            'testimonial' => 'bewertungen kundenstimmen referenzen',
+            'notice' => 'hinweis info alert box',
+            'section' => 'container bereich wrapper',
+            'stacked-cards' => 'stapel scroll karten',
+            'stack-cards' => 'stapel karten',
+        ];
+    }
+
+    /** Text für die Suche: Bezeichnung, Schlüssel und Suchbegriffe (klein geschrieben) */
+    public static function getSearchText(string $key, string $label = ''): string
+    {
+        return mb_strtolower(trim($label . ' ' . $key . ' ' . (self::getPresetKeywords()[$key] ?? '')));
+    }
+
+    /**
+     * Bezeichnungen alphabetisch (deutsche Sortierung, falls intl verfügbar)
+     *
+     * @param array<string, string> $labels
+     * @return array<string, string>
+     */
+    public static function sortLabels(array $labels): array
+    {
+        if (class_exists(\Collator::class)) {
+            $collator = new \Collator('de_DE');
+            uasort($labels, static fn (string $a, string $b): int => (int) $collator->compare($a, $b));
+        } else {
+            asort($labels, SORT_NATURAL | SORT_FLAG_CASE);
+        }
+        return $labels;
     }
 
     /** @return list<string> */

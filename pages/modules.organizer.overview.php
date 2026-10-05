@@ -15,7 +15,7 @@ if ([] !== $conflicts && $addon->getConfig('warn_module_preview_conflict', true)
     echo rex_view::warning($addon->i18n('conflict_warning', implode(', ', $conflicts)));
 }
 
-$iconLabels = IconRegistry::getPresetLabels();
+$iconLabels = IconRegistry::sortLabels(IconRegistry::getPresetLabels());
 $mediaPlaceAvailable = rex_addon::exists('mediaplace') && rex_addon::get('mediaplace')->isAvailable();
 
 $sql = 'SELECT m.id, m.name, m.key
@@ -201,7 +201,7 @@ $iconOptionsHtml = '';
 foreach ($iconLabels as $iconKey => $iconLabel) {
     $iconPath = $addon->getPath('assets/icons/layout-' . $iconKey . '.svg');
     $iconSvg = is_file($iconPath) ? file_get_contents($iconPath) : '';
-    $iconOptionsHtml .= '<label class="mo-icon-radio" data-icon-option="' . rex_escape($iconKey) . '">';
+    $iconOptionsHtml .= '<label class="mo-icon-radio" data-icon-option="' . rex_escape($iconKey) . '" data-search="' . rex_escape(IconRegistry::getSearchText($iconKey, $iconLabel)) . '">';
     $iconOptionsHtml .= '<input type="radio" name="mo-icon-key" value="' . rex_escape($iconKey) . '">';
     $iconOptionsHtml .= $iconSvg;
     $iconOptionsHtml .= '<span>' . rex_escape($iconLabel) . '</span></label>';
@@ -235,12 +235,13 @@ if ([] !== $customPreviews) {
     $previewOptions .= '</optgroup><optgroup label="' . rex_escape($addon->i18n('editor_template_presets')) . '">';
 }
 foreach (\KLXM\ModuleOrganizer\PreviewRegistry::getPresetLabels() as $previewKey => $previewLabel) {
-    $previewOptions .= '<option value="' . rex_escape($previewKey) . '">' . rex_escape($previewLabel) . '</option>';
+    $previewOptions .= '<option value="' . rex_escape($previewKey) . '" data-search="' . rex_escape(IconRegistry::getSearchText($previewKey, $previewLabel)) . '">' . rex_escape($previewLabel) . '</option>';
 }
 if ([] !== $customPreviews) {
     $previewOptions .= '</optgroup>';
 }
 $sidebar .= '<div class="form-group mo-preview-field"><label for="mo-field-preview">' . $addon->i18n('preview') . '</label>';
+$sidebar .= '<input type="search" class="form-control input-sm mo-preset-search" id="mo-preview-search" data-target="#mo-field-preview" placeholder="' . rex_escape($addon->i18n('preset_search')) . '" aria-label="' . rex_escape($addon->i18n('preset_search_preview')) . '" autocomplete="off">';
 $sidebar .= '<select class="form-control" id="mo-field-preview">' . $previewOptions . '<option value="media" hidden></option></select>';
 $sidebar .= '<div class="mo-preview-actions">';
 $sidebar .= '<button type="button" id="mo-preview-draw" class="btn btn-default btn-xs"><i class="rex-icon fa-pen-ruler"></i> ' . $addon->i18n('preview_draw') . '</button>';
@@ -252,8 +253,10 @@ $sidebar .= '</div>';
 $sidebar .= '<div class="mo-preview-thumb" id="mo-preview-thumb"></div>';
 $sidebar .= '<p class="help-block">' . $addon->i18n('preview_notice') . '</p></div>';
 
-$sidebar .= '<div class="form-group"><label>' . $addon->i18n('icon') . '</label>';
-$sidebar .= '<div class="mo-icon-radio-grid">';
+$sidebar .= '<div class="form-group"><label for="mo-icon-search">' . $addon->i18n('icon') . '</label>';
+$sidebar .= '<input type="search" class="form-control input-sm mo-preset-search" id="mo-icon-search" data-target="#mo-icon-grid" placeholder="' . rex_escape($addon->i18n('preset_search')) . '" autocomplete="off">';
+$sidebar .= '<p class="mo-preset-search-empty help-block" id="mo-icon-search-empty" hidden>' . $addon->i18n('preset_search_none') . '</p>';
+$sidebar .= '<div class="mo-icon-radio-grid" id="mo-icon-grid">';
 $sidebar .= '<label class="mo-icon-radio" data-icon-option="">';
 $sidebar .= '<input type="radio" name="mo-icon-key" value=""><span>' . $addon->i18n('no_icon') . '</span></label>';
 $sidebar .= $iconOptionsHtml;

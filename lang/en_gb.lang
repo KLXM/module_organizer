@@ -211,3 +211,6 @@ module_organizer_categories_collapsed = Categories in the block picker
 module_organizer_categories_collapsed_open = expanded
 module_organizer_categories_collapsed_closed = collapsed
 module_organizer_categories_collapsed_notice = Applies to the compact list and the list with preview. Each category can be expanded or collapsed with a click; the state is remembered per browser. When searching, all results are shown.
+module_organizer_preset_search = Search (e.g. accordion, tabs, grid) …
+module_organizer_preset_search_preview = Search preview images
+module_organizer_preset_search_none = No matching template.

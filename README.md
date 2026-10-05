@@ -14,9 +14,9 @@ REDAXO-AddOn, das die Modulauswahl im Content-Editor ("Block hinzufügen") durch
 - Kategorisierung der Module per Drag & Drop in einem zweistufigen Strukturbaum (Kategorien → Module)
 - Globale (admin-gepflegte) und persönliche (pro Benutzer) Favoriten, die in der Blockauswahl immer zuerst erscheinen
 - „Zuletzt verwendet“ je Benutzer – die fünf zuletzt eingefügten Blöcke stehen gleich oben
-- 67 neutrale Vorschaubilder (Mockups) je Layout – oder ein eigener Screenshot aus dem Medienpool
+- 69 neutrale Vorschaubilder (Mockups) je Layout – oder ein eigener Screenshot aus dem Medienpool
 - Kurze Beschreibungstexte pro Modul, die als Tooltip in der Blockauswahl erscheinen
-- 67 vorgefertigte SVG-Layout-Icons, monochrom oder **Duotone** (zwei Farben, Paletten oder eigene Farben, Akzentfarbe je Kategorie) für gängige Modultypen (Bild, Video, Formular, Cards, Hero, FAQ, Zitat, Kalender, Zeitstrahl, Downloads, WLAN, Katalog u. v. m.)
+- 69 vorgefertigte SVG-Layout-Icons, monochrom oder **Duotone** (zwei Farben, Paletten oder eigene Farben, Akzentfarbe je Kategorie) für gängige Modultypen (Bild, Video, Formular, Cards, Hero, FAQ, Zitat, Kalender, Zeitstrahl, Downloads, WLAN, Katalog u. v. m.)
 - Eigene Bilder aus MediaPlace/Medienpool als Icon wählbar
 - SVG-Code einfügen: eigene Icons per Copy & Paste – serverseitig bereinigt (keine Skripte, Event-Attribute oder externen Verweise)
 - Vektor-Editor für eigene Icons und Vorschaubilder: Vollbild, Bausteine, alle Vorlagen als bearbeitbare Formen, Mehrfachauswahl, Ausrichten, Rückgängig, Live-Vorschau monochrom und Duotone
@@ -58,7 +58,7 @@ Ein kurzer Satz je Modul („Großes Bild über die ganze Breite – für den Se
 
 Jedes Modul kann ein Vorschau-Icon bekommen:
 
-1. **Vorlagen** – 67 Layout-Icons (Hero, Cards, Bild + Text, FAQ, Formular, Karte, Statistiken, Zitat, Slideshow, Bild-Teaser, Seiten-Navigation, Zeitstrahl, Kalender, Downloads, Standorte, Kontakt, Katalog mit Ort, Info-Karten, Mappe, WLAN, geschützter Bereich Beginn/Ende, Inhalt einbinden, Tabs, Stimmen, Logos, Schritte, Countdown, News, Produkt, Vorher/Nachher, Audio, Diagramm, Öffnungszeiten, Preisliste, Hinweis, Karussell, Masonry, Suche, gestapelte Karten …).
+1. **Vorlagen** – 69 Layout-Icons, alphabetisch sortiert und **durchsuchbar** (auch nach Synonymen: „Accordion“, „Reiter“, „Kacheln“, „Fließtext“ …) – Hero, Cards, Raster/Grid, Nur Text, Akkordeon, Bild + Text, FAQ, Formular, Karte, Statistiken, Zitat, Slideshow, Bild-Teaser, Seiten-Navigation, Zeitstrahl, Kalender, Downloads, Standorte, Kontakt, Katalog mit Ort, Info-Karten, Mappe, WLAN, geschützter Bereich Beginn/Ende, Inhalt einbinden, Tabs, Stimmen, Logos, Schritte, Countdown, News, Produkt, Vorher/Nachher, Audio, Diagramm, Öffnungszeiten, Preisliste, Hinweis, Karussell, Masonry, Suche, gestapelte Karten …).
 2. **Bild aus dem Medienpool/MediaPlace** – z. B. ein Screenshot des Moduls als echte Vorschau.
 3. **SVG-Code einfügen** – eigenes Icon per Copy & Paste. Das SVG wird beim Speichern bereinigt: Skripte, Event-Attribute (`on…`), `foreignObject`, externe Verweise und `javascript:`/`data:`-Werte werden entfernt; ungültiges Markup wird abgelehnt.
 4. **Icon-Editor** – eigenes Icon im Backend zeichnen; das SVG wird serverseitig erzeugt (siehe unten).
@@ -73,7 +73,7 @@ Alle Icons nutzen `currentColor` und passen sich damit Hell- und Dunkelmodus an.
 - **Formen:** Rechteck, Kreis, Linie, Pfeil, Stern, Haken, Marker, Überschrift, Text, Button, Bild, Video, Dokument, Formular, Browserfenster. Icons bis 16, Vorschaubilder bis 60 Formen.
 - **Bausteine:** fertige Gruppen zum Einfügen – Navigation, Bühne, Bild + Text, Karte, 3 Karten, Galerie, Formularzeile, Zitat, Kennzahlen, Liste, Akkordeon, Fußzeile.
 - **Icon oder Vorschaubild:** oben in der Kopfleiste umschalten (24×18 bzw. 16:10) – gespeichert wird entsprechend als Icon oder Vorschaubild des gewählten Moduls.
-- **Vorlagen:** alle 67 Icon- und Vorschau-Vorlagen lassen sich *als Formen laden* und abwandeln; eigene Werke ebenso. Geschwungene Teile mancher Icons (und eingefügtes SVG) lassen sich *durchpausen* – sie liegen blass unter der Fläche.
+- **Vorlagen:** alle 69 Icon- und Vorschau-Vorlagen lassen sich *als Formen laden* und abwandeln; eigene Werke ebenso. Geschwungene Teile mancher Icons (und eingefügtes SVG) lassen sich *durchpausen* – sie liegen blass unter der Fläche.
 - **Bearbeiten:** Auswahl per Klick, Umschalt+Klick oder Aufziehen; acht Anfasser (Umschalt hält das Seitenverhältnis), X/Y/Breite/Höhe als Zahlen, Ausrichten (an der Fläche oder an der Auswahl), Verteilen, Ebenen, Duplizieren, Kopieren/Einfügen, Rückgängig/Wiederholen, Raster und Einrasten.
 - **Füllung je Form:** *Kontur*, *Hauch*, *Akzent*, *Voll* und *Grau* – Hauch und Akzent erscheinen bei Duotone in der Akzentfarbe, Grau bleibt neutral.
 - **Tastatur:** Pfeile verschieben (Umschalt = größere Schritte, Alt = Größe), 1–5 Füllung, Strg/Cmd+Z/Umschalt+Z, C/X/V, D, A, Entf, Esc.
@@ -82,7 +82,7 @@ Der Browser schickt nur Formtyp, Koordinaten und Füllstil – das SVG baut `Cus
 
 ### Vorschaubilder
 
-Neben dem Icon kann jedes Modul ein großes Vorschaubild haben: *Automatisch* (passend zum Icon), eine der 67 Vorlagen, ein im Editor gezeichnetes, *Keins* oder ein eigenes Bild aus dem Medienpool/MediaPlace (z. B. ein Screenshot des Moduls). Die Vorlagen sind bewusst neutrale Mockups ohne Inhalte – sie verraten nichts über das Projekt und folgen dem Duotone-Stil.
+Neben dem Icon kann jedes Modul ein großes Vorschaubild haben: *Automatisch* (passend zum Icon), eine der 69 Vorlagen, ein im Editor gezeichnetes, *Keins* oder ein eigenes Bild aus dem Medienpool/MediaPlace (z. B. ein Screenshot des Moduls). Die Vorlagen sind bewusst neutrale Mockups ohne Inhalte – sie verraten nichts über das Projekt und folgen dem Duotone-Stil.
 
 ### Icon-Stil: Monochrom oder Duotone
 
