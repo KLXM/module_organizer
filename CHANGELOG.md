@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.1] - 2026-10-06
+
+### Fixed
+- Kategorien in der Blockauswahl ließen sich in manchen Installationen nicht zuklappen: Das `hidden`-Attribut wurde gesetzt, die Einträge blieben aber sichtbar, weil ihre `display`-Regel Vorrang hatte (betrifft kompakte Liste und Liste mit Vorschau; fiel nur auf, wenn das Backend-Theme keine eigene `[hidden]`-Regel mitbringt). Versteckte Einträge sind jetzt immer ausgeblendet.
+
+### Added
+- GitHub-Action „Publish release“: veröffentlichte Releases werden automatisch in den REDAXO-Installer übertragen (benötigt die Secrets `MYREDAXO_USERNAME` und `MYREDAXO_API_KEY`)
+
+
 ## [1.6.0] - 2026-10-05
 
 ### Added
