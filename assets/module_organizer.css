@@ -1318,3 +1318,11 @@ html.mo-editor-open { overflow: hidden; }
 .mo-preset-search { margin-bottom: 8px; }
 .mo-icon-radio[hidden] { display: none; }
 .mo-preset-search-empty { margin: 0 0 8px; }
+
+/* 1.6.1: Zugeklappte Kategorien – [hidden] gegen display-Regeln der Zeilen und gegen Theme-CSS durchsetzen */
+#mo-popover [hidden],
+#mo-overlay [hidden],
+.mo-popover [hidden],
+.mo-overlay [hidden] {
+    display: none !important;
+}
